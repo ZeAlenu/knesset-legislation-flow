@@ -1278,8 +1278,8 @@ function renderHierarchy(){
       });
       const addBtn = document.createElement("button");
       addBtn.className = "add-step-btn";
-      addBtn.textContent = "➕ הוסף תת-שלב";
-      addBtn.onclick = function(){ addStepTo(stage.steps, stage); };
+      addBtn.textContent = "➕ הוסף שלב";
+      addBtn.onclick = function(){ addStepTo(stage.children || stage.steps, stage, -1); };
       content.appendChild(addBtn);
     }
 
@@ -1520,7 +1520,7 @@ function renderStep(step, stage, index){
             branchAddBtn.className = "add-step-btn";
             branchAddBtn.style.cssText = "margin:4px auto;display:block;font-size:10px";
             branchAddBtn.textContent = "➕ הוסף לענף";
-            branchAddBtn.onclick = function(e){ e.stopPropagation(); if(!child.children) child.children=[]; addStepTo(child.children, stage, child.depth); };
+            branchAddBtn.onclick = function(e){ e.stopPropagation(); if(!child.children) child.children=[]; addStepTo(child.children, stage, Math.max(0, (child.depth||1) - 1)); };
             col.appendChild(branchAddBtn);
           }
           parallelRow.appendChild(col);
@@ -1585,6 +1585,13 @@ function renderStep(step, stage, index){
         addBtn.textContent = "➕ הוסף תת-שלב";
         addBtn.onclick = function(e){ e.stopPropagation(); if(!step.children) step.children=[]; addStepTo(step.children, stage, step.depth); };
         detailPanel.appendChild(addBtn);
+        // Add sibling (same level) button
+        const addSiblingBtn = document.createElement("button");
+        addSiblingBtn.className = "add-step-btn";
+        addSiblingBtn.style.cssText = "margin:4px 10px;background:#E8F5E9";
+        addSiblingBtn.textContent = "➕ הוסף שלב באותה רמה";
+        addSiblingBtn.onclick = function(e){ e.stopPropagation(); addStepTo(findParentArray(step.id) || stage.children, stage, Math.max(0, (step.depth||0) - 1)); };
+        detailPanel.appendChild(addSiblingBtn);
       }
     }
 
@@ -1694,6 +1701,22 @@ function deleteStage(id){
   appState.stages = appState.stages.filter(s=>s.id!==id);
   appState.openStages.delete(id);
   renderAll();
+}
+
+function findParentArray(stepId){
+  for(const stage of appState.stages){
+    const result = _findParentArr(stage.children, stepId);
+    if(result) return result;
+  }
+  return null;
+}
+function _findParentArr(arr, stepId){
+  if(!arr) return null;
+  for(const item of arr){
+    if(item.id === stepId) return arr;
+    if(item.children){ const r = _findParentArr(item.children, stepId); if(r) return r; }
+  }
+  return null;
 }
 
 function addStepTo(arr, stage, parentDepth){
