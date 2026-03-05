@@ -1482,7 +1482,12 @@ function renderStep(step, stage, index){
         dc.focus();
         dc.addEventListener("blur", function(){
           dc.contentEditable = "false";
-          step.details = dc.innerText;
+          // Preserve line breaks: convert <br> and <div> to \n
+          let html = dc.innerHTML;
+          html = html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/div><div>/gi, "\n").replace(/<\/?div>/gi, "").replace(/<\/?span[^>]*>/gi, "").replace(/&nbsp;/g, " ");
+          // Strip remaining tags
+          const tmp = document.createElement("div"); tmp.innerHTML = html;
+          step.details = tmp.textContent || tmp.innerText || "";
         },{once:true});
       });
       detailPanel.appendChild(detContent);
