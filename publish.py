@@ -4,6 +4,7 @@ import http.server
 import json
 import subprocess
 import os
+from datetime import datetime
 
 PUBLISH_KEY = "97d2870b8acfb063d9bc11e3ef9ce2db"
 SITE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -35,12 +36,41 @@ class PublishHandler(http.server.BaseHTTPRequestHandler):
         
         try:
             data = json.loads(body)
+            # Load existing state for merge
+            existing = {}
+            if os.path.exists(STATE_FILE):
+                with open(STATE_FILE, "r") as f:
+                    try: existing = json.load(f)
+                    except: pass
+            
+            # Stage-level merge: only update stages that changed
+            if existing.get("stages") and data.get("stages"):
+                existing_map = {s["id"]: s for s in existing["stages"]}
+                incoming_map = {s["id"]: s for s in data["stages"]}
+                # Merge: incoming wins for stages that differ
+                for sid, stage in incoming_map.items():
+                    existing_map[sid] = stage
+                # Preserve stages not in incoming (shouldn't happen but safe)
+                merged_stages = []
+                seen = set()
+                for s in data["stages"]:
+                    merged_stages.append(existing_map[s["id"]])
+                    seen.add(s["id"])
+                for s in existing["stages"]:
+                    if s["id"] not in seen:
+                        merged_stages.append(existing_map[s["id"]])
+                data["stages"] = merged_stages
+            
+            # Always merge categories and flow (take incoming for now)
+            author = data.get("publishedBy", "unknown")
+            data["mergedAt"] = datetime.now().isoformat()
+            
             with open(STATE_FILE, "w") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
             
             # Git commit and push
             subprocess.run(["git", "add", "state.json"], cwd=SITE_DIR, check=True)
-            subprocess.run(["git", "commit", "-m", "publish: update shared state"], cwd=SITE_DIR, check=True)
+            subprocess.run(["git", "commit", "-m", f"publish: merge by {author}"], cwd=SITE_DIR, check=True)
             subprocess.run(["git", "push"], cwd=SITE_DIR, check=True)
             
             self.send_response(200)

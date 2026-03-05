@@ -823,8 +823,8 @@ async function publishState(){
     publishedBy: author
   });
   
-  logChange("פרסום", author);
-  showToast("🔄 מפרסם...");
+  logChange("פרסום (מיזוג)", author);
+  showToast("🔄 מפרסם (מיזוג ברמת שלב)...");
   try {
     const resp = await fetch(PUBLISH_URL, {
       method: "POST",
