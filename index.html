@@ -788,20 +788,35 @@ function renderCatList(){
 function pickCatColor(catId, swatchEl){
   document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
   const cat = getCat(catId);
+  const presets = ["#FFFFFF","#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B","#E67E22","#8E44AD","#2C3E50"];
   const popup = document.createElement("div");
   popup.className = "color-picker-popup show";
-  popup.innerHTML = `
-    <input type="color" value="${cat.color}" oninput="updateCatColorLive('${catId}',this.value,this.closest('.cat-row'))">
-    <div class="preset-colors">
-      ${["#FFFFFF","#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B","#E67E22","#8E44AD","#2C3E50"].map(c=>
-        `<div class="preset-color" style="background:${c}" onclick="updateCatColorLive('${catId}','${c}',this.closest('.cat-row'));this.closest('.color-picker-popup').querySelector('input').value='${c}'"></div>`
-      ).join("")}
-    </div>
-  `;
-  popup.style.position = "absolute";
+  popup.style.position = "fixed";
   popup.style.zIndex = "300";
-  swatchEl.parentElement.style.position = "relative";
-  swatchEl.parentElement.appendChild(popup);
+  popup.style.width = "210px";
+  popup.innerHTML = `
+    <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">צבע רקע:</div>
+    <input type="color" value="${cat.color}" oninput="updateCatColorLive('${catId}',this.value,this.closest('.color-picker-popup').closest('body').querySelector('.cat-row[data-cat=${catId}]'))" style="width:100%;height:28px;border:none;border-radius:4px;cursor:pointer">
+    <div class="preset-colors" style="margin-top:4px">
+      ${presets.map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();getCat('${catId}').color='${c}';renderCatList()"></div>`).join("")}
+    </div>
+    <div style="font-size:11px;color:#888;margin:8px 0 4px;font-weight:600">צבע טקסט:</div>
+    <input type="color" value="${cat.textColor||'#FFFFFF'}" oninput="getCat('${catId}').textColor=this.value" style="width:100%;height:28px;border:none;border-radius:4px;cursor:pointer">
+    <div class="preset-colors" style="margin-top:4px">
+      ${["#FFFFFF","#000000","#333333","#0A5E6E","#1B2A4A","#CC0000"].map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();getCat('${catId}').textColor='${c}'"></div>`).join("")}
+    </div>
+    <div style="font-size:11px;color:#888;margin:8px 0 4px;font-weight:600">צבע מסגרת:</div>
+    <input type="color" value="${cat.borderColor||cat.color}" oninput="getCat('${catId}').borderColor=this.value" style="width:100%;height:28px;border:none;border-radius:4px;cursor:pointer">
+    <div class="preset-colors" style="margin-top:4px">
+      ${presets.map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();getCat('${catId}').borderColor='${c}'"></div>`).join("")}
+    </div>
+    <button onclick="event.stopPropagation();document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderCatList();renderAll(true)" style="margin-top:10px;width:100%;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
+  `;
+
+  const rect = swatchEl.getBoundingClientRect();
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 420) + "px";
+  popup.style.left = Math.max(4, rect.left) + "px";
+  document.body.appendChild(popup);
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
       if(!popup.contains(e.target) && e.target !== swatchEl){
