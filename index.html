@@ -105,7 +105,8 @@ header p{font-size:13px;opacity:.85}
 .flow-legend-item{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#555;font-weight:500}
 .flow-legend-shape{width:18px;height:14px;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
 
-.flow-step{text-align:center;margin-bottom:2px;position:relative}
+.flow-step{text-align:center;margin-bottom:2px;position:relative;z-index:1}
+.flow-step:hover{z-index:25}
 .flow-step .box{display:inline-block;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;color:#fff;min-width:160px;cursor:pointer;transition:all .2s;border:2px solid transparent}
 .flow-step .box:hover{transform:scale(1.03);filter:brightness(1.1)}
 .flow-step .box.flow-active{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,.6);animation:flowGlow 1.5s ease-in-out infinite alternate}
@@ -187,8 +188,10 @@ header p{font-size:13px;opacity:.85}
 .hidden-input{position:absolute;width:0;height:0;opacity:0;pointer-events:none}
 
 /* FLOW EDIT CONTROLS */
-.flow-edit-actions{display:none;gap:3px;justify-content:center;margin:2px 0}
+.flow-edit-actions{display:none;gap:3px;justify-content:center;margin:2px 0;position:relative;z-index:20}
 .editing .flow-edit-actions{display:flex}
+.step-edit-actions{position:relative;z-index:20}
+.sub-step-header{position:relative;z-index:10}
 .flow-edit-btn{background:rgba(255,255,255,.85);border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:11px;padding:1px 4px;transition:all .2s;line-height:1.2}
 .flow-edit-btn:hover{background:#fff;border-color:#999}
 .flow-insert-btn{display:none;border:2px dashed #ccc;border-radius:6px;padding:3px 10px;text-align:center;color:#999;cursor:pointer;margin:2px auto;font-size:11px;font-weight:600;transition:all .2s;background:none;font-family:inherit}
