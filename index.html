@@ -216,6 +216,7 @@ header p{font-size:13px;opacity:.85}
     <button onclick="saveToStorage()">💾 שמור</button>
     <button onclick="exportJSON()">📤 ייצוא</button>
     <button onclick="publishState()" style="background:#2D7D46;color:#fff">🌐 פרסם לכולם</button>
+    <button onclick="showChangelog()">📋 היסטוריה</button>
     <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
     <input type="file" id="importInput" accept=".json" class="hidden-input" onchange="importJSON(event)">
   </div>
@@ -737,6 +738,7 @@ function saveToStorage(){
       flowBackLinks: appState.flowBackLinks,
       nextId
     }));
+    logChange("שמירה מקומית", localStorage.getItem("knesset-author")||"?");
     showToast("💾 נשמר בהצלחה");
   } catch(e){ showToast("❌ שגיאה בשמירה"); }
 }
@@ -744,17 +746,76 @@ function saveToStorage(){
 const PUBLISH_URL = "https://stainless-roses-jury-electoral.trycloudflare.com/publish";
 const PUBLISH_KEY = "97d2870b8acfb063d9bc11e3ef9ce2db";
 
+// Local changelog
+function getChangelog(){ try { return JSON.parse(localStorage.getItem("knesset-changelog")||"[]"); } catch(e){ return []; } }
+function saveChangelog(log){ localStorage.setItem("knesset-changelog", JSON.stringify(log)); }
+function logChange(action, author){
+  const log = getChangelog();
+  log.push({action, author, date: new Date().toISOString(), snapshot: JSON.stringify({categories:appState.categories,stages:appState.stages,flowSteps:appState.flowSteps,flowBackLinks:appState.flowBackLinks,nextId})});
+  if(log.length > 50) log.splice(0, log.length - 50); // keep last 50
+  saveChangelog(log);
+}
+
+function getAuthorName(){
+  let name = localStorage.getItem("knesset-author");
+  if(!name){
+    name = prompt("מה שמך? (ישמר בדפדפן)");
+    if(name) localStorage.setItem("knesset-author", name);
+  }
+  return name || "אנונימי";
+}
+
+function showChangelog(){
+  const log = getChangelog();
+  if(log.length === 0){ showToast("אין היסטוריית שינויים"); return; }
+  const modal = document.createElement("div");
+  modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center";
+  let html = '<div style="background:#fff;border-radius:12px;padding:20px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;direction:rtl">';
+  html += '<h3 style="margin:0 0 12px">📋 היסטוריית שינויים</h3>';
+  log.slice().reverse().forEach((entry, i) => {
+    const d = new Date(entry.date);
+    const timeStr = d.toLocaleDateString("he-IL") + " " + d.toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});
+    html += `<div style="padding:8px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center">
+      <div><strong>${entry.author||"?"}</strong> — ${entry.action}<br><span style="font-size:11px;color:#888">${timeStr}</span></div>
+      <button onclick="restoreFromLog(${log.length-1-i})" style="padding:4px 10px;border:1px solid #ddd;border-radius:4px;background:#f8f8f8;cursor:pointer;font-size:11px;font-family:inherit">↩️ שחזר</button>
+    </div>`;
+  });
+  html += '<button onclick="this.closest(\'div[style]\').remove()" style="margin-top:12px;width:100%;padding:8px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:13px">סגור</button>';
+  html += '</div>';
+  modal.innerHTML = html;
+  modal.onclick = function(e){ if(e.target === modal) modal.remove(); };
+  document.body.appendChild(modal);
+}
+
+function restoreFromLog(index){
+  const log = getChangelog();
+  if(!log[index] || !log[index].snapshot) return;
+  if(!confirm("לשחזר גרסה זו?")) return;
+  pushUndo();
+  const d = JSON.parse(log[index].snapshot);
+  if(d.categories) appState.categories = d.categories;
+  if(d.stages) appState.stages = d.stages;
+  if(d.flowSteps) appState.flowSteps = d.flowSteps;
+  if(d.flowBackLinks) appState.flowBackLinks = d.flowBackLinks;
+  if(d.nextId) nextId = d.nextId;
+  renderAll();
+  showToast("↩️ שוחזר!");
+}
+
 async function publishState(){
   if(!confirm("לפרסם את המצב הנוכחי לכל מי שיש לו את הלינק?")) return;
+  const author = getAuthorName();
   const stateData = JSON.stringify({
     categories: appState.categories,
     stages: appState.stages,
     flowSteps: appState.flowSteps,
     flowBackLinks: appState.flowBackLinks,
     nextId,
-    publishDate: new Date().toISOString()
+    publishDate: new Date().toISOString(),
+    publishedBy: author
   });
   
+  logChange("פרסום", author);
   showToast("🔄 מפרסם...");
   try {
     const resp = await fetch(PUBLISH_URL, {
