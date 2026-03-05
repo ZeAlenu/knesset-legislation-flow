@@ -32,9 +32,9 @@ header p{font-size:13px;opacity:.85}
 .toolbar .sep{width:1px;height:24px;background:#ddd;margin:0 4px}
 
 /* LAYOUT */
-.container{display:flex;gap:30px;padding:24px 40px;max-width:1800px;margin:0 auto}
+.container{display:flex;gap:30px;padding:24px 40px;max-width:1900px;margin:0 auto}
 .hierarchy-panel{flex:1;min-width:0}
-.flow-panel{width:360px;flex-shrink:0;position:sticky;top:20px;align-self:flex-start}
+.flow-panel{width:500px;flex-shrink:0;position:sticky;top:20px;align-self:flex-start}
 
 /* LEGEND */
 .legend{background:#fff;border-radius:12px;padding:14px 20px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.08);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -48,8 +48,8 @@ header p{font-size:13px;opacity:.85}
 .stage-btn.active{background:#e6f7f9;border-color:var(--teal-dark)}
 .stage-btn .number{background:var(--teal-dark);color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
 .stage-btn .label{font-size:17px;font-weight:700;color:var(--teal-dark)}
-.stage-btn .arrow{margin-right:auto;font-size:18px;transition:transform .3s;color:var(--teal-dark);display:inline-block}
-.stage-btn.active .arrow{transform:rotate(-90deg)}
+.stage-btn .arrow{margin-right:auto;font-size:18px;transition:transform .3s;color:var(--teal-dark)}
+.stage-btn.active .arrow{transform:rotate(90deg)}
 .stage-btn .edit-actions{display:none;gap:4px;margin-right:8px}
 .editing .stage-btn .edit-actions{display:flex}
 .edit-btn-sm{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;transition:background .2s}
@@ -65,8 +65,8 @@ header p{font-size:13px;opacity:.85}
 .sub-step-header:hover{filter:brightness(.95)}
 .sub-step-header .icon{font-size:16px;flex-shrink:0}
 .sub-step-header .text{font-size:14px;font-weight:600;flex:1}
-.sub-step-header .expand-arrow{font-size:13px;transition:transform .3s;opacity:.6;display:inline-block}
-.sub-step.open>.sub-step-header .expand-arrow{transform:rotate(-90deg)}
+.sub-step-header .expand-arrow{font-size:13px;transition:transform .3s;opacity:.6}
+.sub-step.open>.sub-step-header .expand-arrow{transform:rotate(90deg)}
 .sub-step-header .cat-logo{width:20px;height:20px;border-radius:3px;object-fit:contain;flex-shrink:0}
 .sub-step-header .override-badge{font-size:10px;opacity:.7;cursor:help}
 .sub-step-header .step-edit-actions{display:none;gap:3px;margin-right:4px}
@@ -94,19 +94,37 @@ header p{font-size:13px;opacity:.85}
 .editing .inline-edit-hint{display:inline;font-size:10px;color:#999;margin-right:6px}
 
 /* FLOW CHART */
-.flow-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 6px rgba(0,0,0,.08);max-height:calc(100vh - 80px);overflow-y:auto}
-.flow-card h3{font-size:15px;font-weight:700;color:#1B2A4A;margin-bottom:14px;text-align:center}
-.flow-step{text-align:center;margin-bottom:3px}
-.flow-step .box{display:inline-block;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;color:#fff;min-width:180px;cursor:pointer;transition:all .2s}
-.flow-step .box:hover{transform:scale(1.03)}
-.flow-arrow{text-align:center;color:#999;font-size:18px;margin:3px 0}
-.flow-note{font-size:10px;color:var(--waiting);text-align:center;margin:3px 0;font-weight:600}
-.flow-split{display:flex;gap:10px;justify-content:center;margin:6px 0}
-.flow-track{display:flex;flex-direction:column;align-items:center;gap:4px}
-.flow-or{background:var(--waiting);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
-.flow-side-note{font-size:10px;color:#CC0000;text-align:center;background:#FFF0F0;border:1px solid #CC0000;border-radius:6px;padding:3px 6px;margin:2px 0}
-.flow-diamond{display:inline-flex;align-items:center;justify-content:center;width:100px;height:100px;transform:rotate(45deg);font-size:11px;font-weight:600;color:#fff;margin:8px auto}
-.flow-diamond span{transform:rotate(-45deg);display:block;text-align:center}
+.flow-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 6px rgba(0,0,0,.08);max-height:calc(100vh - 80px);overflow-y:auto;scroll-behavior:smooth}
+.flow-card h3{font-size:15px;font-weight:700;color:#1B2A4A;margin-bottom:10px;text-align:center}
+
+/* Shape legend */
+.flow-legend{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;margin-bottom:14px;padding:8px 10px;background:#f8f9fb;border-radius:8px;border:1px solid #e8e8e8}
+.flow-legend-item{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#555;font-weight:500}
+.flow-legend-shape{width:18px;height:14px;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+
+.flow-step{text-align:center;margin-bottom:2px;position:relative}
+.flow-step .box{display:inline-block;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;color:#fff;min-width:160px;cursor:pointer;transition:all .2s;border:2px solid transparent}
+.flow-step .box:hover{transform:scale(1.03);filter:brightness(1.1)}
+.flow-step .box.flow-active{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,.6);animation:flowGlow 1.5s ease-in-out infinite alternate}
+@keyframes flowGlow{from{box-shadow:0 0 8px rgba(255,215,0,.4)}to{box-shadow:0 0 16px rgba(255,215,0,.8)}}
+.flow-here-badge{position:absolute;left:-2px;top:50%;transform:translateY(-50%);font-size:10px;color:#FFD700;font-weight:700;white-space:nowrap;pointer-events:none;text-shadow:0 0 4px rgba(0,0,0,.3)}
+.flow-arrow{text-align:center;color:#bbb;font-size:16px;margin:2px 0;line-height:1}
+.flow-note{font-size:10px;color:var(--waiting);text-align:center;margin:2px 0;font-weight:600}
+.flow-split{display:flex;gap:8px;justify-content:center;margin:4px 0;align-items:flex-start}
+.flow-track{display:flex;flex-direction:column;align-items:center;gap:3px}
+.flow-or{background:var(--waiting);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.flow-side-note{font-size:10px;color:#CC0000;text-align:center;background:#FFF0F0;border:1px solid #CC0000;border-radius:6px;padding:2px 6px;margin:2px 0}
+.flow-diamond{display:inline-flex;align-items:center;justify-content:center;width:85px;height:85px;transform:rotate(45deg);font-size:10px;font-weight:600;color:#fff;margin:6px auto;cursor:pointer;transition:all .2s;border:2px solid transparent}
+.flow-diamond:hover{filter:brightness(1.1)}
+.flow-diamond.flow-active{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,.6)}
+.flow-diamond span{transform:rotate(-45deg);display:block;text-align:center;line-height:1.3}
+.flow-circle{display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;font-size:10px;font-weight:600;color:#fff;cursor:pointer;transition:all .2s;border:2px solid transparent}
+.flow-circle:hover{filter:brightness(1.1)}
+.flow-circle.flow-active{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,.6)}
+.flow-converge-line{width:2px;height:12px;background:#bbb;margin:0 auto}
+.flow-branch-container{display:flex;justify-content:center;gap:0;margin:4px 0;position:relative}
+.flow-branch{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;position:relative}
+.flow-branch-label{font-size:10px;color:#888;font-weight:600;margin-bottom:2px}
 
 /* MODAL */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center}
@@ -154,7 +172,7 @@ header p{font-size:13px;opacity:.85}
 .toast.show{opacity:1}
 
 /* RESPONSIVE */
-@media(max-width:1100px){.container{flex-direction:column;padding:16px}.flow-panel{width:100%;position:static}}
+@media(max-width:1200px){.container{flex-direction:column;padding:16px}.flow-panel{width:100%;position:static}}
 @media(max-width:600px){header{padding:14px 16px}header h1{font-size:20px}.container{padding:12px}.toolbar{padding:8px 16px}}
 
 /* ADD STEP BUTTON */
@@ -193,7 +211,7 @@ header p{font-size:13px;opacity:.85}
   <span style="font-size:11px;color:#999">לחיצה כפולה על טקסט = עריכה | גרור לסידור מחדש</span>
 </div>
 
-<div style="padding:16px 40px 0;max-width:1800px;margin:0 auto">
+<div style="padding:16px 40px 0;max-width:1900px;margin:0 auto">
   <div class="legend" id="legendBar"></div>
 </div>
 
@@ -484,11 +502,45 @@ let appState = {
   categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
   stages: JSON.parse(JSON.stringify(DEFAULT_STAGES)),
   editing: false,
-  openStages: new Set(["s1"])
+  openStages: new Set(["s1"]),
+  activeFlowStage: null  // tracks which stage is highlighted in flow
 };
 
 let nextId = 1000;
 function genId(){ return "gen_" + (nextId++); }
+
+// Mapping: flow chart step id → stage id
+const FLOW_STAGE_MAP = {
+  "flow-s1": "s1",
+  "flow-s1-chriga": "s1",
+  "flow-s1-nesiut": "s1",
+  "flow-s1-hanaha": "s1",
+  "flow-s1-gov": "s1",
+  "flow-s2": "s2",
+  "flow-s3": "s3",
+  "flow-s4": "s4",
+  "flow-s5": "s5",
+  "flow-s6": "s6",
+  "flow-s7": "s7",
+  "flow-s8": "s8",
+  "flow-s9": "s9",
+  "flow-s10": "s10",
+  "flow-final": "s10"
+};
+
+// Reverse mapping: stage id → primary flow step id
+const STAGE_FLOW_MAP = {
+  "s1": "flow-s1",
+  "s2": "flow-s2",
+  "s3": "flow-s3",
+  "s4": "flow-s4",
+  "s5": "flow-s5",
+  "s6": "flow-s6",
+  "s7": "flow-s7",
+  "s8": "flow-s8",
+  "s9": "flow-s9",
+  "s10": "flow-s10"
+};
 
 // ============================================================
 // LOAD / SAVE
@@ -581,7 +633,6 @@ function renderCatList(){
 }
 
 function pickCatColor(catId, swatchEl){
-  // Remove existing popups
   document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
   const cat = getCat(catId);
   const popup = document.createElement("div");
@@ -598,7 +649,6 @@ function pickCatColor(catId, swatchEl){
   popup.style.zIndex = "300";
   swatchEl.parentElement.style.position = "relative";
   swatchEl.parentElement.appendChild(popup);
-  // Close on outside click
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
       if(!popup.contains(e.target) && e.target !== swatchEl){
@@ -648,7 +698,6 @@ function uploadCatLogo(catId){
 function deleteCat(catId){
   if(!confirm("למחוק את הקטגוריה?")) return;
   appState.categories = appState.categories.filter(c=>c.id !== catId);
-  // Reset any steps assigned to this cat
   function resetCat(steps){
     steps.forEach(s => {
       if(s.catId === catId) s.catId = "process";
@@ -685,7 +734,6 @@ function makeEditable(text, onUpdate){
     e.stopPropagation();
     span.contentEditable = "true";
     span.focus();
-    // Select all text
     const range = document.createRange();
     range.selectNodeContents(span);
     window.getSelection().removeAllRanges();
@@ -725,19 +773,25 @@ function renderLegend(){
 // RENDER HIERARCHY
 // ============================================================
 
+const HEBREW_LETTER_NAMES = {
+  "א":"א'","ב":"ב'","ג":"ג'","ד":"ד'","ה":"ה'","ו":"ו'","ז":"ז'","ח":"ח'","ט":"ט'","י":"י'"
+};
+
 function renderHierarchy(){
   const panel = document.getElementById("hierarchyPanel");
   panel.innerHTML = "";
 
   appState.stages.forEach((stage, si) => {
     const isOpen = appState.openStages.has(stage.id);
+    const letterLabel = HEBREW_LETTER_NAMES[stage.letter] || stage.letter;
 
     // Stage button
     const btn = document.createElement("button");
     btn.className = "stage-btn" + (isOpen ? " active" : "");
+    btn.id = "stage-btn-" + stage.id;
     btn.innerHTML = `
       <span class="number">${escH(stage.letter)}</span>
-      <span class="label">${escH(stage.title)}</span>
+      <span class="label">שלב ${letterLabel}: ${escH(stage.title)}</span>
       ${stage.subtitle ? `<span style="font-size:12px;color:#666;font-weight:400"> — ${escH(stage.subtitle)}</span>` : ""}
       <span class="edit-actions">
         <span class="edit-btn-sm" onclick="event.stopPropagation();editStageName('${stage.id}')" title="ערוך שם">✏️</span>
@@ -745,7 +799,6 @@ function renderHierarchy(){
       </span>
       <span class="arrow">◀</span>
     `;
-    // Click to expand (with delay for dblclick)
     let stageClickTimer = null;
     btn.addEventListener("click", function(e){
       if(e.target.closest(".edit-actions")) return;
@@ -754,8 +807,23 @@ function renderHierarchy(){
         stageClickTimer = null;
         if(isOpen) appState.openStages.delete(stage.id);
         else appState.openStages.add(stage.id);
-        renderHierarchy();
-      }, 250);
+        // Update active flow stage
+        if(appState.openStages.has(stage.id)){
+          appState.activeFlowStage = stage.id;
+        } else if(appState.activeFlowStage === stage.id){
+          // Find next open stage
+          appState.activeFlowStage = null;
+          for(const s of appState.stages){
+            if(appState.openStages.has(s.id)){
+              appState.activeFlowStage = s.id;
+              break;
+            }
+          }
+        }
+        renderAll();
+        // Auto-scroll flow chart to highlighted step
+        highlightFlowStep();
+      }, 200);
     });
     // Double-click label to edit
     btn.addEventListener("dblclick", function(e){
@@ -771,7 +839,7 @@ function renderHierarchy(){
       window.getSelection().addRange(range);
       lbl.addEventListener("blur", function(){
         lbl.contentEditable = "false";
-        stage.title = lbl.textContent;
+        stage.title = lbl.textContent.replace(/^שלב [א-ת]':\s*/, '');
       },{once:true});
       lbl.addEventListener("keydown", function(ev){
         if(ev.key === "Enter" && !ev.shiftKey){ ev.preventDefault(); lbl.blur(); }
@@ -787,7 +855,6 @@ function renderHierarchy(){
       stage.steps.forEach((step, stepi) => {
         content.appendChild(renderStep(step, stage, stepi));
       });
-      // Add step button
       const addBtn = document.createElement("button");
       addBtn.className = "add-step-btn";
       addBtn.textContent = "➕ הוסף תת-שלב";
@@ -814,7 +881,6 @@ function renderStep(step, stage, index){
   else if(isChriga) wrapper.classList.add("chriga");
   wrapper.style.position = "relative";
 
-  // Header
   const header = document.createElement("div");
   header.className = "sub-step-header";
   header.style.background = isChriga && !step.detailType ? "#CC0000" : (isLightStep(step) ? lighten(bgColor, 0.85) : bgColor);
@@ -839,21 +905,19 @@ function renderStep(step, stage, index){
 
   header.innerHTML = headerHTML;
 
-  // Click to expand (with delay to allow double-click)
   let clickTimer = null;
   header.addEventListener("click", function(e){
     if(e.target.closest(".step-edit-actions") || e.target.closest(".cat-assign") || e.target.closest(".color-picker-popup")) return;
     e.stopPropagation();
-    if(clickTimer) return; // double-click pending
+    if(clickTimer) return;
     clickTimer = setTimeout(function(){
       clickTimer = null;
       if(!hasChildren) return;
       step._open = !step._open;
       renderHierarchy();
-    }, 250);
+    }, 200);
   });
 
-  // Double-click text to edit title
   header.addEventListener("dblclick", function(e){
     if(clickTimer){ clearTimeout(clickTimer); clickTimer = null; }
     if(!appState.editing) return;
@@ -876,27 +940,21 @@ function renderStep(step, stage, index){
 
   wrapper.appendChild(header);
 
-  // Detail panel
   if(hasChildren && step._open){
     const detailPanel = document.createElement("div");
     detailPanel.className = "detail-panel open";
 
-    // Details text
     if(step.details){
       const detContent = document.createElement("div");
       const dt = step.detailType || "expand";
       detContent.className = dt === "chriga" ? "detail-chriga" : "detail-expand";
-      const textContent = step.details.split("\n").map(line => {
-        if(line.startsWith("•")) return line;
-        return line;
-      }).join("<br>");
+      const textContent = step.details.split("\n").map(line => line).join("<br>");
 
       if(dt === "chriga"){
         detContent.innerHTML = `<div class="detail-content"><span class="stop-icon">🛑</span> ${textContent.replace(/בפועל:/g,'<span class="reality">בפועל:</span>')}</div>`;
       } else {
         detContent.innerHTML = `<div class="detail-content">${textContent}</div>`;
       }
-      // Double-click detail to edit
       detContent.addEventListener("dblclick", function(e){
         if(!appState.editing) return;
         e.stopPropagation();
@@ -911,12 +969,10 @@ function renderStep(step, stage, index){
       detailPanel.appendChild(detContent);
     }
 
-    // Child steps
     if(step.children){
       step.children.forEach((child, ci) => {
         detailPanel.appendChild(renderStep(child, stage, ci));
       });
-      // Add child button
       if(appState.editing){
         const addBtn = document.createElement("button");
         addBtn.className = "add-step-btn";
@@ -934,7 +990,6 @@ function renderStep(step, stage, index){
 }
 
 function isLightStep(step){
-  // Detail/expand sub-steps use lighter backgrounds
   return step.depth > 0 && !step.chpiqa;
 }
 
@@ -965,6 +1020,13 @@ function darken(hex){
 // ============================================================
 
 function findStepById(id, steps){
+  if(!steps){
+    for(const stage of appState.stages){
+      const found = findStepById(id, stage.steps);
+      if(found) return found;
+    }
+    return null;
+  }
   for(const s of steps){
     if(s.id === id) return s;
     if(s.children){
@@ -1064,10 +1126,8 @@ function toggleChpiqa(id){
   }
 }
 
-// Category assign dropdown
 function showCatAssign(event, stepId){
   event.stopPropagation();
-  // Remove existing
   document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
 
   const found = findStepAndParent(stepId);
@@ -1168,90 +1228,202 @@ function setStepOverrideBorder(stepId, color){
 }
 
 // ============================================================
-// FLOW CHART
+// FLOW CHART — Click → Navigate to Detail
+// ============================================================
+
+function flowClickStage(stageId){
+  if(!stageId) return;
+  // Open the stage in hierarchy
+  appState.openStages.add(stageId);
+  appState.activeFlowStage = stageId;
+  // Also open sub-steps of that stage
+  const stage = appState.stages.find(s => s.id === stageId);
+  if(stage){
+    stage.steps.forEach(s => { s._open = true; });
+  }
+  renderAll();
+  // Scroll hierarchy panel to the stage
+  setTimeout(()=>{
+    const btn = document.getElementById("stage-btn-" + stageId);
+    if(btn){
+      btn.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+    highlightFlowStep();
+  }, 100);
+}
+
+function highlightFlowStep(){
+  if(!appState.activeFlowStage) return;
+  const flowId = STAGE_FLOW_MAP[appState.activeFlowStage];
+  if(!flowId) return;
+  const el = document.getElementById(flowId);
+  if(!el){return;}
+  // Scroll flow card to center the element
+  const flowCard = document.querySelector('.flow-card');
+  if(flowCard && el){
+    const elRect = el.getBoundingClientRect();
+    const cardRect = flowCard.getBoundingClientRect();
+    const scrollTarget = el.offsetTop - flowCard.offsetTop - (cardRect.height / 2) + (elRect.height / 2);
+    flowCard.scrollTo({top: scrollTarget, behavior:'smooth'});
+  }
+}
+
+// ============================================================
+// FLOW CHART — Render
 // ============================================================
 
 function renderFlowChart(){
   const panel = document.getElementById("flowPanel");
-  const getCatColor = (id) => { const c = getCat(id); return c ? c.color : "#0A5E6E"; };
+  const cc = (id) => { const c = getCat(id); return c ? c.color : "#0A5E6E"; };
+  const active = appState.activeFlowStage;
+
+  function isActive(stageId){
+    return active === stageId;
+  }
+  function activeClass(stageId){
+    return isActive(stageId) ? ' flow-active' : '';
+  }
+  function hereBadge(stageId){
+    return isActive(stageId) ? '<span class="flow-here-badge">← אתה כאן</span>' : '';
+  }
 
   panel.innerHTML = `
   <div class="flow-card">
     <h3>תרשים זרימה — הליך חקיקה פרטית</h3>
 
-    <div class="flow-step"><div class="box" style="background:${getCatColor('chk')}">כתיבת החוק</div></div>
-    <div class="flow-arrow">▼</div>
-    <div class="flow-step"><div class="box" style="background:${getCatColor('chriga')}">🛑 לשכה משפטית / נסחות</div></div>
-    <div class="flow-side-note">🛑 חריגה: ח"כ לא יכול להגיש ישירות</div>
-    <div class="flow-arrow">▼</div>
-
-    <div class="flow-step">
-      <div class="flow-diamond" style="background:${getCatColor('nesiut')}"><span>אישור<br>נשיאות?</span></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 20px">
-      <div style="font-size:11px;color:#999;background:#f0f0f0;padding:4px 10px;border-radius:6px;border:1px solid #ccc">נפסלה</div>
-      <div style="color:#999">▼ אושרה</div>
+    <!-- Shape Legend -->
+    <div class="flow-legend">
+      <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #555;border-radius:4px;width:20px;height:13px"></span> תהליך רגיל</div>
+      <div class="flow-legend-item"><span class="flow-legend-shape" style="font-size:16px">◇</span> נקודת החלטה</div>
+      <div class="flow-legend-item"><span class="flow-legend-shape" style="width:16px;height:16px;border-radius:50%;background:#555"></span> בעל סמכות ייחודי</div>
+      <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #CC0000;border-radius:4px;width:20px;height:13px"></span> חריגה מתקנון</div>
+      <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #B8860B;border-radius:4px;width:20px;height:13px;background:#FFF8DC"></span> המתנה/עיכוב</div>
     </div>
 
-    <div class="flow-step"><div class="box" style="background:${getCatColor('mazkir')}">הנחה על שולחן הכנסת</div></div>
+    <!-- Stage 1: כתיבה -->
+    <div class="flow-step" id="flow-s1" style="position:relative">
+      <div class="box${activeClass('s1')}" style="background:${cc('chk')}" onclick="flowClickStage('s1')">📝 כתיבת הצעת החוק</div>
+      ${hereBadge('s1')}
+    </div>
     <div class="flow-arrow">▼</div>
 
-    <div class="flow-split">
-      <div class="flow-track">
-        <div style="font-size:11px;padding:6px 10px;background:${getCatColor('waiting')};color:#fff;border-radius:20px;font-weight:600">⏳ 45 יום</div>
-        <div class="flow-or" style="background:${getCatColor('waiting')}">או</div>
-        <div style="font-size:11px;padding:5px 8px;background:${getCatColor('vaadat')};color:#fff;border-radius:6px;font-weight:600">קיצור דחיפות</div>
-        <div class="flow-or" style="background:${getCatColor('waiting')}">או</div>
-        <div style="font-size:11px;padding:5px 8px;background:${getCatColor('chk')};color:#fff;border-radius:6px;font-weight:600">הצמדה</div>
+    <div class="flow-step" id="flow-s1-chriga" style="position:relative">
+      <div class="box${activeClass('s1')}" style="background:${cc('chriga')};border-color:#CC0000" onclick="flowClickStage('s1')">🛑 לשכה משפטית / נסחות</div>
+    </div>
+    <div class="flow-side-note">חריגה: ח"כ לא יכול להגיש ישירות לנשיאות</div>
+    <div class="flow-arrow">▼</div>
+
+    <!-- נשיאות — diamond decision -->
+    <div class="flow-step" id="flow-s1-nesiut" style="position:relative">
+      <div class="flow-diamond${activeClass('s1')}" style="background:${cc('nesiut')}" onclick="flowClickStage('s1')"><span>אישור<br>נשיאות?</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 20px">
+      <div style="font-size:10px;color:#999;background:#f0f0f0;padding:3px 8px;border-radius:5px;border:1px solid #ccc">נפסלה</div>
+      <div style="color:#bbb;font-size:11px">▼ אושרה</div>
+    </div>
+
+    <!-- הנחה על שולחן -->
+    <div class="flow-step" id="flow-s1-hanaha" style="position:relative">
+      <div class="box${activeClass('s1')}" style="background:${cc('mazkir')}" onclick="flowClickStage('s1')">📋 הנחה על שולחן הכנסת</div>
+    </div>
+    <div class="flow-arrow">▼</div>
+
+    <!-- SPLIT: ממשלה (left) vs 45 יום / קיצור / הצמדה (right) -->
+    <div class="flow-branch-container">
+      <div class="flow-branch" style="flex:1;border-left:2px solid #ddd;padding-left:10px">
+        <div class="flow-branch-label">מסלול ממשלתי</div>
+        <div class="flow-circle" id="flow-s1-gov" style="background:${cc('gov')};width:70px;height:70px" onclick="flowClickStage('s1')">
+          <span style="font-size:10px;line-height:1.2;text-align:center">🛑<br>ועדת<br>שרים</span>
+        </div>
+        <div class="flow-side-note" style="font-size:9px;max-width:140px">ממתינה מעבר ל-45 יום<br>ללא סמכות חוקית</div>
       </div>
-      <div class="flow-track">
-        <div class="flow-side-note">🛑 ועדת השרים<br>ממתינה מעבר ל-45 יום</div>
+      <div style="display:flex;align-items:center;padding:0 6px">
+        <div class="flow-or">או</div>
+      </div>
+      <div class="flow-branch" style="flex:1;border-right:2px solid #ddd;padding-right:10px">
+        <div class="flow-branch-label">מסלול רגיל</div>
+        <div style="font-size:10px;padding:5px 8px;background:${cc('waiting')};color:#fff;border-radius:14px;font-weight:600">⏳ 45 יום המתנה</div>
+        <div class="flow-or" style="width:18px;height:18px;font-size:8px">או</div>
+        <div style="font-size:10px;padding:4px 7px;background:${cc('vaadat')};color:#fff;border-radius:5px;font-weight:600">קיצור דחיפות</div>
+        <div class="flow-or" style="width:18px;height:18px;font-size:8px">או</div>
+        <div style="font-size:10px;padding:4px 7px;background:${cc('chk')};color:#fff;border-radius:5px;font-weight:600">הצמדה להצ"ח</div>
       </div>
     </div>
 
     <div class="flow-arrow">▼</div>
-    <div class="flow-step"><div class="box" style="background:${getCatColor('yoresh')}">קביעת מועד דיון מוקדם</div></div>
+
+    <!-- Stage 2: קביעת דיון מוקדם -->
+    <div class="flow-step" id="flow-s2" style="position:relative">
+      <div class="box${activeClass('s2')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s2')">קביעת מועד דיון מוקדם</div>
+      ${hereBadge('s2')}
+    </div>
     <div class="flow-arrow">▼</div>
 
-    <div class="flow-step">
-      <div class="flow-diamond" style="background:${getCatColor('yoresh')}"><span>דיון<br>מוקדם</span></div>
+    <!-- Stage 3: דיון מוקדם -->
+    <div class="flow-step" id="flow-s3" style="position:relative">
+      <div class="flow-diamond${activeClass('s3')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s3')"><span>דיון<br>מוקדם</span></div>
+      ${hereBadge('s3')}
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 20px">
-      <div style="font-size:11px;color:#CC0000;background:#fff0f0;padding:4px 10px;border-radius:6px;border:1px solid #CC0000">נדחתה (6 חודשים)</div>
-      <div style="color:#999">▼ אושרה</div>
-    </div>
-
-    <div class="flow-step"><div class="box" style="background:${getCatColor('yoresh')}">קביעת ועדה מכינה</div></div>
-    <div class="flow-arrow">▼</div>
-    <div class="flow-step"><div class="box" style="background:${getCatColor('vaadat')}">הכנה לקריאה ראשונה</div></div>
-    <div class="flow-arrow">▼</div>
-
-    <div class="flow-step">
-      <div class="flow-diamond" style="background:${getCatColor('yoresh')}"><span>קריאה<br>ראשונה</span></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 20px">
-      <div style="font-size:11px;color:#CC0000;background:#fff0f0;padding:4px 10px;border-radius:6px;border:1px solid #CC0000">הוסרה (6 חודשים)</div>
-      <div style="color:#999">▼ עברה</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 20px">
+      <div style="font-size:10px;color:#CC0000;background:#fff0f0;padding:3px 8px;border-radius:5px;border:1px solid #CC0000">נדחתה ← 6 חודשים</div>
+      <div style="color:#bbb;font-size:11px">▼ אושרה</div>
     </div>
 
-    <div class="flow-step"><div class="box" style="background:${getCatColor('vaadat')}">קביעת ועדה לקריאה ב'+ג'</div></div>
-    <div class="flow-arrow">▼</div>
-    <div class="flow-step"><div class="box" style="background:${getCatColor('vaadat')}">הכנה לקריאה ב'+ג'</div></div>
-    <div style="font-size:10px;color:#666;text-align:center;margin:2px 0">מיזוג / פיצול / הסתייגויות</div>
+    <!-- Stage 4: קביעת ועדה -->
+    <div class="flow-step" id="flow-s4" style="position:relative">
+      <div class="box${activeClass('s4')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s4')">קביעת ועדה מכינה</div>
+      ${hereBadge('s4')}
+    </div>
     <div class="flow-arrow">▼</div>
 
-    <div class="flow-step">
-      <div class="flow-diamond" style="background:${getCatColor('yoresh')}"><span>קריאה<br>שנייה</span></div>
+    <!-- Stage 5: הכנה לקריאה ראשונה -->
+    <div class="flow-step" id="flow-s5" style="position:relative">
+      <div class="box${activeClass('s5')}" style="background:${cc('vaadat')}" onclick="flowClickStage('s5')">הכנה לקריאה ראשונה</div>
+      ${hereBadge('s5')}
     </div>
-    <div style="font-size:10px;color:#666;text-align:center;margin:2px 0">הצבעה סעיף-סעיף + הסתייגויות</div>
     <div class="flow-arrow">▼</div>
 
-    <div class="flow-step">
-      <div class="flow-diamond" style="background:${getCatColor('yoresh')};border:3px solid #FFD700"><span>קריאה<br>שלישית</span></div>
+    <!-- Stage 6: קריאה ראשונה -->
+    <div class="flow-step" id="flow-s6" style="position:relative">
+      <div class="flow-diamond${activeClass('s6')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s6')"><span>קריאה<br>ראשונה</span></div>
+      ${hereBadge('s6')}
     </div>
-    <div style="display:flex;justify-content:space-around;margin:8px 10px">
-      <div style="font-size:12px;padding:6px 14px;background:#2D7D46;color:#fff;border-radius:8px;font-weight:700">✅ חוק!</div>
-      <div style="font-size:11px;padding:6px 10px;background:#f0f0f0;color:#666;border-radius:8px;border:1px solid #ccc">❌ נדחה</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 20px">
+      <div style="font-size:10px;color:#CC0000;background:#fff0f0;padding:3px 8px;border-radius:5px;border:1px solid #CC0000">הוסרה ← 6 חודשים</div>
+      <div style="color:#bbb;font-size:11px">▼ עברה</div>
+    </div>
+
+    <!-- Stage 7: קביעת ועדה ב'+ג' -->
+    <div class="flow-step" id="flow-s7" style="position:relative">
+      <div class="box${activeClass('s7')}" style="background:${cc('vaadat')}" onclick="flowClickStage('s7')">קביעת ועדה לקריאה ב'+ג'</div>
+      ${hereBadge('s7')}
+    </div>
+    <div class="flow-arrow">▼</div>
+
+    <!-- Stage 8: הכנה לקריאה ב'+ג' -->
+    <div class="flow-step" id="flow-s8" style="position:relative">
+      <div class="box${activeClass('s8')}" style="background:${cc('vaadat')}" onclick="flowClickStage('s8')">הכנה לקריאה ב'+ג'</div>
+      ${hereBadge('s8')}
+    </div>
+    <div style="font-size:9px;color:#666;text-align:center;margin:1px 0">מיזוג / פיצול / הסתייגויות</div>
+    <div class="flow-arrow">▼</div>
+
+    <!-- Stage 9: קריאה שנייה -->
+    <div class="flow-step" id="flow-s9" style="position:relative">
+      <div class="flow-diamond${activeClass('s9')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s9')"><span>קריאה<br>שנייה</span></div>
+      ${hereBadge('s9')}
+    </div>
+    <div style="font-size:9px;color:#666;text-align:center;margin:1px 0">סעיף-סעיף + הסתייגויות</div>
+    <div class="flow-arrow">▼</div>
+
+    <!-- Stage 10: קריאה שלישית -->
+    <div class="flow-step" id="flow-s10" style="position:relative">
+      <div class="flow-diamond${activeClass('s10')}" style="background:${cc('yoresh')};border:3px solid #FFD700" onclick="flowClickStage('s10')"><span>קריאה<br>שלישית</span></div>
+      ${hereBadge('s10')}
+    </div>
+    <div style="display:flex;justify-content:space-around;margin:6px 10px" id="flow-final">
+      <div style="font-size:11px;padding:5px 12px;background:#2D7D46;color:#fff;border-radius:7px;font-weight:700;cursor:pointer" onclick="flowClickStage('s10')">✅ חוק!</div>
+      <div style="font-size:10px;padding:5px 8px;background:#f0f0f0;color:#666;border-radius:7px;border:1px solid #ccc">❌ נדחה</div>
     </div>
   </div>
   `;
@@ -1286,11 +1458,19 @@ function renderAll(){
 // ============================================================
 
 loadFromStorage();
-// If no saved data, open first sub-steps
 if(!localStorage.getItem("knesset-legislation-v2")){
   appState.stages[0].steps.forEach(s => { s._open = true; if(s.children) s.children.forEach(c => c._open = false); });
 }
+// Set initial active flow stage from open stages
+for(const s of appState.stages){
+  if(appState.openStages.has(s.id)){
+    appState.activeFlowStage = s.id;
+    break;
+  }
+}
 renderAll();
+// Initial highlight
+setTimeout(highlightFlowStep, 300);
 
 </script>
 </body>
