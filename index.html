@@ -3238,7 +3238,31 @@ function showToast(msg){
 // RENDER ALL
 // ============================================================
 
+// Remove steps that appear in multiple arrays (shared reference bug)
+function deduplicateSteps(){
+  const seen = new Set();
+  function cleanArr(arr){
+    if(!arr || !Array.isArray(arr)) return;
+    for(let i = arr.length - 1; i >= 0; i--){
+      const step = arr[i];
+      if(!step || !step.id) continue;
+      if(seen.has(step.id)){
+        // Duplicate reference — remove from this array (keep the first occurrence)
+        arr.splice(i, 1);
+        console.log("Dedup: removed duplicate reference", step.id, step.title);
+      } else {
+        seen.add(step.id);
+        if(step.children) cleanArr(step.children);
+      }
+    }
+  }
+  for(const stage of appState.stages){
+    cleanArr(stage.children || stage.steps || []);
+  }
+}
+
 function renderAll(){
+  deduplicateSteps();
   renderLegend();
   renderHierarchy();
   renderFlowChart();
