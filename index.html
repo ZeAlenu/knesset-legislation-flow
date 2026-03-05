@@ -1351,7 +1351,7 @@ function renderStep(step, stage, index){
   const bgColor = overrideColor || cat.color;
   const borderColor = overrideBorder || getDepthColor(step.depth);
   const isChriga = step.chpiqa;
-  const hasChildren = (step.children && step.children.length > 0) || step.details;
+  const hasChildren = !step._skipChildren && ((step.children && step.children.length > 0) || step.details);
 
   const wrapper = document.createElement("div");
   wrapper.className = `sub-step depth-${step.depth}${step._open ? " open" : ""}`;
@@ -1514,7 +1514,12 @@ function renderStep(step, stage, index){
           }
           const col = document.createElement("div");
           col.style.cssText = "flex:1;min-width:0;border:1px dashed #ccc;border-radius:6px;padding:4px";
+          // Render branch header WITHOUT its children (we render children explicitly below with connectors)
+          const savedChildren = child.children;
+          child._skipChildren = true;
           col.appendChild(renderStep(child, stage, ci));
+          delete child._skipChildren;
+          child.children = savedChildren;
           // Render sub-steps of each branch with connectors
           if(child.children){
             child.children.forEach((gc, gci) => {
