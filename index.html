@@ -940,29 +940,19 @@ function pickCatColor(catId, swatchEl){
     <div class="preset-colors" style="margin-top:4px">
       ${presets.map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();getCat('${catId}').borderColor='${c}'"></div>`).join("")}
     </div>
-    <button onclick="event.stopPropagation();document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderCatList();renderAll()" style="margin-top:10px;width:100%;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
+    <button onclick="event.stopPropagation();this.closest('[style*=inset]').remove();renderCatList();renderAll()" style="margin-top:10px;width:100%;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
   `;
 
-  const rect = swatchEl.getBoundingClientRect();
-  // Position above the swatch so it doesn't get buried under the category list
-  const popupHeight = 420;
-  const spaceAbove = rect.top;
-  const spaceBelow = window.innerHeight - rect.bottom;
-  if(spaceBelow < popupHeight && spaceAbove > spaceBelow){
-    popup.style.bottom = (window.innerHeight - rect.top + 4) + "px";
-  } else {
-    popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - popupHeight) + "px";
-  }
-  popup.style.left = Math.max(4, rect.left) + "px";
-  document.body.appendChild(popup);
-  setTimeout(()=>{
-    document.addEventListener("click",function handler(e){
-      if(!popup.contains(e.target) && e.target !== swatchEl){
-        popup.remove();
-        document.removeEventListener("click",handler);
-      }
-    });
-  },50);
+  // Center as modal overlay
+  const overlay = document.createElement("div");
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:899;display:flex;align-items:center;justify-content:center";
+  popup.style.position = "relative";
+  popup.style.zIndex = "900";
+  popup.style.maxHeight = "85vh";
+  popup.style.overflowY = "auto";
+  overlay.appendChild(popup);
+  overlay.onclick = function(e){ if(e.target === overlay){ overlay.remove(); renderCatList(); renderAll(); } };
+  document.body.appendChild(overlay);
 }
 
 function updateCatColorLive(catId, color, rowEl){
