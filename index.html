@@ -2248,9 +2248,20 @@ function renderFlowStepElement(step, isInBranch){
     </select>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAssignCategory('${step.id}',this)" title="קטגוריה">🏷️</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowUploadImage('${step.id}')" title="תמונה">🖼️</button>`;
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAddSideNote('${step.id}')" title="הערת צד">💬</button>`;
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowToggleTopIcon('${step.id}')" title="לוגו מעל">🔝</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowSplitAfter('${step.id}')" title="פצל כאן">🔀</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
     html += `</div>`;
+  }
+
+  // Top icon (above the box)
+  if(step.topIcon){
+    if(step.topIcon.type === "builtin" && BUILTIN_ICONS[step.topIcon.icon]){
+      html += `<div style="text-align:center;margin-bottom:2px">${BUILTIN_ICONS[step.topIcon.icon]}</div>`;
+    } else if(step.topIcon.type === "image"){
+      html += `<div style="text-align:center;margin-bottom:2px"><img src="${step.topIcon.src}" style="width:24px;height:24px;object-fit:contain"></div>`;
+    }
   }
 
   const imgTag = step.image ? `<img src="${step.image}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px">` : "";
@@ -2331,11 +2342,36 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
       
       html += `</div>`;
     } else {
-      // Normal step rendering
-      html += `<div class="flow-step" id="${step.id}" style="position:relative">`;
-      html += renderFlowStepElement(step, isInBranch);
-      if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
-      html += `</div>`;
+      // Normal step rendering - with side notes if present
+      if(step.sideNotes && step.sideNotes.length > 0){
+        html += `<div style="display:flex;align-items:center;gap:8px;direction:rtl;margin:4px 0">`;
+        // Right side notes
+        const rightNotes = step.sideNotes.filter(n=>n.side==="right");
+        if(rightNotes.length){
+          html += `<div style="flex-shrink:0;max-width:130px">`;
+          rightNotes.forEach((n,ni) => { html += `<div style="font-size:9px;color:#666;background:#FFFDE7;padding:3px 6px;border-radius:4px;border:1px solid #FFE082;margin:2px 0">${escH(n.text)}${appState.editing?` <span style="cursor:pointer;color:#c00" onclick="event.stopPropagation();removeSideNote('${step.id}',${step.sideNotes.indexOf(n)})">✕</span>`:""}</div>`; });
+          html += `</div><div style="color:#999;font-size:10px;flex-shrink:0">◂</div>`;
+        }
+        // Main step
+        html += `<div class="flow-step" id="${step.id}" style="position:relative;flex:1;min-width:0">`;
+        html += renderFlowStepElement(step, isInBranch);
+        if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
+        html += `</div>`;
+        // Left side notes
+        const leftNotes = step.sideNotes.filter(n=>n.side!=="right");
+        if(leftNotes.length){
+          html += `<div style="color:#999;font-size:10px;flex-shrink:0">▸</div>`;
+          html += `<div style="flex-shrink:0;max-width:130px">`;
+          leftNotes.forEach((n,ni) => { html += `<div style="font-size:9px;color:#666;background:#FFFDE7;padding:3px 6px;border-radius:4px;border:1px solid #FFE082;margin:2px 0">${escH(n.text)}${appState.editing?` <span style="cursor:pointer;color:#c00" onclick="event.stopPropagation();removeSideNote('${step.id}',${step.sideNotes.indexOf(n)})">✕</span>`:""}</div>`; });
+          html += `</div>`;
+        }
+        html += `</div>`;
+      } else {
+        html += `<div class="flow-step" id="${step.id}" style="position:relative">`;
+        html += renderFlowStepElement(step, isInBranch);
+        if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
+        html += `</div>`;
+      }
     }
 
     // Note below step (for old-style notes attached to steps)
@@ -2807,6 +2843,53 @@ function flowClearCategoryOverride(id){
     delete step.color;
     delete step.textColor;
     document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
+    renderAll();
+  }
+}
+
+function removeSideNote(stepId, noteIdx){
+  pushUndo();
+  const step = findFlowStep(stepId);
+  if(step && step.sideNotes){ step.sideNotes.splice(noteIdx, 1); renderAll(); }
+}
+
+function flowAddSideNote(id){
+  pushUndo();
+  const text = prompt("טקסט הערת צד:");
+  if(!text) return;
+  const step = findFlowStep(id);
+  if(step){
+    if(!step.sideNotes) step.sideNotes = [];
+    step.sideNotes.push({text, side: "left"});
+    renderAll();
+  }
+}
+
+function flowToggleTopIcon(id){
+  const step = findFlowStep(id);
+  if(!step) return;
+  pushUndo();
+  if(step.topIcon){
+    // Remove
+    delete step.topIcon;
+    renderAll();
+    return;
+  }
+  // Show picker: built-in icons + upload
+  const items = Object.entries(BUILTIN_ICON_LABELS).map(([k,v]) => `${v} (${k})`).join("\n");
+  const choice = prompt("בחר אייקון מעל הקופסה:\n" + items + "\n\nכתוב שם (למשל: stop-hand) או 'upload' להעלאת תמונה:");
+  if(!choice) return;
+  if(choice === "upload"){
+    const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*";
+    inp.onchange = function(){ const f = inp.files[0]; if(!f) return; const r = new FileReader(); r.onload = function(){ step.topIcon = {type:"image", src:r.result}; renderAll(); }; r.readAsDataURL(f); };
+    inp.click();
+  } else {
+    const key = choice.split("(").pop()?.replace(")","").trim() || choice.trim();
+    if(BUILTIN_ICONS[key]){
+      step.topIcon = {type:"builtin", icon: key};
+    } else {
+      step.topIcon = {type:"builtin", icon: choice.trim()};
+    }
     renderAll();
   }
 }
