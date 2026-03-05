@@ -741,6 +741,9 @@ function saveToStorage(){
   } catch(e){ showToast("❌ שגיאה בשמירה"); }
 }
 
+const PUBLISH_URL = "https://stainless-roses-jury-electoral.trycloudflare.com/publish";
+const PUBLISH_KEY = "97d2870b8acfb063d9bc11e3ef9ce2db";
+
 async function publishState(){
   if(!confirm("לפרסם את המצב הנוכחי לכל מי שיש לו את הלינק?")) return;
   const stateData = JSON.stringify({
@@ -750,41 +753,29 @@ async function publishState(){
     flowBackLinks: appState.flowBackLinks,
     nextId,
     publishDate: new Date().toISOString()
-  }, null, 2);
+  });
   
+  showToast("🔄 מפרסם...");
   try {
-    // Try GitHub API (requires token set in localStorage)
-    const token = localStorage.getItem("gh-token");
-    if(token){
-      const content = btoa(unescape(encodeURIComponent(stateData)));
-      // Get current file SHA
-      let sha = "";
-      try {
-        const existing = await fetch("https://api.github.com/repos/ZeAlenu/knesset-legislation-flow/contents/state.json", {headers:{"Authorization":"token "+token}});
-        if(existing.ok){ const j = await existing.json(); sha = j.sha; }
-      } catch(e){}
-      
-      const resp = await fetch("https://api.github.com/repos/ZeAlenu/knesset-legislation-flow/contents/state.json", {
-        method: "PUT",
-        headers: {"Authorization": "token "+token, "Content-Type": "application/json"},
-        body: JSON.stringify({message: "publish: update shared state", content, sha: sha || undefined})
-      });
-      if(resp.ok){
-        showToast("🌐 פורסם בהצלחה! כולם יראו את השינויים");
-        return;
-      }
+    const resp = await fetch(PUBLISH_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "X-Publish-Key": PUBLISH_KEY},
+      body: stateData
+    });
+    if(resp.ok){
+      showToast("🌐 פורסם בהצלחה! כולם יראו את השינויים");
+    } else {
+      const err = await resp.text();
+      showToast("❌ שגיאה: " + err);
+      // Fallback: download
+      const blob = new Blob([stateData], {type:"application/json"});
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "state.json"; a.click();
     }
-    
-    // Fallback: download file + instructions
-    const blob = new Blob([stateData], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "state.json";
-    a.click();
-    showToast("📥 קובץ state.json הורד — שלחי אותו לאררט כדי לפרסם");
   } catch(e){
     console.error("Publish error:", e);
-    showToast("❌ שגיאה בפרסום");
+    showToast("❌ שגיאת חיבור — מוריד קובץ במקום");
+    const blob = new Blob([stateData], {type:"application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "state.json"; a.click();
   }
 }
 
