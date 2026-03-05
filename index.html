@@ -183,8 +183,21 @@ header p{font-size:13px;opacity:.85}
 /* FILE INPUT HIDDEN */
 .hidden-input{position:absolute;width:0;height:0;opacity:0;pointer-events:none}
 
+/* FLOW EDIT CONTROLS */
+.flow-edit-actions{display:none;gap:3px;justify-content:center;margin:2px 0}
+.editing .flow-edit-actions{display:flex}
+.flow-edit-btn{background:rgba(255,255,255,.85);border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:11px;padding:1px 4px;transition:all .2s;line-height:1.2}
+.flow-edit-btn:hover{background:#fff;border-color:#999}
+.flow-insert-btn{display:none;border:2px dashed #ccc;border-radius:6px;padding:3px 10px;text-align:center;color:#999;cursor:pointer;margin:2px auto;font-size:11px;font-weight:600;transition:all .2s;background:none;font-family:inherit}
+.flow-insert-btn:hover{border-color:var(--teal-mid);color:var(--teal-mid)}
+.editing .flow-insert-btn{display:block}
+.flow-shape-sel{font-size:10px;padding:2px 4px;border:1px solid #ccc;border-radius:4px;background:#fff;font-family:inherit;cursor:pointer;display:none}
+.editing .flow-shape-sel{display:inline-block}
+.flow-branch-edit{display:none;gap:4px;justify-content:center;margin:3px 0}
+.editing .flow-branch-edit{display:flex}
+
 /* Print */
-@media print{.toolbar,.header-actions,.edit-actions,.step-edit-actions,.add-step-btn,.flow-panel{display:none!important}.stage-content{max-height:none!important;overflow:visible!important}.detail-panel{max-height:none!important;overflow:visible!important}}
+@media print{.toolbar,.header-actions,.edit-actions,.step-edit-actions,.add-step-btn,.flow-panel,.flow-edit-actions,.flow-insert-btn,.flow-shape-sel,.flow-branch-edit{display:none!important}.stage-content{max-height:none!important;overflow:visible!important}.detail-panel{max-height:none!important;overflow:visible!important}}
 </style>
 </head>
 <body>
@@ -208,7 +221,9 @@ header p{font-size:13px;opacity:.85}
   <span style="font-size:12px;color:#666;font-weight:600">מצב עריכה:</span>
   <button onclick="addStage()">➕ הוסף שלב</button>
   <div class="sep"></div>
-  <span style="font-size:11px;color:#999">לחיצה כפולה על טקסט = עריכה | גרור לסידור מחדש</span>
+  <button onclick="flowAddSplitAtEnd()">🔀 הוסף פיצול לתרשים</button>
+  <div class="sep"></div>
+  <span style="font-size:11px;color:#999">לחיצה כפולה על טקסט = עריכה | ➕ בתרשים = הוספת שלב</span>
 </div>
 
 <div style="padding:16px 40px 0;max-width:1900px;margin:0 auto">
@@ -494,6 +509,40 @@ const DEFAULT_STAGES = [
   }
 ];
 
+const DEFAULT_FLOW_STEPS = [
+  {id:"f1",label:"📝 כתיבת הצעת החוק",type:"box",category:"chk",stageId:"s1",note:"",noteType:""},
+  {id:"f2",label:"🛑 לשכה משפטית / נסחות",type:"box",category:"chriga",stageId:"s1",note:"חריגה: ח\"כ לא יכול להגיש ישירות לנשיאות",noteType:"warning"},
+  {id:"f3",label:"אישור נשיאות?",type:"diamond",category:"nesiut",stageId:"s1",rejectLabel:"נפסלה",approveLabel:"אושרה",note:"",noteType:""},
+  {id:"f4",label:"📋 הנחה על שולחן הכנסת",type:"box",category:"mazkir",stageId:"s1",note:"",noteType:""},
+  {id:"f5",label:"",type:"split",stageId:"",note:"",noteType:"",branches:[
+    {label:"מסלול ממשלתי",steps:[
+      {id:"f5a",label:"🛑 ועדת שרים",type:"circle",category:"gov",stageId:"s1",note:"ממתינה מעבר ל-45 יום\nללא סמכות חוקית",noteType:"warning"}
+    ]},
+    {label:"מסלול רגיל",steps:[
+      {id:"f5b1",label:"⏳ 45 יום המתנה",type:"pill",category:"waiting",stageId:"",note:"",noteType:""},
+      {id:"f5b2",label:"קיצור דחיפות",type:"box",category:"vaadat",stageId:"",note:"",noteType:""},
+      {id:"f5b3",label:"הצמדה להצ\"ח",type:"box",category:"chk",stageId:"",note:"",noteType:""}
+    ]}
+  ]},
+  {id:"f6",label:"קביעת מועד דיון מוקדם",type:"box",category:"yoresh",stageId:"s2",note:"",noteType:""},
+  {id:"f7",label:"דיון מוקדם",type:"diamond",category:"yoresh",stageId:"s3",rejectLabel:"נדחתה ← 6 חודשים",approveLabel:"אושרה",note:"",noteType:""},
+  {id:"f8",label:"קביעת ועדה מכינה",type:"box",category:"yoresh",stageId:"s4",note:"",noteType:""},
+  {id:"f9",label:"הכנה לקריאה ראשונה",type:"box",category:"vaadat",stageId:"s5",note:"",noteType:""},
+  {id:"f10",label:"קריאה ראשונה",type:"diamond",category:"yoresh",stageId:"s6",rejectLabel:"הוסרה ← 6 חודשים",approveLabel:"עברה",note:"",noteType:""},
+  {id:"f11",label:"קביעת ועדה לקריאה ב'+ג'",type:"box",category:"vaadat",stageId:"s7",note:"",noteType:""},
+  {id:"f12",label:"הכנה לקריאה ב'+ג'",type:"box",category:"vaadat",stageId:"s8",note:"מיזוג / פיצול / הסתייגויות",noteType:"info"},
+  {id:"f13",label:"קריאה שנייה",type:"diamond",category:"yoresh",stageId:"s9",note:"סעיף-סעיף + הסתייגויות",noteType:"info"},
+  {id:"f14",label:"קריאה שלישית",type:"diamond",category:"yoresh",stageId:"s10",specialBorder:"#FFD700",note:"",noteType:""},
+  {id:"f15",label:"",type:"split",stageId:"s10",note:"",noteType:"",branches:[
+    {label:"",steps:[
+      {id:"f15a",label:"✅ חוק!",type:"pill",category:"vaadat",stageId:"s10",color:"#2D7D46",note:"",noteType:""}
+    ]},
+    {label:"",steps:[
+      {id:"f15b",label:"❌ נדחה",type:"pill",category:"",stageId:"",color:"#f0f0f0",textColor:"#666",note:"",noteType:""}
+    ]}
+  ]}
+];
+
 // ============================================================
 // APP STATE
 // ============================================================
@@ -501,6 +550,7 @@ const DEFAULT_STAGES = [
 let appState = {
   categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
   stages: JSON.parse(JSON.stringify(DEFAULT_STAGES)),
+  flowSteps: JSON.parse(JSON.stringify(DEFAULT_FLOW_STEPS)),
   editing: false,
   openStages: new Set(["s1"]),
   activeFlowStage: null  // tracks which stage is highlighted in flow
@@ -509,38 +559,29 @@ let appState = {
 let nextId = 1000;
 function genId(){ return "gen_" + (nextId++); }
 
-// Mapping: flow chart step id → stage id
-const FLOW_STAGE_MAP = {
-  "flow-s1": "s1",
-  "flow-s1-chriga": "s1",
-  "flow-s1-nesiut": "s1",
-  "flow-s1-hanaha": "s1",
-  "flow-s1-gov": "s1",
-  "flow-s2": "s2",
-  "flow-s3": "s3",
-  "flow-s4": "s4",
-  "flow-s5": "s5",
-  "flow-s6": "s6",
-  "flow-s7": "s7",
-  "flow-s8": "s8",
-  "flow-s9": "s9",
-  "flow-s10": "s10",
-  "flow-final": "s10"
-};
+// Dynamic mapping: flow step id → stage id (built from flowSteps data)
+function buildFlowStageMaps(){
+  const flowToStage = {};
+  const stageToFlow = {};
+  function scanSteps(steps){
+    for(const step of steps){
+      if(step.stageId){
+        flowToStage[step.id] = step.stageId;
+        if(!stageToFlow[step.stageId]) stageToFlow[step.stageId] = step.id;
+      }
+      if(step.branches){
+        for(const b of step.branches){
+          if(b.steps) scanSteps(b.steps);
+        }
+      }
+    }
+  }
+  scanSteps(appState.flowSteps);
+  return {flowToStage, stageToFlow};
+}
 
-// Reverse mapping: stage id → primary flow step id
-const STAGE_FLOW_MAP = {
-  "s1": "flow-s1",
-  "s2": "flow-s2",
-  "s3": "flow-s3",
-  "s4": "flow-s4",
-  "s5": "flow-s5",
-  "s6": "flow-s6",
-  "s7": "flow-s7",
-  "s8": "flow-s8",
-  "s9": "flow-s9",
-  "s10": "flow-s10"
-};
+function getFlowStageMap(){ return buildFlowStageMaps().flowToStage; }
+function getStageFlowMap(){ return buildFlowStageMaps().stageToFlow; }
 
 // ============================================================
 // LOAD / SAVE
@@ -553,6 +594,7 @@ function loadFromStorage(){
       const d = JSON.parse(raw);
       if(d.categories) appState.categories = d.categories;
       if(d.stages) appState.stages = d.stages;
+      if(d.flowSteps) appState.flowSteps = d.flowSteps;
       if(d.nextId) nextId = d.nextId;
       showToast("נטען מאחסון מקומי");
     }
@@ -564,6 +606,7 @@ function saveToStorage(){
     localStorage.setItem("knesset-legislation-v2", JSON.stringify({
       categories: appState.categories,
       stages: appState.stages,
+      flowSteps: appState.flowSteps,
       nextId
     }));
     showToast("💾 נשמר בהצלחה");
@@ -571,7 +614,7 @@ function saveToStorage(){
 }
 
 function exportJSON(){
-  const blob = new Blob([JSON.stringify({categories:appState.categories,stages:appState.stages,nextId,exportDate:new Date().toISOString()},null,2)],{type:"application/json"});
+  const blob = new Blob([JSON.stringify({categories:appState.categories,stages:appState.stages,flowSteps:appState.flowSteps,nextId,exportDate:new Date().toISOString()},null,2)],{type:"application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "knesset-legislation-"+new Date().toISOString().slice(0,10)+".json";
@@ -588,6 +631,7 @@ function importJSON(ev){
       const d = JSON.parse(e.target.result);
       if(d.categories) appState.categories = d.categories;
       if(d.stages) appState.stages = d.stages;
+      if(d.flowSteps) appState.flowSteps = d.flowSteps;
       if(d.nextId) nextId = d.nextId;
       renderAll();
       showToast("📥 יובא בהצלחה");
@@ -1254,7 +1298,8 @@ function flowClickStage(stageId){
 
 function highlightFlowStep(){
   if(!appState.activeFlowStage) return;
-  const flowId = STAGE_FLOW_MAP[appState.activeFlowStage];
+  const stageFlowMap = getStageFlowMap();
+  const flowId = stageFlowMap[appState.activeFlowStage];
   if(!flowId) return;
   const el = document.getElementById(flowId);
   if(!el){return;}
@@ -1272,161 +1317,427 @@ function highlightFlowStep(){
 // FLOW CHART — Render
 // ============================================================
 
+// ============================================================
+// FLOW CHART — Data-driven Render with Edit Mode
+// ============================================================
+
+function getFlowStepColor(step){
+  if(step.color) return step.color;
+  const cat = getCat(step.category);
+  return cat ? cat.color : "#0A5E6E";
+}
+
+function getFlowStepTextColor(step){
+  if(step.textColor) return step.textColor;
+  return "#fff";
+}
+
+function renderFlowStepElement(step, isInBranch){
+  const color = getFlowStepColor(step);
+  const textColor = getFlowStepTextColor(step);
+  const active = appState.activeFlowStage;
+  const isAct = step.stageId && active === step.stageId;
+  const actCls = isAct ? " flow-active" : "";
+  const stageClick = step.stageId ? `onclick="flowClickStage('${step.stageId}')"` : "";
+  const borderStyle = step.specialBorder ? `;border:3px solid ${step.specialBorder}` : "";
+  const smallStyle = isInBranch ? "font-size:10px;padding:4px 7px;" : "";
+
+  let html = "";
+
+  // Edit controls (top)
+  html += `<div class="flow-edit-actions">`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowEditLabel('${step.id}')" title="שנה שם">✏️</button>`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowEditColor('${step.id}',this)" title="צבע">🎨</button>`;
+  html += `<select class="flow-shape-sel" onchange="flowChangeShape('${step.id}',this.value)" title="צורה">
+    <option value="box" ${step.type==="box"?"selected":""}>▢ מלבן</option>
+    <option value="diamond" ${step.type==="diamond"?"selected":""}>◇ מעוין</option>
+    <option value="circle" ${step.type==="circle"?"selected":""}>● עיגול</option>
+    <option value="pill" ${step.type==="pill"?"selected":""}>⬭ כמוסה</option>
+  </select>`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAssignCategory('${step.id}',this)" title="קטגוריה">🏷️</button>`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
+  html += `</div>`;
+
+  const label = escH(step.label);
+
+  if(step.type === "diamond"){
+    const diamondLabel = label.replace(/\n/g,"<br>");
+    html += `<div class="flow-diamond${actCls}" style="background:${color};color:${textColor}${borderStyle}" ${stageClick}><span>${diamondLabel}</span></div>`;
+    // Reject/approve labels for diamonds
+    if(step.rejectLabel || step.approveLabel){
+      const isRedReject = step.rejectLabel && step.rejectLabel.includes("6 חודשים");
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;margin:4px 20px">`;
+      if(isRedReject){
+        html += `<div style="font-size:10px;color:#CC0000;background:#fff0f0;padding:3px 8px;border-radius:5px;border:1px solid #CC0000">${escH(step.rejectLabel)}</div>`;
+      } else {
+        html += `<div style="font-size:10px;color:#999;background:#f0f0f0;padding:3px 8px;border-radius:5px;border:1px solid #ccc">${escH(step.rejectLabel||"")}</div>`;
+      }
+      html += `<div style="color:#bbb;font-size:11px">▼ ${escH(step.approveLabel||"")}</div>`;
+      html += `</div>`;
+    }
+  } else if(step.type === "circle"){
+    const circleLabel = label.replace(/\n/g,"<br>");
+    html += `<div class="flow-circle${actCls}" style="background:${color};color:${textColor};width:70px;height:70px" ${stageClick}><span style="font-size:10px;line-height:1.2;text-align:center">${circleLabel}</span></div>`;
+  } else if(step.type === "pill"){
+    html += `<div style="${smallStyle}font-size:${isInBranch?'10':'11'}px;padding:${isInBranch?'5px 8px':'6px 14px'};background:${color};color:${textColor};border-radius:14px;font-weight:600;display:inline-block;cursor:pointer" ${stageClick}>${label}</div>`;
+  } else {
+    // box (default)
+    const catId = step.category;
+    const borderExtra = catId === "chriga" ? ";border-color:#CC0000" : "";
+    html += `<div class="box${actCls}" style="background:${color};color:${textColor}${borderExtra}${borderStyle};${smallStyle}" ${stageClick}>${label}</div>`;
+  }
+
+  return html;
+}
+
+function renderFlowStepWithWrapper(step, index, arr, isInBranch){
+  let html = "";
+  const active = appState.activeFlowStage;
+  const isAct = step.stageId && active === step.stageId;
+
+  if(step.type === "split"){
+    // Insert button before split
+    html += `<button class="flow-insert-btn" onclick="flowInsertStep(${index},'main')">➕</button>`;
+    html += renderFlowSplit(step, index);
+  } else {
+    // Insert button before step (in main flow only, not in branches)
+    if(!isInBranch){
+      html += `<button class="flow-insert-btn" onclick="flowInsertStep(${index},'main')">➕</button>`;
+    }
+
+    html += `<div class="flow-step" id="${step.id}" style="position:relative">`;
+    html += renderFlowStepElement(step, isInBranch);
+    if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
+    html += `</div>`;
+
+    // Note below step
+    if(step.note){
+      if(step.noteType === "warning"){
+        html += `<div class="flow-side-note">${escH(step.note).replace(/\n/g,"<br>")}</div>`;
+      } else {
+        html += `<div style="font-size:9px;color:#666;text-align:center;margin:1px 0">${escH(step.note).replace(/\n/g,"<br>")}</div>`;
+      }
+    }
+  }
+
+  // Arrow after step (if not last and not in branch)
+  if(!isInBranch && index < arr.length - 1 && step.type !== "split"){
+    html += `<div class="flow-arrow">▼</div>`;
+  }
+
+  return html;
+}
+
+function renderFlowSplit(step, mainIndex){
+  let html = `<div class="flow-branch-container">`;
+  const branches = step.branches || [];
+
+  branches.forEach((branch, bi) => {
+    const borderSide = bi === 0 ? "border-left" : "border-right";
+    const paddingSide = bi === 0 ? "padding-left" : "padding-right";
+    html += `<div class="flow-branch" style="flex:1;${borderSide}:2px solid #ddd;${paddingSide}:10px">`;
+    if(branch.label) html += `<div class="flow-branch-label">${escH(branch.label)}</div>`;
+
+    branch.steps.forEach((bStep, bsi) => {
+      html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
+      html += renderFlowStepElement(bStep, true);
+      html += `</div>`;
+      // Note below branch step
+      if(bStep.note){
+        if(bStep.noteType === "warning"){
+          html += `<div class="flow-side-note" style="font-size:9px;max-width:140px">${escH(bStep.note).replace(/\n/g,"<br>")}</div>`;
+        } else {
+          html += `<div style="font-size:9px;color:#666;text-align:center;margin:1px 0">${escH(bStep.note)}</div>`;
+        }
+      }
+      // "או" separator between branch items
+      if(bsi < branch.steps.length - 1){
+        html += `<div class="flow-or" style="width:18px;height:18px;font-size:8px">או</div>`;
+      }
+    });
+
+    // Add step button inside branch
+    html += `<button class="flow-insert-btn" onclick="flowInsertBranchStep('${step.id}',${bi})" style="margin-top:4px">➕</button>`;
+    html += `</div>`;
+
+    // "או" separator between branches
+    if(bi < branches.length - 1){
+      html += `<div style="display:flex;align-items:center;padding:0 6px"><div class="flow-or">או</div></div>`;
+    }
+  });
+
+  html += `</div>`;
+  // Edit controls for split
+  html += `<div class="flow-branch-edit">`;
+  html += `<button class="flow-edit-btn" onclick="flowAddBranch('${step.id}')" title="הוסף ענף">➕ ענף</button>`;
+  html += `<button class="flow-edit-btn" onclick="flowDeleteStep('${step.id}')" title="מחק פיצול" style="color:#c00">🗑️ פיצול</button>`;
+  if(branches.length > 1) html += `<button class="flow-edit-btn" onclick="flowRemoveLastBranch('${step.id}')" title="הסר ענף אחרון">➖ ענף</button>`;
+  html += `</div>`;
+
+  // Arrow after split
+  html += `<div class="flow-arrow">▼</div>`;
+
+  return html;
+}
+
 function renderFlowChart(){
   const panel = document.getElementById("flowPanel");
-  const cc = (id) => { const c = getCat(id); return c ? c.color : "#0A5E6E"; };
-  const active = appState.activeFlowStage;
+  let html = `<div class="flow-card"><h3>תרשים זרימה — הליך חקיקה פרטית</h3>`;
 
-  function isActive(stageId){
-    return active === stageId;
+  // Shape legend
+  html += `<div class="flow-legend">
+    <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #555;border-radius:4px;width:20px;height:13px"></span> תהליך רגיל</div>
+    <div class="flow-legend-item"><span class="flow-legend-shape" style="font-size:16px">◇</span> נקודת החלטה</div>
+    <div class="flow-legend-item"><span class="flow-legend-shape" style="width:16px;height:16px;border-radius:50%;background:#555"></span> בעל סמכות ייחודי</div>
+    <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #CC0000;border-radius:4px;width:20px;height:13px"></span> חריגה מתקנון</div>
+    <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #B8860B;border-radius:4px;width:20px;height:13px;background:#FFF8DC"></span> המתנה/עיכוב</div>
+  </div>`;
+
+  // Render all flow steps from data
+  const steps = appState.flowSteps;
+  steps.forEach((step, i) => {
+    html += renderFlowStepWithWrapper(step, i, steps, false);
+  });
+
+  // Final insert button
+  html += `<button class="flow-insert-btn" onclick="flowInsertStep(${steps.length},'main')">➕ הוסף שלב</button>`;
+
+  html += `</div>`;
+  panel.innerHTML = html;
+}
+
+// ============================================================
+// FLOW CHART — Editing Functions
+// ============================================================
+
+function findFlowStep(id, steps){
+  if(!steps) steps = appState.flowSteps;
+  for(const s of steps){
+    if(s.id === id) return s;
+    if(s.branches){
+      for(const b of s.branches){
+        const found = findFlowStep(id, b.steps);
+        if(found) return found;
+      }
+    }
   }
-  function activeClass(stageId){
-    return isActive(stageId) ? ' flow-active' : '';
+  return null;
+}
+
+function findFlowStepAndParent(id){
+  // Search main array
+  for(let i=0;i<appState.flowSteps.length;i++){
+    if(appState.flowSteps[i].id === id) return {step:appState.flowSteps[i], arr:appState.flowSteps, index:i};
+    if(appState.flowSteps[i].branches){
+      for(const b of appState.flowSteps[i].branches){
+        for(let j=0;j<b.steps.length;j++){
+          if(b.steps[j].id === id) return {step:b.steps[j], arr:b.steps, index:j};
+        }
+      }
+    }
   }
-  function hereBadge(stageId){
-    return isActive(stageId) ? '<span class="flow-here-badge">← אתה כאן</span>' : '';
+  return null;
+}
+
+function flowEditLabel(id){
+  const step = findFlowStep(id);
+  if(!step) return;
+  const newLabel = prompt("שם השלב:", step.label);
+  if(newLabel !== null && newLabel.trim() !== ""){
+    step.label = newLabel.trim();
+    renderAll();
   }
+}
 
-  panel.innerHTML = `
-  <div class="flow-card">
-    <h3>תרשים זרימה — הליך חקיקה פרטית</h3>
+function flowEditColor(id, btnEl){
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  const step = findFlowStep(id);
+  if(!step) return;
+  const currentColor = getFlowStepColor(step);
 
-    <!-- Shape Legend -->
-    <div class="flow-legend">
-      <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #555;border-radius:4px;width:20px;height:13px"></span> תהליך רגיל</div>
-      <div class="flow-legend-item"><span class="flow-legend-shape" style="font-size:16px">◇</span> נקודת החלטה</div>
-      <div class="flow-legend-item"><span class="flow-legend-shape" style="width:16px;height:16px;border-radius:50%;background:#555"></span> בעל סמכות ייחודי</div>
-      <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #CC0000;border-radius:4px;width:20px;height:13px"></span> חריגה מתקנון</div>
-      <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #B8860B;border-radius:4px;width:20px;height:13px;background:#FFF8DC"></span> המתנה/עיכוב</div>
-    </div>
+  const popup = document.createElement("div");
+  popup.className = "color-picker-popup show";
+  popup.style.position = "fixed";
+  popup.style.zIndex = "300";
+  const rect = btnEl.getBoundingClientRect();
+  popup.style.top = (rect.bottom + 4) + "px";
+  popup.style.left = (rect.left) + "px";
 
-    <!-- Stage 1: כתיבה -->
-    <div class="flow-step" id="flow-s1" style="position:relative">
-      <div class="box${activeClass('s1')}" style="background:${cc('chk')}" onclick="flowClickStage('s1')">📝 כתיבת הצעת החוק</div>
-      ${hereBadge('s1')}
+  popup.innerHTML = `
+    <div style="font-size:11px;color:#888;margin-bottom:6px">צבע רקע:</div>
+    <input type="color" value="${currentColor}" oninput="flowSetColor('${id}',this.value)">
+    <div class="preset-colors">
+      ${["#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B","#E67E22","#8E44AD","#2C3E50","#f0f0f0"].map(c=>
+        `<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();flowSetColor('${id}','${c}');this.closest('.color-picker-popup').querySelector('input').value='${c}'"></div>`
+      ).join("")}
     </div>
-    <div class="flow-arrow">▼</div>
-
-    <div class="flow-step" id="flow-s1-chriga" style="position:relative">
-      <div class="box${activeClass('s1')}" style="background:${cc('chriga')};border-color:#CC0000" onclick="flowClickStage('s1')">🛑 לשכה משפטית / נסחות</div>
-    </div>
-    <div class="flow-side-note">חריגה: ח"כ לא יכול להגיש ישירות לנשיאות</div>
-    <div class="flow-arrow">▼</div>
-
-    <!-- נשיאות — diamond decision -->
-    <div class="flow-step" id="flow-s1-nesiut" style="position:relative">
-      <div class="flow-diamond${activeClass('s1')}" style="background:${cc('nesiut')}" onclick="flowClickStage('s1')"><span>אישור<br>נשיאות?</span></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 20px">
-      <div style="font-size:10px;color:#999;background:#f0f0f0;padding:3px 8px;border-radius:5px;border:1px solid #ccc">נפסלה</div>
-      <div style="color:#bbb;font-size:11px">▼ אושרה</div>
-    </div>
-
-    <!-- הנחה על שולחן -->
-    <div class="flow-step" id="flow-s1-hanaha" style="position:relative">
-      <div class="box${activeClass('s1')}" style="background:${cc('mazkir')}" onclick="flowClickStage('s1')">📋 הנחה על שולחן הכנסת</div>
-    </div>
-    <div class="flow-arrow">▼</div>
-
-    <!-- SPLIT: ממשלה (left) vs 45 יום / קיצור / הצמדה (right) -->
-    <div class="flow-branch-container">
-      <div class="flow-branch" style="flex:1;border-left:2px solid #ddd;padding-left:10px">
-        <div class="flow-branch-label">מסלול ממשלתי</div>
-        <div class="flow-circle" id="flow-s1-gov" style="background:${cc('gov')};width:70px;height:70px" onclick="flowClickStage('s1')">
-          <span style="font-size:10px;line-height:1.2;text-align:center">🛑<br>ועדת<br>שרים</span>
-        </div>
-        <div class="flow-side-note" style="font-size:9px;max-width:140px">ממתינה מעבר ל-45 יום<br>ללא סמכות חוקית</div>
-      </div>
-      <div style="display:flex;align-items:center;padding:0 6px">
-        <div class="flow-or">או</div>
-      </div>
-      <div class="flow-branch" style="flex:1;border-right:2px solid #ddd;padding-right:10px">
-        <div class="flow-branch-label">מסלול רגיל</div>
-        <div style="font-size:10px;padding:5px 8px;background:${cc('waiting')};color:#fff;border-radius:14px;font-weight:600">⏳ 45 יום המתנה</div>
-        <div class="flow-or" style="width:18px;height:18px;font-size:8px">או</div>
-        <div style="font-size:10px;padding:4px 7px;background:${cc('vaadat')};color:#fff;border-radius:5px;font-weight:600">קיצור דחיפות</div>
-        <div class="flow-or" style="width:18px;height:18px;font-size:8px">או</div>
-        <div style="font-size:10px;padding:4px 7px;background:${cc('chk')};color:#fff;border-radius:5px;font-weight:600">הצמדה להצ"ח</div>
-      </div>
-    </div>
-
-    <div class="flow-arrow">▼</div>
-
-    <!-- Stage 2: קביעת דיון מוקדם -->
-    <div class="flow-step" id="flow-s2" style="position:relative">
-      <div class="box${activeClass('s2')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s2')">קביעת מועד דיון מוקדם</div>
-      ${hereBadge('s2')}
-    </div>
-    <div class="flow-arrow">▼</div>
-
-    <!-- Stage 3: דיון מוקדם -->
-    <div class="flow-step" id="flow-s3" style="position:relative">
-      <div class="flow-diamond${activeClass('s3')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s3')"><span>דיון<br>מוקדם</span></div>
-      ${hereBadge('s3')}
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 20px">
-      <div style="font-size:10px;color:#CC0000;background:#fff0f0;padding:3px 8px;border-radius:5px;border:1px solid #CC0000">נדחתה ← 6 חודשים</div>
-      <div style="color:#bbb;font-size:11px">▼ אושרה</div>
-    </div>
-
-    <!-- Stage 4: קביעת ועדה -->
-    <div class="flow-step" id="flow-s4" style="position:relative">
-      <div class="box${activeClass('s4')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s4')">קביעת ועדה מכינה</div>
-      ${hereBadge('s4')}
-    </div>
-    <div class="flow-arrow">▼</div>
-
-    <!-- Stage 5: הכנה לקריאה ראשונה -->
-    <div class="flow-step" id="flow-s5" style="position:relative">
-      <div class="box${activeClass('s5')}" style="background:${cc('vaadat')}" onclick="flowClickStage('s5')">הכנה לקריאה ראשונה</div>
-      ${hereBadge('s5')}
-    </div>
-    <div class="flow-arrow">▼</div>
-
-    <!-- Stage 6: קריאה ראשונה -->
-    <div class="flow-step" id="flow-s6" style="position:relative">
-      <div class="flow-diamond${activeClass('s6')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s6')"><span>קריאה<br>ראשונה</span></div>
-      ${hereBadge('s6')}
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 20px">
-      <div style="font-size:10px;color:#CC0000;background:#fff0f0;padding:3px 8px;border-radius:5px;border:1px solid #CC0000">הוסרה ← 6 חודשים</div>
-      <div style="color:#bbb;font-size:11px">▼ עברה</div>
-    </div>
-
-    <!-- Stage 7: קביעת ועדה ב'+ג' -->
-    <div class="flow-step" id="flow-s7" style="position:relative">
-      <div class="box${activeClass('s7')}" style="background:${cc('vaadat')}" onclick="flowClickStage('s7')">קביעת ועדה לקריאה ב'+ג'</div>
-      ${hereBadge('s7')}
-    </div>
-    <div class="flow-arrow">▼</div>
-
-    <!-- Stage 8: הכנה לקריאה ב'+ג' -->
-    <div class="flow-step" id="flow-s8" style="position:relative">
-      <div class="box${activeClass('s8')}" style="background:${cc('vaadat')}" onclick="flowClickStage('s8')">הכנה לקריאה ב'+ג'</div>
-      ${hereBadge('s8')}
-    </div>
-    <div style="font-size:9px;color:#666;text-align:center;margin:1px 0">מיזוג / פיצול / הסתייגויות</div>
-    <div class="flow-arrow">▼</div>
-
-    <!-- Stage 9: קריאה שנייה -->
-    <div class="flow-step" id="flow-s9" style="position:relative">
-      <div class="flow-diamond${activeClass('s9')}" style="background:${cc('yoresh')}" onclick="flowClickStage('s9')"><span>קריאה<br>שנייה</span></div>
-      ${hereBadge('s9')}
-    </div>
-    <div style="font-size:9px;color:#666;text-align:center;margin:1px 0">סעיף-סעיף + הסתייגויות</div>
-    <div class="flow-arrow">▼</div>
-
-    <!-- Stage 10: קריאה שלישית -->
-    <div class="flow-step" id="flow-s10" style="position:relative">
-      <div class="flow-diamond${activeClass('s10')}" style="background:${cc('yoresh')};border:3px solid #FFD700" onclick="flowClickStage('s10')"><span>קריאה<br>שלישית</span></div>
-      ${hereBadge('s10')}
-    </div>
-    <div style="display:flex;justify-content:space-around;margin:6px 10px" id="flow-final">
-      <div style="font-size:11px;padding:5px 12px;background:#2D7D46;color:#fff;border-radius:7px;font-weight:700;cursor:pointer" onclick="flowClickStage('s10')">✅ חוק!</div>
-      <div style="font-size:10px;padding:5px 8px;background:#f0f0f0;color:#666;border-radius:7px;border:1px solid #ccc">❌ נדחה</div>
-    </div>
-  </div>
   `;
+
+  document.body.appendChild(popup);
+  setTimeout(()=>{
+    document.addEventListener("click",function handler(e){
+      if(!popup.contains(e.target) && e.target !== btnEl){
+        popup.remove();
+        document.removeEventListener("click",handler);
+        renderAll();
+      }
+    });
+  },50);
+}
+
+function flowSetColor(id, color){
+  const step = findFlowStep(id);
+  if(step) step.color = color;
+}
+
+function flowChangeShape(id, shape){
+  const step = findFlowStep(id);
+  if(step){
+    step.type = shape;
+    renderAll();
+  }
+}
+
+function flowAssignCategory(id, btnEl){
+  document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
+  const step = findFlowStep(id);
+  if(!step) return;
+
+  const dropdown = document.createElement("div");
+  dropdown.className = "cat-assign show";
+  dropdown.style.position = "fixed";
+  dropdown.style.zIndex = "300";
+  const rect = btnEl.getBoundingClientRect();
+  dropdown.style.top = (rect.bottom + 4) + "px";
+  dropdown.style.left = (rect.left) + "px";
+
+  dropdown.innerHTML = appState.categories.map(cat => `
+    <div class="cat-assign-item ${step.category===cat.id?'active':''}" onclick="event.stopPropagation();flowSetCategory('${id}','${cat.id}')">
+      <span class="swatch" style="background:${cat.color}"></span>
+      ${escH(cat.name)}
+    </div>
+  `).join("") + `
+    <div class="cat-assign-item reset" onclick="event.stopPropagation();flowClearCategoryOverride('${id}')">
+      🔄 נקה צבע ידני
+    </div>
+  `;
+
+  document.body.appendChild(dropdown);
+  setTimeout(()=>{
+    document.addEventListener("click",function handler(e){
+      if(!dropdown.contains(e.target)){
+        dropdown.remove();
+        document.removeEventListener("click",handler);
+      }
+    });
+  },50);
+}
+
+function flowSetCategory(id, catId){
+  const step = findFlowStep(id);
+  if(step){
+    step.category = catId;
+    delete step.color; // Remove manual override when assigning category
+    document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
+    renderAll();
+  }
+}
+
+function flowClearCategoryOverride(id){
+  const step = findFlowStep(id);
+  if(step){
+    delete step.color;
+    delete step.textColor;
+    document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
+    renderAll();
+  }
+}
+
+function flowDeleteStep(id){
+  if(!confirm("למחוק שלב מתרשים הזרימה?")) return;
+  const found = findFlowStepAndParent(id);
+  if(found){
+    found.arr.splice(found.index, 1);
+    renderAll();
+  }
+}
+
+function flowInsertStep(index, context){
+  const newStep = {
+    id: "flow_" + genId(),
+    label: "שלב חדש",
+    type: "box",
+    category: "process",
+    stageId: "",
+    note: "",
+    noteType: ""
+  };
+  appState.flowSteps.splice(index, 0, newStep);
+  renderAll();
+  showToast("➕ שלב חדש נוסף לתרשים");
+}
+
+function flowInsertBranchStep(splitId, branchIndex){
+  const split = findFlowStep(splitId);
+  if(!split || !split.branches || !split.branches[branchIndex]) return;
+  const newStep = {
+    id: "flow_" + genId(),
+    label: "שלב חדש",
+    type: "box",
+    category: "process",
+    stageId: "",
+    note: "",
+    noteType: ""
+  };
+  split.branches[branchIndex].steps.push(newStep);
+  renderAll();
+  showToast("➕ שלב חדש נוסף לענף");
+}
+
+function flowAddBranch(splitId){
+  const split = findFlowStep(splitId);
+  if(!split) return;
+  if(!split.branches) split.branches = [];
+  split.branches.push({
+    label: "ענף חדש",
+    steps: [{
+      id: "flow_" + genId(),
+      label: "שלב חדש",
+      type: "box",
+      category: "process",
+      stageId: "",
+      note: "",
+      noteType: ""
+    }]
+  });
+  renderAll();
+  showToast("➕ ענף חדש נוסף");
+}
+
+function flowRemoveLastBranch(splitId){
+  const split = findFlowStep(splitId);
+  if(!split || !split.branches || split.branches.length <= 1) return;
+  if(!confirm("למחוק את הענף האחרון?")) return;
+  split.branches.pop();
+  renderAll();
+}
+
+function flowAddSplitAtEnd(){
+  const newSplit = {
+    id: "flow_" + genId(),
+    label: "",
+    type: "split",
+    stageId: "",
+    note: "",
+    noteType: "",
+    branches: [
+      { label: "מסלול א'", steps: [{ id: "flow_" + genId(), label: "אפשרות 1", type: "box", category: "process", stageId: "", note: "", noteType: "" }] },
+      { label: "מסלול ב'", steps: [{ id: "flow_" + genId(), label: "אפשרות 2", type: "box", category: "process", stageId: "", note: "", noteType: "" }] }
+    ]
+  };
+  appState.flowSteps.push(newSplit);
+  renderAll();
+  showToast("🔀 פיצול חדש נוסף לתרשים");
 }
 
 // ============================================================
