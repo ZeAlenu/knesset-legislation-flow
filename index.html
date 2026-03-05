@@ -1331,9 +1331,33 @@ function renderStep(step, stage, index){
           const col = document.createElement("div");
           col.style.cssText = "flex:1;min-width:0;border:1px dashed #ccc;border-radius:6px;padding:4px";
           col.appendChild(renderStep(child, stage, ci));
+          // Render sub-steps of each branch
+          if(child.children){
+            child.children.forEach((gc, gci) => {
+              col.appendChild(renderStep(gc, stage, gci));
+            });
+          }
+          // Add button inside each branch
+          if(appState.editing){
+            const branchAddBtn = document.createElement("button");
+            branchAddBtn.className = "add-step-btn";
+            branchAddBtn.style.cssText = "margin:4px auto;display:block;font-size:10px";
+            branchAddBtn.textContent = "➕ הוסף לענף";
+            branchAddBtn.onclick = function(e){ e.stopPropagation(); if(!child.children) child.children=[]; addStepTo(child.children, stage, child.depth); };
+            col.appendChild(branchAddBtn);
+          }
           parallelRow.appendChild(col);
         });
         detailPanel.appendChild(parallelRow);
+        // Add branch button
+        if(appState.editing){
+          const addBranchBtn = document.createElement("button");
+          addBranchBtn.className = "add-step-btn";
+          addBranchBtn.style.cssText = "margin:4px auto;display:block;font-size:10px";
+          addBranchBtn.textContent = "➕ הוסף ענף מקביל";
+          addBranchBtn.onclick = function(e){ e.stopPropagation(); pushUndo(); step.children.push({id:"step_"+genId(), title:"ענף חדש", icon:"", catId:"process", depth:(step.depth||0)+1, details:"", detailType:"expand", children:[], _open:true}); renderAll(); };
+          detailPanel.appendChild(addBranchBtn);
+        }
       } else {
         step.children.forEach((child, ci) => {
           detailPanel.appendChild(renderStep(child, stage, ci));
