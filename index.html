@@ -1321,10 +1321,12 @@ function renderStep(step, stage, index){
 
   const header = document.createElement("div");
   header.className = "sub-step-header";
+  // Category colors take priority over chpiqa defaults
+  const catHasCustomColor = cat.id !== "default" && cat.color;
   const catBorderColor = cat.borderColor || null;
-  const effectiveBorder = overrideBorder || catBorderColor || (isChriga ? "#CC0000" : getDepthColor(step.depth));
-  const effectiveBg = overrideColor || (isChriga && !step.detailType ? "#CC0000" : (isLightStep(step) ? lighten(bgColor, 0.85) : bgColor));
-  const effectiveText = step.overrideTextColor || cat.textColor || (isChriga && !step.detailType ? "#fff" : (isLightStep(step) ? darken(bgColor) : "#fff"));
+  const effectiveBorder = overrideBorder || catBorderColor || (isChriga && !catHasCustomColor ? "#CC0000" : getDepthColor(step.depth));
+  const effectiveBg = overrideColor || (catHasCustomColor ? (isLightStep(step) ? lighten(cat.color, 0.85) : cat.color) : (isChriga && !step.detailType ? "#CC0000" : (isLightStep(step) ? lighten(bgColor, 0.85) : bgColor)));
+  const effectiveText = step.overrideTextColor || cat.textColor || (isChriga && !catHasCustomColor ? "#fff" : (isLightStep(step) ? darken(bgColor) : "#fff"));
   header.style.background = effectiveBg;
   header.style.color = effectiveText;
   header.style.borderColor = effectiveBorder;
