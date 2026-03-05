@@ -1205,6 +1205,8 @@ function renderStep(step, stage, index){
   header.style.background = isChriga && !step.detailType ? "#CC0000" : (isLightStep(step) ? lighten(bgColor, 0.85) : bgColor);
   header.style.color = step.overrideTextColor ? step.overrideTextColor : (isChriga && !step.detailType ? "#fff" : (isLightStep(step) ? darken(bgColor) : "#fff"));
   header.style.borderColor = isChriga ? "#CC0000" : borderColor;
+  if(step.fontSize) header.style.fontSize = step.fontSize + "px";
+  if(step.fontWeight) header.style.fontWeight = step.fontWeight;
 
   let headerHTML = "";
   if(cat.logo) headerHTML += `<img class="cat-logo" src="${cat.logo}" style="width:18px;height:18px;border-radius:2px;flex-shrink:0">`;
@@ -1218,6 +1220,7 @@ function renderStep(step, stage, index){
       <span class="edit-btn-sm" onclick="event.stopPropagation();editStepTitle('${step.id}',this)" title="ערוך שם">✏️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();showCatAssign(event,'${step.id}')" title="שייך קטגוריה">🏷️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepColor(event,'${step.id}')" title="צבע">🎨</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepFont(event,'${step.id}')" title="עיצוב טקסט">🔤</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepIcon(event,'${step.id}')" title="סמל מובנה">⛔</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();uploadStepImage('${step.id}')" title="תמונה/לוגו">🖼️</span>
@@ -1649,6 +1652,56 @@ function setStepOverrideBorder(stepId, color){
   const found = findStepAndParent(stepId);
   if(found) found.step.overrideBorder = color;
 }
+function pickStepFont(event, stepId){
+  event.stopPropagation();
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  const found = findStepAndParent(stepId);
+  if(!found) return;
+  const step = found.step;
+
+  const popup = document.createElement("div");
+  popup.className = "color-picker-popup show";
+  popup.style.position = "fixed";
+  popup.style.zIndex = "300";
+  popup.style.width = "200px";
+  popup.innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:#333;margin-bottom:8px">עיצוב טקסט:</div>
+    <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">גודל פונט:</div>
+    <div style="display:flex;gap:4px;align-items:center;margin-bottom:8px">
+      <input type="range" min="10" max="24" value="${step.fontSize||13}" oninput="setStepProp('${stepId}','fontSize',+this.value);this.nextElementSibling.textContent=this.value+'px'" style="flex:1">
+      <span style="font-size:11px;color:#555;min-width:30px">${step.fontSize||13}px</span>
+    </div>
+    <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">משקל:</div>
+    <div style="display:flex;gap:4px;margin-bottom:8px">
+      ${["400","600","700","900"].map(w=>
+        `<button onclick="event.stopPropagation();setStepProp('${stepId}','fontWeight','${w}');renderAll()" style="flex:1;padding:4px;border:1px solid ${(step.fontWeight||'400')===w?'var(--teal-dark)':'#ddd'};border-radius:4px;background:${(step.fontWeight||'400')===w?'#E6F6FB':'#fff'};cursor:pointer;font-weight:${w};font-size:11px;font-family:inherit">${w==='400'?'רגיל':w==='600'?'בינוני':w==='700'?'בולט':'כבד'}</button>`
+      ).join("")}
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button onclick="event.stopPropagation();document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderAll()" style="flex:1;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
+      <button onclick="event.stopPropagation();delete findStepAndParent('${stepId}').step.fontSize;delete findStepAndParent('${stepId}').step.fontWeight;document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderAll()" style="flex:1;padding:6px;border:1px solid #ddd;border-radius:6px;background:#f8f8f8;cursor:pointer;font-family:inherit;font-size:11px">נקה</button>
+    </div>
+  `;
+  const rect = event.target.getBoundingClientRect();
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 250) + "px";
+  popup.style.right = (window.innerWidth - rect.right) + "px";
+  document.body.appendChild(popup);
+  setTimeout(()=>{
+    document.addEventListener("click",function handler(e){
+      if(!popup.contains(e.target)){
+        popup.remove();
+        document.removeEventListener("click",handler);
+        renderAll();
+      }
+    });
+  },50);
+}
+
+function setStepProp(stepId, prop, value){
+  const found = findStepAndParent(stepId);
+  if(found) found.step[prop] = value;
+}
+
 function pickDetailColor(event, stepId){
   event.stopPropagation();
   document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
