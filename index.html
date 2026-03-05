@@ -167,7 +167,7 @@ header p{font-size:13px;opacity:.85}
 .color-picker-popup.show{display:block}
 .color-picker-popup input[type=color]{width:50px;height:36px;border:none;cursor:pointer;border-radius:4px}
 .color-picker-popup .preset-colors{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
-.color-picker-popup .preset-color{width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:border-color .2s}
+.color-picker-popup .preset-color{width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid #ddd;transition:border-color .2s}
 .color-picker-popup .preset-color:hover{border-color:#333}
 
 /* TOAST */
@@ -753,7 +753,7 @@ function pickCatColor(catId, swatchEl){
   popup.innerHTML = `
     <input type="color" value="${cat.color}" oninput="updateCatColorLive('${catId}',this.value,this.closest('.cat-row'))">
     <div class="preset-colors">
-      ${["#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B","#E67E22","#8E44AD","#2C3E50"].map(c=>
+      ${["#FFFFFF","#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B","#E67E22","#8E44AD","#2C3E50"].map(c=>
         `<div class="preset-color" style="background:${c}" onclick="updateCatColorLive('${catId}','${c}',this.closest('.cat-row'));this.closest('.color-picker-popup').querySelector('input').value='${c}'"></div>`
       ).join("")}
     </div>
@@ -852,7 +852,7 @@ function populateBackArrowDropdowns(){
   function collectSteps(steps, prefix = ""){
     for(const step of steps){
       if(step.type !== "note" && step.label){
-        options += `<option value="${step.id}">${prefix}${escH(step.label)}</option>`;
+        options += `<option value="${step.id}">${prefix}${step.label}</option>`;
       }
       if(step.branches){
         for(const branch of step.branches){
@@ -885,8 +885,8 @@ function renderBackArrowList(){
       <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid #eee;border-radius:6px;margin-bottom:6px">
         <div style="width:12px;height:12px;background:${arrow.color};border-radius:2px;flex-shrink:0"></div>
         <div style="flex:1;font-size:12px;line-height:1.4">
-          <strong>${escH(arrow.label)}</strong><br>
-          <span style="color:#666">מ-"${escH(fromLabel)}" ל-"${escH(toLabel)}"</span>
+          <strong>${arrow.label}</strong><br>
+          <span style="color:#666">מ-"${fromLabel}" ל-"${toLabel}"</span>
         </div>
         <button onclick="deleteBackArrow(${index})" style="background:#f0f0f0;border:1px solid #ccc;border-radius:4px;padding:4px 8px;cursor:pointer;color:#c00;font-size:11px">🗑️</button>
       </div>
@@ -1427,7 +1427,7 @@ function pickStepColor(event, stepId){
     <div style="font-size:11px;color:#888;margin:6px 0 4px">מסגרת:</div>
     <input type="color" value="${step.overrideBorder||getDepthColor(step.depth)}" oninput="setStepOverrideBorder('${stepId}',this.value)">
     <div class="preset-colors">
-      ${["#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B"].map(c=>
+      ${["#FFFFFF","#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B"].map(c=>
         `<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();setStepOverrideColor('${stepId}','${c}')"></div>`
       ).join("")}
     </div>
@@ -1903,8 +1903,16 @@ function renderFlowChart(){
   html += `</div>`;
   panel.innerHTML = html;
   
-  // Re-render back arrows after DOM updates
-  setTimeout(renderBackArrows, 50);
+  // Re-render back arrows after DOM updates and add scroll listener
+  setTimeout(() => {
+    renderBackArrows();
+    const flowCard = document.querySelector(".flow-card");
+    if(flowCard){
+      flowCard.addEventListener("scroll", () => {
+        setTimeout(renderBackArrows, 10);
+      });
+    }
+  }, 50);
 }
 
 // ============================================================
@@ -1973,7 +1981,7 @@ function flowEditColor(id, btnEl){
       <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">צבע רקע</div>
       <input type="color" value="${currentBgColor}" oninput="flowSetBgColor('${id}',this.value)" style="width:100%;height:32px;border:none;border-radius:4px;cursor:pointer">
       <div class="preset-colors" style="margin-top:4px">
-        ${["#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B"].map(c=>
+        ${["#FFFFFF","#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B"].map(c=>
           `<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();flowSetBgColor('${id}','${c}');this.closest('.color-picker-popup').querySelector('input[oninput*=BgColor]').value='${c}'"></div>`
         ).join("")}
       </div>
