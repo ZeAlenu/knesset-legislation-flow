@@ -1344,6 +1344,11 @@ function renderStep(step, stage, index){
             childArrow.style.margin = "1px 0";
             childArrow.innerHTML = '<div class="arrow-line" style="height:12px"></div><div class="arrow-head" style="border-left-width:6px;border-right-width:6px;border-top-width:7px"></div>';
             detailPanel.appendChild(childArrow);
+          } else if(child.connector === "fork"){
+            const forkEl = document.createElement("div");
+            forkEl.style.cssText = "text-align:center;margin:4px 0;line-height:1";
+            forkEl.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="30" y1="0" x2="30" y2="12" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="10" y2="28" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="50" y2="28" stroke="#555" stroke-width="2"/><polygon points="8,24 12,32 16,24" fill="#555" transform="rotate(-30,10,28)"/><polygon points="48,24 52,32 56,24" fill="#555" transform="rotate(30,50,28)"/></svg>`;
+            detailPanel.appendChild(forkEl);
           } else if(child.connector && child.connector !== "arrow"){
             const symEl = document.createElement("div");
             symEl.style.cssText = "text-align:center;font-size:18px;font-weight:700;color:#555;margin:2px 0;line-height:1";
@@ -1354,13 +1359,13 @@ function renderStep(step, stage, index){
           if(appState.editing && ci < step.children.length - 1){
             const connDiv = document.createElement("div");
             connDiv.style.cssText = "display:flex;gap:2px;justify-content:center;margin:1px 0;opacity:0.5";
-            [{v:"arrow",l:"↓"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(sym=>{
+            [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(sym=>{
               const b = document.createElement("button");
               b.className = "add-step-btn";
               const cur = child.connector || (child.showArrowAfter ? "arrow" : "");
               b.style.cssText = "padding:1px 5px;font-size:10px;min-width:20px;" + (cur===sym.v?"background:#E6F6FB;border-color:var(--teal-dark);":"");
               b.textContent = sym.l; b.title = sym.v||"הסר";
-              b.onclick = function(e){ e.stopPropagation(); child.showArrowAfter = sym.v==="arrow"; child.connector = sym.v||undefined; renderAll(); };
+              b.onclick = function(e){ e.stopPropagation(); child.showArrowAfter = (sym.v==="arrow"); child.connector = sym.v||undefined; renderAll(); };
               connDiv.appendChild(b);
             });
             detailPanel.appendChild(connDiv);
