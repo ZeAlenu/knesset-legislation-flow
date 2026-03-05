@@ -1222,6 +1222,10 @@ function renderStep(step, stage, index){
       <span class="edit-btn-sm" onclick="event.stopPropagation();showCatAssign(event,'${step.id}')" title="שייך קטגוריה">🏷️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepColor(event,'${step.id}')" title="צבע">🎨</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepFont(event,'${step.id}')" title="עיצוב טקסט">🔤</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();moveStep('${step.id}',-1)" title="הזז למעלה">⬆️</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();moveStep('${step.id}',1)" title="הזז למטה">⬇️</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',-1)" title="העלה רמה">⬅️</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',1)" title="הורד רמה">➡️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepIcon(event,'${step.id}')" title="סמל מובנה">⛔</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();uploadStepImage('${step.id}')" title="תמונה/לוגו">🖼️</span>
@@ -1517,6 +1521,29 @@ function addStepTo(arr, stage, parentDepth){
       children:[], _open:true
     });
   }
+  renderAll();
+}
+
+function moveStep(id, direction){
+  pushUndo();
+  const found = findStepAndParent(id);
+  if(!found) return;
+  const arr = found.parent;
+  const idx = found.index;
+  const newIdx = idx + direction;
+  if(newIdx < 0 || newIdx >= arr.length) return;
+  [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+  renderAll();
+}
+
+function changeDepth(id, delta){
+  pushUndo();
+  const found = findStepAndParent(id);
+  if(!found) return;
+  const step = found.step;
+  const newDepth = Math.max(0, (step.depth || 0) + delta);
+  function setDepth(s, d){ s.depth = d; if(s.children) s.children.forEach(c => setDepth(c, d+1)); }
+  setDepth(step, newDepth);
   renderAll();
 }
 
