@@ -224,7 +224,9 @@ header p{font-size:13px;opacity:.85}
   <span style="font-size:12px;color:#666;font-weight:600">מצב עריכה:</span>
   <button onclick="addStage()">➕ הוסף שלב</button>
   <div class="sep"></div>
-  <button onclick="flowAddSplitAtEnd()">🔀 הוסף פיצול לתרשים</button>
+  <button onclick="flowAddStepAtEnd()">➕ שלב בתרשים</button>
+  <button onclick="flowAddNoteAtEnd()">📝 הערה בתרשים</button>
+  <button onclick="flowAddSplitAtEnd()">🔀 פיצול בתרשים</button>
   <div class="sep"></div>
   <button onclick="openBackArrowModal()">↩️ חצי חזרה</button>
   <div class="sep"></div>
@@ -2215,6 +2217,35 @@ function flowRemoveLastBranch(splitId){
   if(!confirm("למחוק את הענף האחרון?")) return;
   split.branches.pop();
   renderAll();
+}
+
+function flowAddStepAtEnd(){
+  const newStep = {
+    id: "flow_" + genId(),
+    label: "שלב חדש",
+    type: "box",
+    category: "process",
+    stageId: "",
+    note: "",
+    noteType: ""
+  };
+  appState.flowSteps.push(newStep);
+  renderAll();
+  showToast("➕ שלב חדש נוסף לתרשים");
+}
+
+function flowAddNoteAtEnd(){
+  const newNote = {
+    id: "flow_" + genId(),
+    label: "",
+    type: "note",
+    stageId: "",
+    note: "הערה חדשה",
+    noteType: "warning"
+  };
+  appState.flowSteps.push(newNote);
+  renderAll();
+  showToast("📝 הערה חדשה נוספה לתרשים");
 }
 
 function flowAddSplitAtEnd(){
