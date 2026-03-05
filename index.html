@@ -154,11 +154,11 @@ header p{font-size:13px;opacity:.85}
 .cat-add-btn:hover{border-color:var(--teal-mid);color:var(--teal-mid)}
 
 /* CATEGORY ASSIGN DROPDOWN */
-.cat-assign{position:absolute;top:100%;right:0;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:50;min-width:200px;padding:6px;display:none}
+.cat-assign{position:fixed;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:300;min-width:200px;max-height:400px;overflow-y:auto;padding:6px;display:none}
 .cat-assign.show{display:block}
-.cat-assign-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px;transition:background .2s}
+.cat-assign-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px;transition:background .2s;color:#333}
 .cat-assign-item:hover{background:#f0f0f0}
-.cat-assign-item .swatch{width:18px;height:18px;border-radius:3px;flex-shrink:0}
+.cat-assign-item .swatch{width:18px;height:18px;border-radius:3px;flex-shrink:0;border:1px solid #ddd}
 .cat-assign-item.active{background:#e6f7f9;font-weight:700}
 .cat-assign-item.reset{color:#CC0000;font-weight:600;border-top:1px solid #eee;margin-top:4px;padding-top:10px}
 
@@ -1422,14 +1422,18 @@ function showCatAssign(event, stepId){
     </div>
   `;
 
-  const header = event.target.closest(".sub-step-header");
-  header.style.position = "relative";
-  header.appendChild(dropdown);
+  // Position fixed, viewport-aware
+  const rect = event.target.getBoundingClientRect();
+  dropdown.style.top = Math.min(rect.bottom + 4, window.innerHeight - 350) + "px";
+  dropdown.style.right = (window.innerWidth - rect.right) + "px";
+  document.body.appendChild(dropdown);
 
   setTimeout(()=>{
-    document.addEventListener("click", function handler(){
-      dropdown.remove();
-      document.removeEventListener("click",handler);
+    document.addEventListener("click", function handler(e){
+      if(!dropdown.contains(e.target)){
+        dropdown.remove();
+        document.removeEventListener("click",handler);
+      }
     });
   },50);
 }
@@ -1468,7 +1472,7 @@ function pickStepColor(event, stepId){
 
   const popup = document.createElement("div");
   popup.className = "color-picker-popup show";
-  popup.style.position = "absolute";
+  popup.style.position = "fixed";
   popup.style.zIndex = "300";
   popup.innerHTML = `
     <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">צבע רקע:</div>
@@ -1486,12 +1490,17 @@ function pickStepColor(event, stepId){
     <div class="preset-colors" style="margin-top:4px">
       ${presets.map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();setStepOverrideBorder('${stepId}','${c}')"></div>`).join("")}
     </div>
-    <button onclick="event.stopPropagation();resetStepColors('${stepId}')" style="margin-top:8px;width:100%;padding:4px;border:1px solid #ddd;border-radius:4px;background:#f8f8f8;cursor:pointer;font-family:inherit;font-size:11px">נקה הכל</button>
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <button onclick="event.stopPropagation();document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderAll()" style="flex:1;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
+      <button onclick="event.stopPropagation();resetStepColors('${stepId}')" style="flex:1;padding:6px;border:1px solid #ddd;border-radius:6px;background:#f8f8f8;cursor:pointer;font-family:inherit;font-size:11px">נקה הכל</button>
+    </div>
   `;
 
-  const header = event.target.closest(".sub-step-header");
-  header.style.position = "relative";
-  header.appendChild(popup);
+  // Position fixed, viewport-aware
+  const rect = event.target.getBoundingClientRect();
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 380) + "px";
+  popup.style.right = (window.innerWidth - rect.right) + "px";
+  document.body.appendChild(popup);
 
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
@@ -2082,11 +2091,15 @@ function flowEditColor(id, btnEl){
       </div>
     </div>
     
-    <button onclick="event.stopPropagation();flowResetColors('${id}')" style="background:#f0f0f0;border:1px solid #ccc;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:11px;width:100%;color:#666">
-      נקה הכל
-    </button>
+    <div style="display:flex;gap:6px;margin-top:4px">
+      <button onclick="event.stopPropagation();document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderAll()" style="flex:1;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
+      <button onclick="event.stopPropagation();flowResetColors('${id}')" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:6px;background:#f0f0f0;cursor:pointer;font-family:inherit;font-size:11px;color:#666">נקה הכל</button>
+    </div>
   `;
 
+  // Viewport-aware positioning
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 450) + "px";
+  popup.style.left = Math.max(4, rect.left - 100) + "px";
   document.body.appendChild(popup);
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
@@ -2148,8 +2161,8 @@ function flowAssignCategory(id, btnEl){
   dropdown.style.position = "fixed";
   dropdown.style.zIndex = "300";
   const rect = btnEl.getBoundingClientRect();
-  dropdown.style.top = (rect.bottom + 4) + "px";
-  dropdown.style.left = (rect.left) + "px";
+  dropdown.style.top = Math.min(rect.bottom + 4, window.innerHeight - 350) + "px";
+  dropdown.style.left = Math.max(4, rect.left - 50) + "px";
 
   dropdown.innerHTML = appState.categories.map(cat => `
     <div class="cat-assign-item ${step.category===cat.id?'active':''}" onclick="event.stopPropagation();flowSetCategory('${id}','${cat.id}')">
