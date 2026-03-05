@@ -810,7 +810,7 @@ function pickCatColor(catId, swatchEl){
     <div class="preset-colors" style="margin-top:4px">
       ${presets.map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();getCat('${catId}').borderColor='${c}'"></div>`).join("")}
     </div>
-    <button onclick="event.stopPropagation();document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderCatList();renderAll(true)" style="margin-top:10px;width:100%;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
+    <button onclick="event.stopPropagation();document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderCatList();renderAll()" style="margin-top:10px;width:100%;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
   `;
 
   const rect = swatchEl.getBoundingClientRect();
@@ -873,6 +873,7 @@ function uploadCatLogo(catId){
 
 function deleteCat(catId){
   if(!confirm("למחוק את הקטגוריה?")) return;
+  pushUndo();
   appState.categories = appState.categories.filter(c=>c.id !== catId);
   function resetCat(steps){
     steps.forEach(s => {
@@ -1430,6 +1431,7 @@ function _findInArray(id, arr, parent){
 }
 
 function addStage(){
+  pushUndo();
   const letters = "אבגדהוזחטיכלמנסעפצקרשת";
   const usedLetters = new Set(appState.stages.map(s=>s.letter));
   let letter = "";
@@ -1464,6 +1466,7 @@ function deleteStage(id){
 }
 
 function addStepTo(arr, stage, parentDepth){
+  pushUndo();
   const id = "step_"+genId();
   const depth = parentDepth !== undefined ? parentDepth + 1 : (arr.length > 0 ? (arr[0].depth || 0) : 0);
   arr.push({
@@ -1478,6 +1481,7 @@ function editStepTitle(id, btnEl){
   if(!step) return;
   const newTitle = prompt("שם השלב:", step.title);
   if(newTitle !== null && newTitle.trim() !== ""){
+    pushUndo();
     step.title = newTitle.trim();
     renderAll();
   }
@@ -1485,12 +1489,14 @@ function editStepTitle(id, btnEl){
 
 function deleteStep(id){
   if(!confirm("למחוק?")) return;
+  pushUndo();
   const found = findStepAndParent(id);
   if(found) found.parent.splice(found.index, 1);
   renderAll();
 }
 
 function splitStepParallel(id){
+  pushUndo();
   const found = findStepAndParent(id);
   if(!found) return;
   const step = found.step;
@@ -2533,6 +2539,7 @@ function flowClearCategoryOverride(id){
 }
 
 function flowSplitAfter(id){
+  pushUndo();
   // Find step in flowSteps and insert a split after it
   function insertAfter(arr){
     for(let i = 0; i < arr.length; i++){
@@ -2581,6 +2588,7 @@ function flowUploadImage(id){
 
 function flowDeleteStep(id){
   if(!confirm("למחוק שלב מתרשים הזרימה?")) return;
+  pushUndo();
   const found = findFlowStepAndParent(id);
   if(found){
     found.arr.splice(found.index, 1);
@@ -2589,6 +2597,7 @@ function flowDeleteStep(id){
 }
 
 function flowInsertStep(index, context){
+  pushUndo();
   const newStep = {
     id: "flow_" + genId(),
     label: "שלב חדש",
@@ -2713,8 +2722,7 @@ function showToast(msg){
 // RENDER ALL
 // ============================================================
 
-function renderAll(skipUndo){
-  if(!skipUndo) pushUndo();
+function renderAll(){
   renderLegend();
   renderHierarchy();
   renderFlowChart();
