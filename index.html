@@ -1693,7 +1693,8 @@ const BUILTIN_ICONS = {
   "info": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#2E86AB"/><text x="50" y="40" text-anchor="middle" font-size="30" font-weight="bold" fill="white">i</text><rect x="44" y="48" width="12" height="30" rx="3" fill="white"/></svg>`,
   "clock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#1B3A6B" stroke="#0A5E6E" stroke-width="3"/><circle cx="50" cy="50" r="38" fill="none" stroke="white" stroke-width="2"/><line x1="50" y1="50" x2="50" y2="25" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="50" x2="68" y2="55" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="50" r="3" fill="white"/></svg>`,
   "lock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="45" width="60" height="45" rx="6" fill="#B8860B"/><path d="M32,45 L32,32 C32,15 68,15 68,32 L68,45" fill="none" stroke="#B8860B" stroke-width="8"/><circle cx="50" cy="65" r="6" fill="white"/></svg>`,
-  "star": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 61,38 95,38 68,60 79,93 50,73 21,93 32,60 5,38 39,38" fill="#FFD700" stroke="#B8860B" stroke-width="2"/></svg>`
+  "star": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 61,38 95,38 68,60 79,93 50,73 21,93 32,60 5,38 39,38" fill="#FFD700" stroke="#B8860B" stroke-width="2"/></svg>`,
+  "hourglass": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="5" width="60" height="8" rx="3" fill="#B8860B"/><rect x="20" y="87" width="60" height="8" rx="3" fill="#B8860B"/><path d="M28,13 L28,35 C28,42 50,55 50,50 C50,55 72,42 72,35 L72,13 Z" fill="#FFD700" opacity="0.3" stroke="#B8860B" stroke-width="2"/><path d="M28,87 L28,65 C28,58 50,45 50,50 C50,45 72,58 72,65 L72,87 Z" fill="#FFD700" opacity="0.3" stroke="#B8860B" stroke-width="2"/><path d="M40,87 L40,72 C40,65 50,58 50,55 C50,58 60,65 60,72 L60,87 Z" fill="#DAA520"/></svg>`
 };
 
 const BUILTIN_ICON_LABELS = {
@@ -1704,7 +1705,8 @@ const BUILTIN_ICON_LABELS = {
   "info": "ℹ️ מידע",
   "clock": "🕐 שעון",
   "lock": "🔒 נעילה",
-  "star": "⭐ כוכב"
+  "star": "⭐ כוכב",
+  "hourglass": "⏳ שעון חול"
 };
 
 function pickStepIcon(event, stepId){
@@ -1901,6 +1903,7 @@ function renderFlowStepElement(step, isInBranch){
     </select>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAssignCategory('${step.id}',this)" title="קטגוריה">🏷️</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowUploadImage('${step.id}')" title="תמונה">🖼️</button>`;
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowSplitAfter('${step.id}')" title="פצל כאן">🔀</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
     html += `</div>`;
   }
@@ -2461,6 +2464,36 @@ function flowClearCategoryOverride(id){
     document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
     renderAll();
   }
+}
+
+function flowSplitAfter(id){
+  // Find step in flowSteps and insert a split after it
+  function insertAfter(arr){
+    for(let i = 0; i < arr.length; i++){
+      if(arr[i].id === id){
+        const splitStep = {
+          id: "fs_" + genId(),
+          label: "פיצול",
+          type: "split",
+          branches: [
+            { label: "מסלול א׳", steps: [{ id: "fs_" + genId(), label: "אפשרות 1", type: "box", category: "", color: "", textColor: "", note: "", noteType: "" }] },
+            { label: "מסלול ב׳", steps: [{ id: "fs_" + genId(), label: "אפשרות 2", type: "box", category: "", color: "", textColor: "", note: "", noteType: "" }] }
+          ]
+        };
+        arr.splice(i + 1, 0, splitStep);
+        return true;
+      }
+      if(arr[i].branches){
+        for(const b of arr[i].branches){
+          if(b.steps && insertAfter(b.steps)) return true;
+        }
+      }
+    }
+    return false;
+  }
+  insertAfter(appState.flowSteps);
+  renderAll();
+  showToast("🔀 פיצול נוסף");
 }
 
 function flowUploadImage(id){
