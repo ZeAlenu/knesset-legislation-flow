@@ -3259,24 +3259,51 @@ function showToast(msg){
 
 // Remove steps that appear in multiple arrays (shared reference bug)
 function deduplicateSteps(){
-  const seen = new Set();
-  function cleanArr(arr){
-    if(!arr || !Array.isArray(arr)) return;
+  // Pass 1: collect all IDs that exist inside parallel branches (deep children)
+  const deepIds = new Set();
+  function collectDeep(arr){
+    if(!arr) return;
+    for(const step of arr){
+      if(!step) continue;
+      if(step.parallel && step.children){
+        // Everything inside parallel branches is "deep"
+        for(const branch of step.children){
+          markAll(branch);
+          if(branch.children) branch.children.forEach(gc => markAll(gc));
+        }
+      }
+      if(step.children) collectDeep(step.children);
+    }
+  }
+  function markAll(s){
+    if(!s || !s.id) return;
+    deepIds.add(s.id);
+    if(s.children) s.children.forEach(c => markAll(c));
+  }
+  for(const stage of appState.stages){
+    collectDeep(stage.children || stage.steps || []);
+  }
+  
+  // Pass 2: remove from parent arrays any step whose ID is in deepIds but is NOT inside a parallel branch
+  function cleanArr(arr, insideParallel){
+    if(!arr) return;
     for(let i = arr.length - 1; i >= 0; i--){
       const step = arr[i];
       if(!step || !step.id) continue;
-      if(seen.has(step.id)){
-        // Duplicate reference — remove from this array (keep the first occurrence)
+      if(!insideParallel && deepIds.has(step.id) && !step.parallel){
+        console.log("Dedup: removed shallow duplicate", step.id, step.title);
         arr.splice(i, 1);
-        console.log("Dedup: removed duplicate reference", step.id, step.title);
-      } else {
-        seen.add(step.id);
-        if(step.children) cleanArr(step.children);
+        continue;
+      }
+      if(step.parallel && step.children){
+        step.children.forEach(branch => { if(branch.children) cleanArr(branch.children, true); });
+      } else if(step.children){
+        cleanArr(step.children, insideParallel);
       }
     }
   }
   for(const stage of appState.stages){
-    cleanArr(stage.children || stage.steps || []);
+    cleanArr(stage.children || stage.steps || [], false);
   }
 }
 
