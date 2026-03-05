@@ -1333,7 +1333,30 @@ function getFlowStepColor(step){
 
 function getFlowStepTextColor(step){
   if(step.textColor) return step.textColor;
+  // Smart default based on background color
+  const bgColor = getFlowStepColor(step);
+  if(bgColor === "#FFFFFF" || bgColor === "#f0f0f0" || bgColor === "#FFD700"){
+    return "#333";
+  }
   return "#fff";
+}
+
+function renderNoteAnnotation(noteStep){
+  const noteText = escH(noteStep.note||noteStep.label).replace(/\n/g,"<br>");
+  
+  if(noteStep.noteType === "warning-circle"){
+    // Red circle annotation
+    return `<div style="background:#CC0000;color:white;border-radius:50%;width:85px;height:85px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:8px;line-height:1.3;padding:8px;border:2px dashed rgba(255,255,255,0.3)">${noteText}</div>`;
+  } else if(noteStep.noteType === "warning-box"){
+    // Dark blue small annotation box
+    return `<div style="background:#1B2A4A;color:white;border-radius:6px;font-size:9px;padding:6px 10px;text-align:center;line-height:1.3;border:2px dashed rgba(255,255,255,0.3);max-width:130px">${noteText}</div>`;
+  } else if(noteStep.noteType === "warning"){
+    // Red rounded warning box
+    return `<div style="background:#CC0000;color:white;border-radius:8px;font-size:9px;padding:6px 12px;text-align:center;line-height:1.3;border:2px dashed rgba(255,255,255,0.3);max-width:140px">${noteText}</div>`;
+  } else {
+    // Default light gray note
+    return `<div style="background:#f8f9fa;color:#666;border:2px dashed #ccc;border-radius:6px;font-size:9px;padding:6px 10px;text-align:center;line-height:1.3;max-width:130px">${noteText}</div>`;
+  }
 }
 
 function renderFlowStepElement(step, isInBranch){
@@ -1348,19 +1371,22 @@ function renderFlowStepElement(step, isInBranch){
 
   let html = "";
 
-  // Edit controls (top)
-  html += `<div class="flow-edit-actions">`;
-  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowEditLabel('${step.id}')" title="שנה שם">✏️</button>`;
-  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowEditColor('${step.id}',this)" title="צבע">🎨</button>`;
-  html += `<select class="flow-shape-sel" onchange="flowChangeShape('${step.id}',this.value)" title="צורה">
-    <option value="box" ${step.type==="box"?"selected":""}>▢ מלבן</option>
-    <option value="diamond" ${step.type==="diamond"?"selected":""}>◇ מעוין</option>
-    <option value="circle" ${step.type==="circle"?"selected":""}>● עיגול</option>
-    <option value="pill" ${step.type==="pill"?"selected":""}>⬭ כמוסה</option>
-  </select>`;
-  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAssignCategory('${step.id}',this)" title="קטגוריה">🏷️</button>`;
-  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
-  html += `</div>`;
+  // Edit controls (top) - don't show for note types since they're handled differently
+  if(step.type !== "note"){
+    html += `<div class="flow-edit-actions">`;
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowEditLabel('${step.id}')" title="שנה שם">✏️</button>`;
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowEditColor('${step.id}',this)" title="צבע">🎨</button>`;
+    html += `<select class="flow-shape-sel" onchange="flowChangeShape('${step.id}',this.value)" title="צורה">
+      <option value="box" ${step.type==="box"?"selected":""}>▢ מלבן</option>
+      <option value="diamond" ${step.type==="diamond"?"selected":""}>◇ מעוין</option>
+      <option value="circle" ${step.type==="circle"?"selected":""}>● עיגול</option>
+      <option value="pill" ${step.type==="pill"?"selected":""}>⬭ כמוסה</option>
+      <option value="note" ${step.type==="note"?"selected":""}>📝 הערה</option>
+    </select>`;
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAssignCategory('${step.id}',this)" title="קטגוריה">🏷️</button>`;
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
+    html += `</div>`;
+  }
 
   const label = escH(step.label);
 
@@ -1385,18 +1411,8 @@ function renderFlowStepElement(step, isInBranch){
   } else if(step.type === "pill"){
     html += `<div style="${smallStyle}font-size:${isInBranch?'10':'11'}px;padding:${isInBranch?'5px 8px':'6px 14px'};background:${color};color:${textColor};border-radius:14px;font-weight:600;display:inline-block;cursor:pointer" ${stageClick}>${label}</div>`;
   } else if(step.type === "note"){
-    const noteText = escH(step.note||step.label).replace(/\n/g,"<br>");
-    if(step.noteType === "warning-circle"){
-      // Red circle annotation (like the ממשלה explanation)
-      html += `<div style="background:#CC0000;color:white;border-radius:50%;width:110px;height:110px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:8px;line-height:1.3;padding:10px;margin:4px auto">${noteText}</div>`;
-    } else if(step.noteType === "warning-box"){
-      // Dark blue small annotation box
-      html += `<div style="background:#1B2A4A;color:white;border-radius:6px;font-size:9px;padding:5px 8px;text-align:center;line-height:1.3;margin:4px auto;max-width:120px">${noteText}</div>`;
-    } else if(step.noteType === "warning"){
-      html += `<div style="background:#CC0000;color:white;border-radius:8px;font-size:9px;padding:5px 10px;text-align:center;line-height:1.3;margin:4px auto;max-width:160px">${noteText}</div>`;
-    } else {
-      html += `<div class="flow-note" style="color:#666;font-size:10px;padding:2px 8px">${noteText}</div>`;
-    }
+    // Note types should be handled by renderNoteAnnotation now, but keep this for backwards compatibility
+    return renderNoteAnnotation(step);
   } else {
     // box (default)
     const catId = step.category;
@@ -1412,6 +1428,9 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
   const active = appState.activeFlowStage;
   const isAct = step.stageId && active === step.stageId;
 
+  // Skip note steps - they're handled as side annotations with their parent step
+  if(step.type === "note") return "";
+
   if(step.type === "split"){
     // Insert button before split
     html += `<button class="flow-insert-btn" onclick="flowInsertStep(${index},'main')">➕</button>`;
@@ -1422,12 +1441,38 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
       html += `<button class="flow-insert-btn" onclick="flowInsertStep(${index},'main')">➕</button>`;
     }
 
-    html += `<div class="flow-step" id="${step.id}" style="position:relative">`;
-    html += renderFlowStepElement(step, isInBranch);
-    if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
-    html += `</div>`;
+    // Check if next step is a note - if so, render with side annotation
+    const nextStep = arr[index + 1];
+    const hasNoteAnnotation = nextStep && nextStep.type === "note";
 
-    // Note below step
+    if(hasNoteAnnotation){
+      // Render step + note in flex container for RTL side annotation
+      html += `<div style="display:flex;align-items:flex-start;gap:12px;justify-content:center;position:relative;margin:4px 0">`;
+      
+      // Note annotation on the left (RTL)
+      html += `<div style="flex-shrink:0;max-width:140px;position:relative">`;
+      html += renderNoteAnnotation(nextStep);
+      // Add connecting line/arrow to the step
+      html += `<div style="position:absolute;top:50%;left:100%;width:8px;height:2px;background:#999;margin-left:2px;"></div>`;
+      html += `<div style="position:absolute;top:50%;left:100%;margin-left:8px;color:#999;font-size:10px;">←</div>`;
+      html += `</div>`;
+      
+      // Main step on the right
+      html += `<div class="flow-step" id="${step.id}" style="position:relative;flex-shrink:0">`;
+      html += renderFlowStepElement(step, isInBranch);
+      if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
+      html += `</div>`;
+      
+      html += `</div>`;
+    } else {
+      // Normal step rendering
+      html += `<div class="flow-step" id="${step.id}" style="position:relative">`;
+      html += renderFlowStepElement(step, isInBranch);
+      if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
+      html += `</div>`;
+    }
+
+    // Note below step (for old-style notes attached to steps)
     if(step.note){
       if(step.noteType === "warning"){
         html += `<div class="flow-side-note">${escH(step.note).replace(/\n/g,"<br>")}</div>`;
@@ -1437,8 +1482,16 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
     }
   }
 
-  // Arrow after step (if not last and not in branch)
-  if(!isInBranch && index < arr.length - 1 && step.type !== "split" && step.type !== "note"){
+  // Arrow after step (skip arrow if next step is a note)
+  const nextStep = arr[index + 1];
+  const nextStepIsNote = nextStep && nextStep.type === "note";
+  // Also look ahead one more step to see if we should add arrow after note
+  const stepAfterNote = nextStepIsNote && arr[index + 2];
+  
+  if(!isInBranch && !nextStepIsNote && index < arr.length - 1 && step.type !== "split"){
+    html += `<div class="flow-arrow">▼</div>`;
+  } else if(!isInBranch && nextStepIsNote && stepAfterNote){
+    // Add arrow after note annotation
     html += `<div class="flow-arrow">▼</div>`;
   }
 
@@ -1456,19 +1509,47 @@ function renderFlowSplit(step, mainIndex){
     if(branch.label) html += `<div class="flow-branch-label">${escH(branch.label)}</div>`;
 
     branch.steps.forEach((bStep, bsi) => {
-      html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
-      html += renderFlowStepElement(bStep, true);
-      html += `</div>`;
-      // Note below branch step
-      if(bStep.note){
+      // Skip note steps - they're handled as side annotations
+      if(bStep.type === "note") return;
+      
+      // Check if next step is a note for side annotation
+      const nextBStep = branch.steps[bsi + 1];
+      const hasNoteAnnotation = nextBStep && nextBStep.type === "note";
+      
+      if(hasNoteAnnotation){
+        // Render step + note in flex container for branch
+        html += `<div style="display:flex;align-items:flex-start;gap:8px;justify-content:center;position:relative;margin:2px 0">`;
+        // Note annotation on the left (smaller for branches)
+        html += `<div style="flex-shrink:0;max-width:100px;position:relative">`;
+        html += renderNoteAnnotation(nextBStep).replace(/width:85px;height:85px/, 'width:60px;height:60px').replace(/font-size:9px/, 'font-size:8px').replace(/max-width:130px/, 'max-width:90px');
+        // Connecting line
+        html += `<div style="position:absolute;top:50%;left:100%;width:6px;height:1px;background:#999;margin-left:1px;"></div>`;
+        html += `<div style="position:absolute;top:50%;left:100%;margin-left:5px;color:#999;font-size:8px;">←</div>`;
+        html += `</div>`;
+        // Main step
+        html += `<div class="flow-step" id="${bStep.id}" style="position:relative;flex-shrink:0">`;
+        html += renderFlowStepElement(bStep, true);
+        html += `</div>`;
+        html += `</div>`;
+      } else {
+        html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
+        html += renderFlowStepElement(bStep, true);
+        html += `</div>`;
+      }
+      
+      // Note below branch step (for old-style notes)
+      if(bStep.note && !hasNoteAnnotation){
         if(bStep.noteType === "warning"){
           html += `<div class="flow-side-note" style="font-size:9px;max-width:140px">${escH(bStep.note).replace(/\n/g,"<br>")}</div>`;
         } else {
           html += `<div style="font-size:9px;color:#666;text-align:center;margin:1px 0">${escH(bStep.note)}</div>`;
         }
       }
-      // "או" separator between branch items
-      if(bsi < branch.steps.length - 1){
+      
+      // "או" separator between branch items (skip if next is note)
+      const nextNonNote = branch.steps.slice(bsi + 1).find(s => s.type !== "note");
+      const isLastVisible = !nextNonNote;
+      if(!isLastVisible){
         html += `<div class="flow-or" style="width:18px;height:18px;font-size:8px">או</div>`;
       }
     });
@@ -1509,12 +1590,25 @@ function renderFlowChart(){
     <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #CC0000;border-radius:4px;width:20px;height:13px"></span> חריגה מתקנון</div>
     <div class="flow-legend-item"><span class="flow-legend-shape" style="border:2px solid #B8860B;border-radius:4px;width:20px;height:13px;background:#FFF8DC"></span> המתנה/עיכוב</div>
   </div>`;
+  // Category color legend
+  html += `<div class="flow-legend" style="margin-top:6px">
+    <div style="font-size:10px;color:#888;font-weight:700;width:100%;text-align:center;margin-bottom:2px">קטגוריות:</div>`;
+  for(const cat of appState.categories){
+    html += `<div class="flow-legend-item"><span class="flow-legend-shape" style="width:14px;height:14px;border-radius:3px;background:${cat.color}"></span> ${escH(cat.name)}</div>`;
+  }
+  html += `</div>`;
 
   // Render all flow steps from data
   const steps = appState.flowSteps;
-  steps.forEach((step, i) => {
-    html += renderFlowStepWithWrapper(step, i, steps, false);
-  });
+  for(let i = 0; i < steps.length; i++){
+    const stepHtml = renderFlowStepWithWrapper(steps[i], i, steps, false);
+    html += stepHtml;
+    
+    // Skip the next step if it's a note (since it was rendered as side annotation)
+    if(i + 1 < steps.length && steps[i + 1].type === "note"){
+      i++; // Skip the note step in main loop
+    }
+  }
 
   // Final insert button
   html += `<button class="flow-insert-btn" onclick="flowInsertStep(${steps.length},'main')">➕ הוסף שלב</button>`;
@@ -1570,24 +1664,54 @@ function flowEditColor(id, btnEl){
   document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
   const step = findFlowStep(id);
   if(!step) return;
-  const currentColor = getFlowStepColor(step);
+  const currentBgColor = getFlowStepColor(step);
+  const currentTextColor = getFlowStepTextColor(step);
+  const currentBorderColor = step.specialBorder || "#0A5E6E";
 
   const popup = document.createElement("div");
   popup.className = "color-picker-popup show";
   popup.style.position = "fixed";
   popup.style.zIndex = "300";
+  popup.style.width = "200px";
+  popup.style.padding = "16px";
   const rect = btnEl.getBoundingClientRect();
   popup.style.top = (rect.bottom + 4) + "px";
   popup.style.left = (rect.left) + "px";
 
   popup.innerHTML = `
-    <div style="font-size:11px;color:#888;margin-bottom:6px">צבע רקע:</div>
-    <input type="color" value="${currentColor}" oninput="flowSetColor('${id}',this.value)">
-    <div class="preset-colors">
-      ${["#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B","#E67E22","#8E44AD","#2C3E50","#f0f0f0"].map(c=>
-        `<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();flowSetColor('${id}','${c}');this.closest('.color-picker-popup').querySelector('input').value='${c}'"></div>`
-      ).join("")}
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">צבע רקע</div>
+      <input type="color" value="${currentBgColor}" oninput="flowSetBgColor('${id}',this.value)" style="width:100%;height:32px;border:none;border-radius:4px;cursor:pointer">
+      <div class="preset-colors" style="margin-top:4px">
+        ${["#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B"].map(c=>
+          `<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();flowSetBgColor('${id}','${c}');this.closest('.color-picker-popup').querySelector('input[oninput*=BgColor]').value='${c}'"></div>`
+        ).join("")}
+      </div>
     </div>
+    
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">צבע טקסט</div>
+      <input type="color" value="${currentTextColor}" oninput="flowSetTextColor('${id}',this.value)" style="width:100%;height:32px;border:none;border-radius:4px;cursor:pointer">
+      <div class="preset-colors" style="margin-top:4px">
+        ${["#FFFFFF","#000000","#333333","#666666","#1B3A6B","#0A5E6E","#CC0000","#2D7D46"].map(c=>
+          `<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();flowSetTextColor('${id}','${c}');this.closest('.color-picker-popup').querySelector('input[oninput*=TextColor]').value='${c}'"></div>`
+        ).join("")}
+      </div>
+    </div>
+    
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">צבע מסגרת</div>
+      <input type="color" value="${currentBorderColor}" oninput="flowSetBorderColor('${id}',this.value)" style="width:100%;height:32px;border:none;border-radius:4px;cursor:pointer">
+      <div class="preset-colors" style="margin-top:4px">
+        ${["#0A5E6E","#1A7A9A","#2E96B8","#4DB8D9","#CC0000","#FFD700","#2D7D46","#8B5CF6"].map(c=>
+          `<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();flowSetBorderColor('${id}','${c}');this.closest('.color-picker-popup').querySelector('input[oninput*=BorderColor]').value='${c}'"></div>`
+        ).join("")}
+      </div>
+    </div>
+    
+    <button onclick="event.stopPropagation();flowResetColors('${id}')" style="background:#f0f0f0;border:1px solid #ccc;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:11px;width:100%;color:#666">
+      נקה הכל
+    </button>
   `;
 
   document.body.appendChild(popup);
@@ -1605,6 +1729,32 @@ function flowEditColor(id, btnEl){
 function flowSetColor(id, color){
   const step = findFlowStep(id);
   if(step) step.color = color;
+}
+
+function flowSetBgColor(id, color){
+  const step = findFlowStep(id);
+  if(step) step.color = color;
+}
+
+function flowSetTextColor(id, color){
+  const step = findFlowStep(id);
+  if(step) step.textColor = color;
+}
+
+function flowSetBorderColor(id, color){
+  const step = findFlowStep(id);
+  if(step) step.specialBorder = color;
+}
+
+function flowResetColors(id){
+  const step = findFlowStep(id);
+  if(step){
+    delete step.color;
+    delete step.textColor;
+    delete step.specialBorder;
+    document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+    renderAll();
+  }
 }
 
 function flowChangeShape(id, shape){
