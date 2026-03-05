@@ -1200,6 +1200,7 @@ function renderStep(step, stage, index){
 
   let headerHTML = "";
   if(cat.logo) headerHTML += `<img class="cat-logo" src="${cat.logo}" style="width:18px;height:18px;border-radius:2px;flex-shrink:0">`;
+  if(step.image) headerHTML += `<img src="${step.image}" style="width:24px;height:24px;object-fit:contain;flex-shrink:0;border-radius:3px" onclick="if(appState.editing){event.stopPropagation();if(confirm('להסיר תמונה?'))removeStepImage('${step.id}')}" title="${appState.editing?'לחץ להסיר':''}">`;
   if(step.icon) headerHTML += `<span class="icon">${step.icon}</span>`;
   headerHTML += `<span class="text">${escH(step.title)}</span>`;
   if(overrideColor || overrideBorder) headerHTML += `<span class="override-badge" title="עקיפת קטגוריה">🎨</span>`;
@@ -1209,6 +1210,7 @@ function renderStep(step, stage, index){
       <span class="edit-btn-sm" onclick="event.stopPropagation();showCatAssign(event,'${step.id}')" title="שייך קטגוריה">🏷️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepColor(event,'${step.id}')" title="צבע">🎨</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();uploadStepImage('${step.id}')" title="תמונה/לוגו">🖼️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();splitStepParallel('${step.id}')" title="פצל למקביל">🔀</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();deleteStep('${step.id}')" title="מחק">🗑️</span>
     </span>
@@ -1673,6 +1675,28 @@ function pickDetailColor(event, stepId){
   },50);
 }
 
+function uploadStepImage(stepId){
+  const inp = document.getElementById("logoInput");
+  inp.onchange = function(e){
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = function(ev){
+      const found = findStepAndParent(stepId);
+      if(found) found.step.image = ev.target.result;
+      renderAll();
+    };
+    r.readAsDataURL(f);
+    inp.value = "";
+  };
+  inp.click();
+}
+
+function removeStepImage(stepId){
+  const found = findStepAndParent(stepId);
+  if(found){ delete found.step.image; renderAll(); }
+}
+
 function setDetailProp(stepId, prop, value){
   const found = findStepAndParent(stepId);
   if(found) found.step[prop] = value;
@@ -1798,11 +1822,13 @@ function renderFlowStepElement(step, isInBranch){
       <option value="note" ${step.type==="note"?"selected":""}>📝 הערה</option>
     </select>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAssignCategory('${step.id}',this)" title="קטגוריה">🏷️</button>`;
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowUploadImage('${step.id}')" title="תמונה">🖼️</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
     html += `</div>`;
   }
 
-  const label = escH(step.label);
+  const imgTag = step.image ? `<img src="${step.image}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px">` : "";
+  const label = imgTag + escH(step.label);
 
   if(step.type === "diamond"){
     const diamondLabel = label.replace(/\n/g,"<br>");
@@ -2357,6 +2383,23 @@ function flowClearCategoryOverride(id){
     document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
     renderAll();
   }
+}
+
+function flowUploadImage(id){
+  const inp = document.getElementById("logoInput");
+  inp.onchange = function(e){
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = function(ev){
+      const step = findFlowStep(id);
+      if(step) step.image = ev.target.result;
+      renderAll();
+    };
+    r.readAsDataURL(f);
+    inp.value = "";
+  };
+  inp.click();
 }
 
 function flowDeleteStep(id){
