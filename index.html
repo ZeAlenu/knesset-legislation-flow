@@ -814,7 +814,15 @@ function pickCatColor(catId, swatchEl){
   `;
 
   const rect = swatchEl.getBoundingClientRect();
-  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 420) + "px";
+  // Position above the swatch so it doesn't get buried under the category list
+  const popupHeight = 420;
+  const spaceAbove = rect.top;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  if(spaceBelow < popupHeight && spaceAbove > spaceBelow){
+    popup.style.bottom = (window.innerHeight - rect.top + 4) + "px";
+  } else {
+    popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - popupHeight) + "px";
+  }
   popup.style.left = Math.max(4, rect.left) + "px";
   document.body.appendChild(popup);
   setTimeout(()=>{
