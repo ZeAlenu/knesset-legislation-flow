@@ -1472,8 +1472,10 @@ function renderStep(step, stage, index){
           // Render sub-steps of each branch with connectors
           if(child.children){
             child.children.forEach((gc, gci) => {
-              // Connector between branch children
-              if(gc.showArrowAfter || gc.connector){
+              col.appendChild(renderStep(gc, stage, gci));
+              // Connector AFTER this step (before the next one)
+              if(gci < child.children.length - 1){
+                // Show connector
                 if(gc.showArrowAfter){
                   const arr = document.createElement("div");
                   arr.className = "stage-arrow"; arr.style.margin = "1px 0";
@@ -1485,21 +1487,20 @@ function renderStep(step, stage, index){
                   sym.textContent = gc.connector;
                   col.appendChild(sym);
                 }
-              }
-              col.appendChild(renderStep(gc, stage, gci));
-              // Edit connectors in branch
-              if(appState.editing && gci < child.children.length - 1){
-                const cd = document.createElement("div");
-                cd.style.cssText = "display:flex;gap:2px;justify-content:center;margin:1px 0;opacity:0.4";
-                [{v:"arrow",l:"↓"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"",l:"✕"}].forEach(s=>{
-                  const b = document.createElement("button"); b.className = "add-step-btn";
-                  const cur = gc.connector||(gc.showArrowAfter?"arrow":"");
-                  b.style.cssText = "padding:1px 4px;font-size:9px;min-width:18px;"+(cur===s.v?"background:#E6F6FB;":"");
-                  b.textContent = s.l;
-                  b.onclick = function(e){ e.stopPropagation(); gc.showArrowAfter=(s.v==="arrow"); gc.connector=s.v||undefined; renderAll(); };
-                  cd.appendChild(b);
-                });
-                col.appendChild(cd);
+                // Edit connector buttons
+                if(appState.editing){
+                  const cd = document.createElement("div");
+                  cd.style.cssText = "display:flex;gap:2px;justify-content:center;margin:1px 0;opacity:0.5";
+                  [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"",l:"✕"}].forEach(s=>{
+                    const b = document.createElement("button"); b.className = "add-step-btn";
+                    const cur = gc.connector||(gc.showArrowAfter?"arrow":"");
+                    b.style.cssText = "padding:2px 5px;font-size:10px;min-width:20px;"+(cur===s.v?"background:#E6F6FB;border:1px solid #4ECDC4;":"");
+                    b.textContent = s.l;
+                    b.onclick = function(e){ e.stopPropagation(); pushUndo(); gc.showArrowAfter=(s.v==="arrow"); gc.connector=(s.v&&s.v!=="arrow")?s.v:undefined; if(!s.v){gc.showArrowAfter=false;} renderAll(); };
+                    cd.appendChild(b);
+                  });
+                  col.appendChild(cd);
+                }
               }
             });
           }
