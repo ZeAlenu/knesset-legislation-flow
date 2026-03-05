@@ -1260,15 +1260,31 @@ function renderStep(step, stage, index){
       const detContent = document.createElement("div");
       const dt = step.detailType || "expand";
       detContent.className = dt === "chriga" ? "detail-chriga" : "detail-expand";
+      
+      // Apply custom detail colors if set
+      const dc_el_style = [];
+      if(step.detailBgColor) dc_el_style.push("background:" + step.detailBgColor);
+      if(step.detailTextColor) dc_el_style.push("color:" + step.detailTextColor);
+      if(step.detailBorderColor) dc_el_style.push("border-color:" + step.detailBorderColor);
+      
       const textContent = step.details.split("\n").map(line => line).join("<br>");
 
-      if(dt === "chriga"){
-        detContent.innerHTML = `<div class="detail-content"><span class="stop-icon">🛑</span> ${textContent.replace(/בפועל:/g,'<span class="reality">בפועל:</span>')}</div>`;
-      } else {
-        detContent.innerHTML = `<div class="detail-content">${textContent}</div>`;
+      let detHTML = "";
+      // Edit button for detail panel colors
+      if(appState.editing){
+        detHTML += `<div style="text-align:left;margin-bottom:4px"><span class="edit-btn-sm" onclick="event.stopPropagation();pickDetailColor(event,'${step.id}')" title="צבע פירוט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🎨</span></div>`;
       }
+      
+      if(dt === "chriga"){
+        detHTML += `<div class="detail-content" ${dc_el_style.length ? 'style="'+dc_el_style.join(";")+'"' : ""}><span class="stop-icon">🛑</span> ${textContent.replace(/בפועל:/g,'<span class="reality">בפועל:</span>')}</div>`;
+      } else {
+        detHTML += `<div class="detail-content" ${dc_el_style.length ? 'style="'+dc_el_style.join(";")+'"' : ""}>${textContent}</div>`;
+      }
+      detContent.innerHTML = detHTML;
+      
       detContent.addEventListener("dblclick", function(e){
         if(!appState.editing) return;
+        if(e.target.closest(".edit-btn-sm")) return;
         e.stopPropagation();
         const dc = detContent.querySelector(".detail-content");
         dc.contentEditable = "true";
@@ -1608,6 +1624,60 @@ function setStepOverrideBorder(stepId, color){
   const found = findStepAndParent(stepId);
   if(found) found.step.overrideBorder = color;
 }
+function pickDetailColor(event, stepId){
+  event.stopPropagation();
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  const found = findStepAndParent(stepId);
+  if(!found) return;
+  const step = found.step;
+  const presets = ["#FFFFFF","#3A0A0A","#1B2A4A","#0A5E6E","#CC0000","#2D7D46","#333333","#f5f7fa","#E6F6FB"];
+
+  const popup = document.createElement("div");
+  popup.className = "color-picker-popup show";
+  popup.style.position = "fixed";
+  popup.style.zIndex = "300";
+  popup.innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:#333;margin-bottom:8px">צבעי פירוט:</div>
+    <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">רקע:</div>
+    <input type="color" value="${step.detailBgColor||'#3A0A0A'}" oninput="setDetailProp('${stepId}','detailBgColor',this.value)" style="width:100%;height:28px;border:none;border-radius:4px;cursor:pointer">
+    <div class="preset-colors" style="margin-top:4px">
+      ${presets.map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();setDetailProp('${stepId}','detailBgColor','${c}')"></div>`).join("")}
+    </div>
+    <div style="font-size:11px;color:#888;margin:8px 0 4px;font-weight:600">טקסט:</div>
+    <input type="color" value="${step.detailTextColor||'#FFFFFF'}" oninput="setDetailProp('${stepId}','detailTextColor',this.value)" style="width:100%;height:28px;border:none;border-radius:4px;cursor:pointer">
+    <div class="preset-colors" style="margin-top:4px">
+      ${["#FFFFFF","#000000","#333333","#FF6B6B","#CC0000","#0A5E6E"].map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();setDetailProp('${stepId}','detailTextColor','${c}')"></div>`).join("")}
+    </div>
+    <div style="font-size:11px;color:#888;margin:8px 0 4px;font-weight:600">מסגרת:</div>
+    <input type="color" value="${step.detailBorderColor||'#CC0000'}" oninput="setDetailProp('${stepId}','detailBorderColor',this.value)" style="width:100%;height:28px;border:none;border-radius:4px;cursor:pointer">
+    <div class="preset-colors" style="margin-top:4px">
+      ${presets.map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();setDetailProp('${stepId}','detailBorderColor','${c}')"></div>`).join("")}
+    </div>
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <button onclick="event.stopPropagation();document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderAll()" style="flex:1;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
+      <button onclick="event.stopPropagation();delete findStepAndParent('${stepId}').step.detailBgColor;delete findStepAndParent('${stepId}').step.detailTextColor;delete findStepAndParent('${stepId}').step.detailBorderColor;document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderAll()" style="flex:1;padding:6px;border:1px solid #ddd;border-radius:6px;background:#f8f8f8;cursor:pointer;font-family:inherit;font-size:11px">נקה</button>
+    </div>
+  `;
+  const rect = event.target.getBoundingClientRect();
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 420) + "px";
+  popup.style.right = (window.innerWidth - rect.right) + "px";
+  document.body.appendChild(popup);
+  setTimeout(()=>{
+    document.addEventListener("click",function handler(e){
+      if(!popup.contains(e.target)){
+        popup.remove();
+        document.removeEventListener("click",handler);
+        renderAll();
+      }
+    });
+  },50);
+}
+
+function setDetailProp(stepId, prop, value){
+  const found = findStepAndParent(stepId);
+  if(found) found.step[prop] = value;
+}
+
 function resetStepColors(stepId){
   const found = findStepAndParent(stepId);
   if(found){
