@@ -1646,7 +1646,12 @@ function showCatAssign(event, stepId){
 function assignCat(stepId, catId){
   const found = findStepAndParent(stepId);
   if(found){
+    pushUndo();
     found.step.catId = catId;
+    // Clear manual overrides so category colors take effect
+    delete found.step.overrideColor;
+    delete found.step.overrideBorder;
+    delete found.step.overrideTextColor;
     document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
     renderAll();
   }
