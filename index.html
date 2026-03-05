@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הליך חקיקה פרטית — ריבונות הכנסת</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap');
+  
+  * { margin:0; padding:0; box-sizing:border-box; }
+  
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: #f5f7fa;
+    color: #333;
+    direction: rtl;
+    min-height: 100vh;
+  }
+  
+  /* ===== HEADER ===== */
+  header {
+    background: linear-gradient(135deg, #0A5E6E 0%, #1A7A9A 100%);
+    color: white;
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  header h1 { font-size: 28px; font-weight: 800; }
+  header p { font-size: 14px; opacity: 0.85; }
+  
+  /* ===== LAYOUT ===== */
+  .container {
+    display: flex;
+    gap: 30px;
+    padding: 30px 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  
+  .hierarchy-panel {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .flow-panel {
+    width: 380px;
+    flex-shrink: 0;
+  }
+  
+  /* ===== LEGEND ===== */
+  .legend {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .legend-title { font-weight: 700; font-size: 13px; color: #666; margin-left: 12px; }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #555;
+  }
+  .legend-swatch {
+    width: 18px; height: 18px; border-radius: 4px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  
+  /* ===== STAGE BUTTON (top level) ===== */
+  .stage-btn {
+    background: white;
+    border: 3px solid #0A5E6E;
+    border-radius: 12px;
+    padding: 18px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+  .stage-btn:hover { background: #f0fafb; transform: translateX(-3px); }
+  .stage-btn.active { background: #e6f7f9; border-color: #0A5E6E; }
+  .stage-btn .number {
+    background: #0A5E6E;
+    color: white;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .stage-btn .label { font-size: 18px; font-weight: 700; color: #0A5E6E; }
+  .stage-btn .arrow {
+    margin-right: auto;
+    font-size: 20px;
+    transition: transform 0.3s;
+    color: #0A5E6E;
+  }
+  .stage-btn.active .arrow { transform: rotate(90deg); }
+  
+  /* ===== STAGE CONTENT ===== */
+  .stage-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    margin-bottom: 8px;
+    margin-right: 20px;
+    border-right: 3px solid #0A5E6E;
+    padding-right: 20px;
+  }
+  .stage-content.open { max-height: 5000px; }
+  
+  /* ===== SUB-STEP ===== */
+  .sub-step {
+    margin-bottom: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  
+  .sub-step-header {
+    padding: 14px 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 10px;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .sub-step-header:hover { filter: brightness(0.95); }
+  
+  /* Depth colors (border) */
+  .depth-0 .sub-step-header { border-color: #0A5E6E; }
+  .depth-1 .sub-step-header { border-color: #1A7A9A; }
+  .depth-2 .sub-step-header { border-color: #2E96B8; }
+  .depth-3 .sub-step-header { border-color: #4DB8D9; }
+  
+  /* Authority colors (background) */
+  .auth-chk .sub-step-header { background: #2E86AB; color: white; }
+  .auth-nesiut .sub-step-header { background: #8B5CF6; color: white; }
+  .auth-mazkir .sub-step-header { background: #5B7B9A; color: white; }
+  .auth-yoresh .sub-step-header { background: #1B3A6B; color: white; }
+  .auth-vaadat .sub-step-header { background: #2D7D46; color: white; }
+  .auth-default .sub-step-header { background: #f0f8fa; color: #0A5E6E; }
+  
+  /* חריגה — red border */
+  .chriga .sub-step-header { border-color: #CC0000 !important; }
+  .chriga-full .sub-step-header { 
+    background: #CC0000 !important; 
+    color: white !important;
+    border-color: #990000 !important;
+  }
+  
+  .sub-step-header .icon { font-size: 18px; flex-shrink: 0; }
+  .sub-step-header .text { font-size: 15px; font-weight: 600; }
+  .sub-step-header .expand-arrow {
+    margin-right: auto;
+    font-size: 14px;
+    transition: transform 0.3s;
+    opacity: 0.6;
+  }
+  .sub-step.open .expand-arrow { transform: rotate(90deg); }
+  
+  /* ===== DETAIL PANEL ===== */
+  .detail-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .detail-panel.open { max-height: 2000px; }
+  
+  .detail-content {
+    padding: 14px 18px;
+    margin: 6px 10px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  
+  /* Detail = expand (light) */
+  .detail-expand .detail-content {
+    background: #E6F6FB;
+    border: 2px solid #4DB8D9;
+    color: #333;
+  }
+  
+  /* Detail = חריגה explanation */
+  .detail-chriga .detail-content {
+    background: #3A0A0A;
+    border: 3px solid #CC0000;
+    color: white;
+  }
+  .detail-chriga .detail-content .stop-icon { font-size: 20px; margin-left: 8px; }
+  .detail-chriga .detail-content .reality { color: #FF6B6B; font-weight: 700; }
+  
+  /* ===== FLOW CHART ===== */
+  .flow-panel {
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
+  }
+  
+  .flow-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  }
+  .flow-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1B2A4A;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  
+  .flow-step {
+    text-align: center;
+    margin-bottom: 4px;
+    position: relative;
+  }
+  .flow-step .box {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    min-width: 200px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .flow-step .box:hover { transform: scale(1.03); }
+  .flow-step .box.navy { background: #1B2A4A; }
+  .flow-step .box.gold { background: #C8962E; }
+  .flow-step .box.red-border { background: white; color: #CC0000; border: 2.5px solid #CC0000; font-weight: 700; }
+  .flow-step .box.purple { background: #7B3FA0; border-radius: 0; transform: rotate(45deg); padding: 14px; margin: 10px auto; min-width: 0; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; }
+  .flow-step .box.purple span { transform: rotate(-45deg); display: block; }
+  .flow-step .box.slate { background: #5A7089; }
+  .flow-step .box.red { background: #CC0000; }
+  .flow-step .box.crimson { background: #8B2222; border-radius: 50%; min-width: 0; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 11px; }
+  .flow-step .box.gray { background: #C0C0C0; color: #333; }
+  .flow-step .box.chk { background: #2E86AB; }
+  .flow-step .box.vaadat { background: #2D7D46; }
+  
+  .flow-arrow {
+    text-align: center;
+    color: #999;
+    font-size: 20px;
+    margin: 4px 0;
+  }
+  .flow-note {
+    font-size: 11px;
+    color: #C8962E;
+    text-align: center;
+    margin: 4px 0;
+    font-weight: 600;
+  }
+  .flow-split {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 8px 0;
+  }
+  .flow-track {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .flow-or {
+    background: #C8962E;
+    color: white;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .flow-side-note {
+    font-size: 10px;
+    color: #CC0000;
+    text-align: center;
+    background: #FFF0F0;
+    border: 1px solid #CC0000;
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin: 2px 0;
+  }
+  
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1000px) {
+    .container { flex-direction: column; padding: 16px; }
+    .flow-panel { width: 100%; position: static; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>הליך חקיקה פרטית</h1>
+    <p>מיפוי סמכויות, חריגות מתקנון, והפקעת ריבונות הכנסת</p>
+  </div>
+</header>
+
+<!-- LEGEND -->
+<div style="padding: 20px 40px 0; max-width: 1600px; margin: 0 auto;">
+  <div class="legend">
+    <span class="legend-title">מקרא:</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#2E86AB"></span>ח"כ</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#8B5CF6"></span>נשיאות</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#5B7B9A"></span>מזכיר</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#1B3A6B"></span>יו"ר הכנסת</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#2D7D46"></span>ועדת הכנסת</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:white;border:2px solid #C03928"></span>ממשלה</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#CC0000"></span>🔒 חריגה</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#C8962E"></span>⏳ המתנה</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:white;border:2px solid #888"></span>סוף תהליך</span>
+    <span class="legend-item">🛑 = חריגה מתקנון</span>
+  </div>
+</div>
+
+<div class="container">
+  <!-- ===== HIERARCHY PANEL ===== -->
+  <div class="hierarchy-panel">
+    
+    <!-- שלב א': כתיבה -->
+    <button class="stage-btn active" onclick="toggleStage(this)">
+      <span class="number">א</span>
+      <span class="label">כתיבה</span>
+      <span class="arrow">◀</span>
+    </button>
+    <div class="stage-content open">
+      
+      <!-- (1) כתיבה וניסוח -->
+      <div class="sub-step depth-0 auth-default open" onclick="toggleSub(event, this)">
+        <div class="sub-step-header">
+          <span class="icon">📝</span>
+          <span class="text">(1) כתיבה וניסוח</span>
+          <span class="expand-arrow">◀</span>
+        </div>
+        <div class="detail-panel open">
+          
+          <!-- מי -->
+          <div class="sub-step depth-1 auth-chk" style="margin: 8px 10px;">
+            <div class="sub-step-header" onclick="event.stopPropagation()">
+              <span class="text">מי: ח"כ יוזם (או מספר חברי כנסת)</span>
+            </div>
+          </div>
+          
+          <!-- מה -->
+          <div class="sub-step depth-1 auth-default" style="margin: 8px 10px;">
+            <div class="sub-step-header" onclick="toggleSub(event, this.parentElement)">
+              <span class="text">מה: איך כותבים הצעת חוק?</span>
+              <span class="expand-arrow">◀</span>
+            </div>
+            <div class="detail-panel">
+              
+              <!-- כללי ניסוח -->
+              <div class="sub-step depth-2 auth-default" style="margin: 6px 10px;">
+                <div class="sub-step-header" onclick="toggleSub(event, this.parentElement)">
+                  <span class="text">כללי ניסוח מחייבים — אין</span>
+                  <span class="expand-arrow">◀</span>
+                </div>
+                <div class="detail-panel detail-expand">
+                  <div class="detail-content">
+                    <strong>נפתח לטקסט:</strong><br>
+                    • לינק לפורמט כתיבה<br>
+                    • המלצות נוסח של היועמ"ש (+ לינק)<br>
+                    • המלצות כתיבה — מרכז יכין (+ לינק)
+                  </div>
+                </div>
+              </div>
+              
+              <!-- מה אסור -->
+              <div class="sub-step depth-2 auth-default" style="margin: 6px 10px;">
+                <div class="sub-step-header" onclick="toggleSub(event, this.parentElement)">
+                  <span class="text">מה אסור?</span>
+                  <span class="expand-arrow">◀</span>
+                </div>
+                <div class="detail-panel detail-expand">
+                  <div class="detail-content">
+                    <strong>נפתח לרשימה:</strong><br>
+                    • הצעת חוק גזענית (+ לינק לתקנון + דוגמאות)<br>
+                    • הצעת חוק השוללת את יהדות המדינה (+ לינק לתקנון + הצעות שנדחו)
+                  </div>
+                </div>
+              </div>
+              
+              <!-- תוספות נדרשות -->
+              <div class="sub-step depth-2 auth-default" style="margin: 6px 10px;">
+                <div class="sub-step-header" onclick="toggleSub(event, this.parentElement)">
+                  <span class="text">תוספות נדרשות לכתיבה</span>
+                  <span class="expand-arrow">◀</span>
+                </div>
+                <div class="detail-panel detail-expand">
+                  <div class="detail-content">
+                    <strong>נפתח לטקסט:</strong><br>
+                    • שמות ח"כ היוזמים והמצטרפים (ניתן להוסיף עד מספר רשמי 'פ')<br>
+                    • דברי הסבר לחוק (לפרט מה נכלל לפי תקנון. אם דומה לקודמת — לציין)
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <!-- (2) הלשכה המשפטית — חריגה -->
+      <div class="sub-step depth-0 chriga-full" onclick="toggleSub(event, this)">
+        <div class="sub-step-header">
+          <span class="icon">🛑</span>
+          <span class="text">(2) הלשכה המשפטית</span>
+          <span class="expand-arrow">◀</span>
+        </div>
+        <div class="detail-panel detail-chriga">
+          <div class="detail-content">
+            <span class="stop-icon">🛑</span> <strong>נפתח לטקסט מסביר:</strong><br><br>
+            לפי התקנון, תפקיד היועמ"ש הוא <strong>ייעוץ בלבד</strong>. אין סמכות לעכב, לאשר נוסח או למנוע הגשה.<br><br>
+            <span class="reality">בפועל: 'הסנהדרין' מעניקה ליועמ"ש הרשאות ח"כ. הלשכה מעכבת ומתנה שינויים.</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- (3) נסחות — חריגה -->
+      <div class="sub-step depth-0 chriga-full" onclick="toggleSub(event, this)">
+        <div class="sub-step-header">
+          <span class="icon">🛑</span>
+          <span class="text">(3) נסחות</span>
+          <span class="expand-arrow">◀</span>
+        </div>
+        <div class="detail-panel detail-chriga">
+          <div class="detail-content">
+            <span class="stop-icon">🛑</span> <strong>נפתח לטקסט מסביר:</strong><br><br>
+            לפי התקנון, אין לנסחות שליטה בתהליך בשום צורה.<br><br>
+            <span class="reality">אבל בגלל מבנה הסנהדרין, יש לנסחות שליטה בתהליך הטכני ויכולת לעכב את ההגשה בשל פרוצדורות שאינן מעוגנות בתקנון.</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- (4) הגשה לנשיאות — חריגה -->
+      <div class="sub-step depth-0 chriga" onclick="toggleSub(event, this)">
+        <div class="sub-step-header">
+          <span class="icon">🛑</span>
+          <span class="text">הגשה לנשיאות הכנסת</span>
+          <span class="expand-arrow">◀</span>
+        </div>
+        <div class="detail-panel detail-chriga">
+          <div class="detail-content">
+            <span class="stop-icon">🛑</span> <strong>נפתח לטקסט מסביר:</strong><br><br>
+            לפי התקנון, הגשה לנשיאות היא בסמכות ח"כ היוזם.<br><br>
+            <span class="reality">בפועל, בגלל מבנה הסנהדרין, מועבר על ידי גורמים שאינם חלק מהתהליך הרשמי.</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- שלב ב': אישור נשיאות -->
+    <button class="stage-btn" onclick="toggleStage(this)">
+      <span class="number">ב</span>
+      <span class="label">אישור נשיאות הכנסת</span>
+      <span class="arrow">◀</span>
+    </button>
+    <div class="stage-content">
+      
+      <div class="sub-step depth-0 auth-nesiut" onclick="toggleSub(event, this)">
+        <div class="sub-step-header">
+          <span class="text">מי?</span>
+          <span class="expand-arrow">◀</span>
+        </div>
+        <div class="detail-panel detail-expand">
+          <div class="detail-content">
+            <strong>סעיף 10 לחוק הכנסת תשנ"ד — 1994:</strong><br>
+            "יושב ראש הכנסת והסגנים ליושב ראש יהוו את נשיאות הכנסת; מספר הסגנים ליושב ראש הכנסת לא יעלה על תשעה."
+          </div>
+        </div>
+      </div>
+      
+      <div class="sub-step depth-0 auth-default" onclick="toggleSub(event, this)">
+        <div class="sub-step-header">
+          <span class="text">מתי?</span>
+          <span class="expand-arrow">◀</span>
+        </div>
+        <div class="detail-panel detail-expand">
+          <div class="detail-content">
+            הנשיאות דנה בהצ"ח בפגישתה הראשונה בראשון. סדר היום למליאה בשני נקבע שם.<br><br>
+            סדר היום של הנשיאות נקבע ביום חמישי.<br><br>
+            <strong>משמעות:</strong> חוק שלא נכלל ביום חמישי בסדר היום — יתעכב לפחות שני שבועות.
+          </div>
+        </div>
+      </div>
+      
+      <div class="sub-step depth-0 auth-nesiut" onclick="toggleSub(event, this)">
+        <div class="sub-step-header">
+          <span class="text">מה — סמכות הנשיאות?</span>
+          <span class="expand-arrow">◀</span>
+        </div>
+        <div class="detail-panel detail-expand">
+          <div class="detail-content">
+            <strong>נפתח לטקסט:</strong><br>
+            "נשיאות הכנסת לא תאשר הצעת חוק שלדעתה שוללת את קיומה של מדינת ישראל כמדינתו של העם היהודי או שהיא גזענית במהותה." (+ לינק)
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- שלב ג': הנחה על שולחן הכנסת (placeholder) -->
+    <button class="stage-btn" onclick="toggleStage(this)">
+      <span class="number">ג</span>
+      <span class="label">הנחה על שולחן הכנסת</span>
+      <span class="arrow">◀</span>
+    </button>
+    <div class="stage-content">
+      <div style="padding: 20px; color: #999; font-style: italic;">בקרוב...</div>
+    </div>
+    
+  </div>
+  
+  <!-- ===== FLOW CHART ===== -->
+  <div class="flow-panel">
+    <div class="flow-card">
+      <h3>תרשים זרימה</h3>
+      
+      <div class="flow-step"><div class="box navy">כתיבת החוק</div></div>
+      <div class="flow-arrow">▼</div>
+      <div class="flow-step"><div class="box gold">🔒 לשכה משפטית / נסחות</div></div>
+      <div class="flow-arrow">▼</div>
+      <div class="flow-step"><div class="box red-border">הגשה לנשיאות</div></div>
+      <div class="flow-note">🔒 ח"כ לא יכול להגיש ישירות — סנהדרין</div>
+      <div class="flow-arrow">▼</div>
+      
+      <div class="flow-step">
+        <div class="box purple"><span>אישור<br>נשיאות?</span></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;">
+        <div class="flow-step"><div class="box gray" style="min-width:80px;font-size:12px;">נפסלה</div></div>
+        <div class="flow-arrow">▼</div>
+      </div>
+      
+      <div class="flow-step"><div class="box slate">הנחה על שולחן הכנסת</div></div>
+      <div class="flow-arrow">▼</div>
+      
+      <div class="flow-split">
+        <div class="flow-track">
+          <div class="flow-step"><div class="box crimson">ניתנה עמדת<br>ממשלה</div></div>
+          <div class="flow-side-note">🔒 ממשלה לא נותנת עמדה תוך 45 יום</div>
+        </div>
+        <div class="flow-track">
+          <div class="flow-step"><div class="box red" style="min-width:100px;font-size:12px;">⏳ 45 יום</div></div>
+          <div class="flow-or">או</div>
+          <div class="flow-step"><div class="box vaadat" style="min-width:100px;font-size:12px;">קיצור דחיפות</div></div>
+          <div class="flow-or">או</div>
+          <div class="flow-step"><div class="box chk" style="min-width:100px;font-size:12px;">הצמדה</div></div>
+          <div class="flow-side-note">🔒 לשכה מתערבת בקביעת דמיון</div>
+        </div>
+      </div>
+      
+      <div class="flow-arrow">▼</div>
+      <div class="flow-step"><div class="box navy">קביעת דיון מוקדם</div></div>
+    </div>
+  </div>
+  
+</div>
+
+<script>
+function toggleStage(btn) {
+  const content = btn.nextElementSibling;
+  const wasActive = btn.classList.contains('active');
+  
+  // Close all
+  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.stage-content').forEach(c => c.classList.remove('open'));
+  
+  if (!wasActive) {
+    btn.classList.add('active');
+    content.classList.add('open');
+  }
+}
+
+function toggleSub(event, el) {
+  event.stopPropagation();
+  const panel = el.querySelector(':scope > .detail-panel');
+  if (panel) {
+    el.classList.toggle('open');
+    panel.classList.toggle('open');
+  }
+}
+</script>
+
+</body>
+</html>
