@@ -50,7 +50,9 @@ header p{font-size:13px;opacity:.85}
 .stage-btn .label{font-size:17px;font-weight:700;color:var(--teal-dark)}
 .stage-btn .arrow{margin-right:auto;font-size:18px;transition:transform .3s;color:var(--teal-dark)}
 .stage-btn.active .arrow{transform:rotate(90deg)}
-.stage-arrow{text-align:center;color:var(--teal-dark);font-size:20px;line-height:1;margin:2px 0;opacity:.6}
+.stage-arrow{display:flex;flex-direction:column;align-items:center;margin:2px 0;opacity:.6}
+.stage-arrow .arrow-line{width:3px;height:18px;background:var(--teal-dark)}
+.stage-arrow .arrow-head{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid var(--teal-dark)}
 .stage-btn .edit-actions{display:none;gap:4px;margin-right:8px}
 .editing .stage-btn .edit-actions{display:flex}
 .edit-btn-sm{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;transition:background .2s}
@@ -95,7 +97,7 @@ header p{font-size:13px;opacity:.85}
 .editing .inline-edit-hint{display:inline;font-size:10px;color:#999;margin-right:6px}
 
 /* FLOW CHART */
-.flow-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 6px rgba(0,0,0,.08);max-height:calc(100vh - 80px);overflow-y:auto;scroll-behavior:smooth}
+.flow-card{background:#fff;border-radius:12px;padding:18px 18px 18px 180px;box-shadow:0 1px 6px rgba(0,0,0,.08);max-height:calc(100vh - 80px);overflow-y:auto;overflow-x:visible;scroll-behavior:smooth}
 .flow-card h3{font-size:15px;font-weight:700;color:#1B2A4A;margin-bottom:10px;text-align:center}
 
 /* Shape legend */
@@ -223,6 +225,8 @@ header p{font-size:13px;opacity:.85}
   <button onclick="addStage()">➕ הוסף שלב</button>
   <div class="sep"></div>
   <button onclick="flowAddSplitAtEnd()">🔀 הוסף פיצול לתרשים</button>
+  <div class="sep"></div>
+  <button onclick="openBackArrowModal()">↩️ חצי חזרה</button>
   <div class="sep"></div>
   <span style="font-size:11px;color:#999">לחיצה כפולה על טקסט = עריכה | ➕ בתרשים = הוספת שלב</span>
 </div>
@@ -933,7 +937,7 @@ function renderHierarchy(){
     if(si < appState.stages.length - 1){
       const arrow = document.createElement("div");
       arrow.className = "stage-arrow";
-      arrow.innerHTML = "▼";
+      arrow.innerHTML = '<div class="arrow-line"></div><div class="arrow-head"></div>';
       panel.appendChild(arrow);
     }
   });
@@ -1542,17 +1546,17 @@ function renderFlowSplit(step, mainIndex){
       const hasNoteAnnotation = nextBStep && nextBStep.type === "note";
       
       if(hasNoteAnnotation){
-        // Render step + note in flex container for branch
-        html += `<div style="display:flex;align-items:flex-start;gap:8px;justify-content:center;position:relative;margin:2px 0">`;
-        // Note annotation on the left (smaller for branches)
-        html += `<div style="flex-shrink:0;max-width:100px;position:relative">`;
+        // Render step wrapper with absolute positioned note for branches
+        html += `<div style="position:relative;text-align:center;margin:2px 0">`;
+        // Note annotation positioned absolutely to the left (smaller for branches)
+        html += `<div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:12px;max-width:100px;z-index:10">`;
         html += renderNoteAnnotation(nextBStep).replace(/width:85px;height:85px/, 'width:60px;height:60px').replace(/font-size:9px/, 'font-size:8px').replace(/max-width:130px/, 'max-width:90px');
         // Connecting line
-        html += `<div style="position:absolute;top:50%;left:100%;width:6px;height:1px;background:#999;margin-left:1px;"></div>`;
-        html += `<div style="position:absolute;top:50%;left:100%;margin-left:5px;color:#999;font-size:8px;">←</div>`;
+        html += `<div style="position:absolute;top:50%;left:100%;width:8px;height:1px;background:#999;margin-left:2px;"></div>`;
+        html += `<div style="position:absolute;top:50%;left:100%;margin-left:8px;color:#999;font-size:8px;">←</div>`;
         html += `</div>`;
-        // Main step
-        html += `<div class="flow-step" id="${bStep.id}" style="position:relative;flex-shrink:0">`;
+        // Main step stays in normal branch flow position
+        html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
         html += renderFlowStepElement(bStep, true);
         html += `</div>`;
         html += `</div>`;
