@@ -1776,9 +1776,12 @@ function promoteStep(id){
     return false;
   }
   for(let si = 0; si < appState.stages.length; si++){
-    if(findAndPromote(appState.stages[si].children, appState.stages[si], null, si)) return;
+    const stageChildren = appState.stages[si].children || [];
+    if(findAndPromote(stageChildren, appState.stages[si], null, si)) return;
   }
-  showToast("⚠️ לא נמצא");
+  // Last resort: maybe it's already a stage-level item with no parent
+  showToast("⚠️ לא נמצא (id: " + id + ") — ייתכן שהוא כבר שלב ראשי");
+  console.log("Promote failed for id:", id, "stages:", JSON.stringify(appState.stages.map(s=>({id:s.id,name:s.name,childIds:(s.children||[]).map(c=>c.id)}))));
 }
 function _promoteInChildren(children, id, grandparentArr, parentStage){
   if(!children) return false;
