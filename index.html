@@ -802,9 +802,17 @@ function restoreFromLog(index){
   showToast("↩️ שוחזר!");
 }
 
+const PUBLISH_PASSWORD = "zan2026";
+
 async function publishState(){
   if(!confirm("לפרסם את המצב הנוכחי לכל מי שיש לו את הלינק?")) return;
   const author = getAuthorName();
+  // Password check (stored after first success)
+  if(!localStorage.getItem("knesset-publish-auth")){
+    const pw = prompt("סיסמת פרסום:");
+    if(pw !== PUBLISH_PASSWORD){ showToast("❌ סיסמה שגויה"); return; }
+    localStorage.setItem("knesset-publish-auth", "1");
+  }
   const stateData = JSON.stringify({
     categories: appState.categories,
     stages: appState.stages,
