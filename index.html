@@ -703,6 +703,10 @@ function loadFromStorage(){
       if(d.flowSteps) appState.flowSteps = d.flowSteps;
       if(d.flowBackLinks) appState.flowBackLinks = d.flowBackLinks;
       if(d.nextId) nextId = d.nextId;
+      // Reset all _open flags so steps default to closed on refresh
+      function closeAll(steps){ if(!steps) return; steps.forEach(s=>{ s._open = false; closeAll(s.children); }); }
+      appState.stages.forEach(st=>{ closeAll(st.steps); });
+      appState.openStages = new Set();
       showToast("נטען מאחסון מקומי");
     }
   } catch(e){ console.error("Load error:",e); }
