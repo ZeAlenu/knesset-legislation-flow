@@ -222,6 +222,8 @@ header p{font-size:13px;opacity:.85}
 
 <div class="toolbar" id="toolbar" style="display:none">
   <span style="font-size:12px;color:#666;font-weight:600">מצב עריכה:</span>
+  <button onclick="undo()" title="Ctrl+Z">↩️ בטל</button>
+  <div class="sep"></div>
   <button onclick="addStage()">➕ הוסף שלב</button>
   <div class="sep"></div>
   <button onclick="flowAddStepAtEnd()">➕ שלב בתרשים</button>
@@ -614,6 +616,42 @@ let appState = {
 
 let nextId = 1000;
 function genId(){ return "gen_" + (nextId++); }
+
+// ============================================================
+// UNDO SYSTEM
+// ============================================================
+const undoStack = [];
+const MAX_UNDO = 30;
+
+function pushUndo(){
+  undoStack.push(JSON.stringify({
+    categories: appState.categories,
+    stages: appState.stages,
+    flowSteps: appState.flowSteps,
+    flowBackLinks: appState.flowBackLinks,
+    nextId
+  }));
+  if(undoStack.length > MAX_UNDO) undoStack.shift();
+}
+
+function undo(){
+  if(undoStack.length === 0){ showToast("אין מה לבטל"); return; }
+  const prev = JSON.parse(undoStack.pop());
+  appState.categories = prev.categories;
+  appState.stages = prev.stages;
+  appState.flowSteps = prev.flowSteps;
+  appState.flowBackLinks = prev.flowBackLinks || [];
+  nextId = prev.nextId || nextId;
+  renderAll();
+  showToast("↩️ בוטל");
+}
+
+document.addEventListener("keydown", function(e){
+  if((e.ctrlKey || e.metaKey) && e.key === "z"){
+    e.preventDefault();
+    undo();
+  }
+});
 
 // Dynamic mapping: flow step id → stage id (built from flowSteps data)
 function buildFlowStageMaps(){
@@ -1156,6 +1194,7 @@ function renderStep(step, stage, index){
       <span class="edit-btn-sm" onclick="event.stopPropagation();showCatAssign(event,'${step.id}')" title="שייך קטגוריה">🏷️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepColor(event,'${step.id}')" title="צבע">🎨</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();splitStepParallel('${step.id}')" title="פצל למקביל">🔀</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();deleteStep('${step.id}')" title="מחק">🗑️</span>
     </span>
   `;
@@ -1390,6 +1429,35 @@ function deleteStep(id){
   const found = findStepAndParent(id);
   if(found) found.parent.splice(found.index, 1);
   renderAll();
+}
+
+function splitStepParallel(id){
+  const found = findStepAndParent(id);
+  if(!found) return;
+  const step = found.step;
+  const parent = found.parent;
+  const idx = found.index;
+  
+  // Create a parallel container that replaces this step
+  // The step becomes the first branch, a new empty step is the second
+  const parallelStep = {
+    id: "gen_" + genId(),
+    title: "🔀 " + step.title + " (מקביל)",
+    icon: "🔀",
+    catId: step.catId,
+    depth: step.depth,
+    details: "",
+    detailType: "expand",
+    _open: true,
+    parallel: true,
+    children: [
+      { ...step, id: step.id, depth: step.depth + 1, _open: false },
+      { id: "gen_" + genId(), title: "מסלול מקביל", icon: "📌", catId: step.catId, depth: step.depth + 1, details: "", detailType: "expand", children: [], _open: false }
+    ]
+  };
+  parent.splice(idx, 1, parallelStep);
+  renderAll();
+  showToast("🔀 השלב פוצל למקביל");
 }
 
 function toggleChpiqa(id){
@@ -2340,7 +2408,8 @@ function showToast(msg){
 // RENDER ALL
 // ============================================================
 
-function renderAll(){
+function renderAll(skipUndo){
+  if(!skipUndo) pushUndo();
   renderLegend();
   renderHierarchy();
   renderFlowChart();
