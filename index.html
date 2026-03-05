@@ -740,28 +740,42 @@ function renderHierarchy(){
       <span class="label">${escH(stage.title)}</span>
       ${stage.subtitle ? `<span style="font-size:12px;color:#666;font-weight:400"> — ${escH(stage.subtitle)}</span>` : ""}
       <span class="edit-actions">
+        <span class="edit-btn-sm" onclick="event.stopPropagation();editStageName('${stage.id}')" title="ערוך שם">✏️</span>
         <span class="edit-btn-sm" onclick="event.stopPropagation();deleteStage('${stage.id}')" title="מחק שלב">🗑️</span>
       </span>
       <span class="arrow">◀</span>
     `;
-    // Make title editable
+    // Click to expand (with delay for dblclick)
+    let stageClickTimer = null;
     btn.addEventListener("click", function(e){
       if(e.target.closest(".edit-actions")) return;
-      if(isOpen) appState.openStages.delete(stage.id);
-      else appState.openStages.add(stage.id);
-      renderHierarchy();
+      if(stageClickTimer) return;
+      stageClickTimer = setTimeout(function(){
+        stageClickTimer = null;
+        if(isOpen) appState.openStages.delete(stage.id);
+        else appState.openStages.add(stage.id);
+        renderHierarchy();
+      }, 250);
     });
     // Double-click label to edit
     btn.addEventListener("dblclick", function(e){
+      if(stageClickTimer){ clearTimeout(stageClickTimer); stageClickTimer = null; }
       if(!appState.editing) return;
       e.stopPropagation();
       const lbl = btn.querySelector(".label");
       lbl.contentEditable = "true";
       lbl.focus();
+      const range = document.createRange();
+      range.selectNodeContents(lbl);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
       lbl.addEventListener("blur", function(){
         lbl.contentEditable = "false";
         stage.title = lbl.textContent;
       },{once:true});
+      lbl.addEventListener("keydown", function(ev){
+        if(ev.key === "Enter" && !ev.shiftKey){ ev.preventDefault(); lbl.blur(); }
+      });
     });
     panel.appendChild(btn);
 
@@ -814,6 +828,7 @@ function renderStep(step, stage, index){
   if(overrideColor || overrideBorder) headerHTML += `<span class="override-badge" title="עקיפת קטגוריה">🎨</span>`;
   headerHTML += `
     <span class="step-edit-actions">
+      <span class="edit-btn-sm" onclick="event.stopPropagation();editStepTitle('${step.id}',this)" title="ערוך שם">✏️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();showCatAssign(event,'${step.id}')" title="שייך קטגוריה">🏷️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepColor(event,'${step.id}')" title="צבע">🎨</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
@@ -824,26 +839,39 @@ function renderStep(step, stage, index){
 
   header.innerHTML = headerHTML;
 
-  // Double-click text to edit
+  // Click to expand (with delay to allow double-click)
+  let clickTimer = null;
+  header.addEventListener("click", function(e){
+    if(e.target.closest(".step-edit-actions") || e.target.closest(".cat-assign") || e.target.closest(".color-picker-popup")) return;
+    e.stopPropagation();
+    if(clickTimer) return; // double-click pending
+    clickTimer = setTimeout(function(){
+      clickTimer = null;
+      if(!hasChildren) return;
+      step._open = !step._open;
+      renderHierarchy();
+    }, 250);
+  });
+
+  // Double-click text to edit title
   header.addEventListener("dblclick", function(e){
+    if(clickTimer){ clearTimeout(clickTimer); clickTimer = null; }
     if(!appState.editing) return;
     e.stopPropagation();
     const textEl = header.querySelector(".text");
     textEl.contentEditable = "true";
     textEl.focus();
+    const range = document.createRange();
+    range.selectNodeContents(textEl);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
     textEl.addEventListener("blur", function(){
       textEl.contentEditable = "false";
       step.title = textEl.textContent;
     },{once:true});
-  });
-
-  // Click to expand
-  header.addEventListener("click", function(e){
-    if(e.target.closest(".step-edit-actions") || e.target.closest(".cat-assign") || e.target.closest(".color-picker-popup")) return;
-    e.stopPropagation();
-    if(!hasChildren) return;
-    step._open = !step._open;
-    renderHierarchy();
+    textEl.addEventListener("keydown", function(ev){
+      if(ev.key === "Enter" && !ev.shiftKey){ ev.preventDefault(); textEl.blur(); }
+    });
   });
 
   wrapper.appendChild(header);
@@ -983,6 +1011,16 @@ function addStage(){
   showToast("➕ שלב חדש נוסף");
 }
 
+function editStageName(id){
+  const stage = appState.stages.find(s => s.id === id);
+  if(!stage) return;
+  const newTitle = prompt("שם השלב:", stage.title);
+  if(newTitle !== null && newTitle.trim() !== ""){
+    stage.title = newTitle.trim();
+    renderAll();
+  }
+}
+
 function deleteStage(id){
   if(!confirm("למחוק את השלב?")) return;
   appState.stages = appState.stages.filter(s=>s.id!==id);
@@ -998,6 +1036,16 @@ function addStepTo(arr, stage){
     details:"", detailType:"expand", children:[], _open:true
   });
   renderAll();
+}
+
+function editStepTitle(id, btnEl){
+  const step = findStepById(id);
+  if(!step) return;
+  const newTitle = prompt("שם השלב:", step.title);
+  if(newTitle !== null && newTitle.trim() !== ""){
+    step.title = newTitle.trim();
+    renderAll();
+  }
 }
 
 function deleteStep(id){
