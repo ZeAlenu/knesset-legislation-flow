@@ -1078,13 +1078,22 @@ function renderHierarchy(){
     if(isOpen){
       stage.steps.forEach((step, stepi) => {
         content.appendChild(renderStep(step, stage, stepi));
-        // Arrow between top-level steps (not after last)
-        if(stepi < stage.steps.length - 1){
+        // Show arrow between steps if step has showArrowAfter flag
+        if(step.showArrowAfter){
           const stepArrow = document.createElement("div");
           stepArrow.className = "stage-arrow";
           stepArrow.style.margin = "1px 0";
           stepArrow.innerHTML = '<div class="arrow-line" style="height:14px"></div><div class="arrow-head" style="border-left-width:7px;border-right-width:7px;border-top-width:8px"></div>';
           content.appendChild(stepArrow);
+        }
+        // In edit mode: show toggle arrow button between steps
+        if(appState.editing && stepi < stage.steps.length - 1){
+          const arrowToggle = document.createElement("button");
+          arrowToggle.className = "add-step-btn";
+          arrowToggle.style.cssText = "margin:2px auto;display:block;font-size:11px;padding:2px 8px;opacity:0.5";
+          arrowToggle.textContent = step.showArrowAfter ? "🔽 הסר חץ" : "➕ חץ";
+          arrowToggle.onclick = function(e){ e.stopPropagation(); step.showArrowAfter = !step.showArrowAfter; renderAll(); };
+          content.appendChild(arrowToggle);
         }
       });
       const addBtn = document.createElement("button");
@@ -1096,12 +1105,21 @@ function renderHierarchy(){
 
     panel.appendChild(content);
 
-    // Arrow between stages (except after last)
-    if(si < appState.stages.length - 1){
+    // Arrow between stages (only if showArrowAfter is set)
+    if(stage.showArrowAfter){
       const arrow = document.createElement("div");
       arrow.className = "stage-arrow";
       arrow.innerHTML = '<div class="arrow-line"></div><div class="arrow-head"></div>';
       panel.appendChild(arrow);
+    }
+    // In edit mode: toggle arrow button between stages
+    if(appState.editing && si < appState.stages.length - 1){
+      const arrowToggle = document.createElement("button");
+      arrowToggle.className = "add-step-btn";
+      arrowToggle.style.cssText = "margin:2px auto;display:block;font-size:11px;padding:2px 10px;opacity:0.5";
+      arrowToggle.textContent = stage.showArrowAfter ? "🔽 הסר חץ" : "➕ חץ";
+      arrowToggle.onclick = function(){ stage.showArrowAfter = !stage.showArrowAfter; renderAll(); };
+      panel.appendChild(arrowToggle);
     }
   });
 }
@@ -1212,13 +1230,22 @@ function renderStep(step, stage, index){
     if(step.children){
       step.children.forEach((child, ci) => {
         detailPanel.appendChild(renderStep(child, stage, ci));
-        // Arrow between children (not after last)
-        if(ci < step.children.length - 1){
+        // Show arrow if child has showArrowAfter flag
+        if(child.showArrowAfter){
           const childArrow = document.createElement("div");
           childArrow.className = "stage-arrow";
           childArrow.style.margin = "1px 0";
           childArrow.innerHTML = '<div class="arrow-line" style="height:12px"></div><div class="arrow-head" style="border-left-width:6px;border-right-width:6px;border-top-width:7px"></div>';
           detailPanel.appendChild(childArrow);
+        }
+        // In edit mode: toggle arrow button
+        if(appState.editing && ci < step.children.length - 1){
+          const arrowToggle = document.createElement("button");
+          arrowToggle.className = "add-step-btn";
+          arrowToggle.style.cssText = "margin:1px auto;display:block;font-size:10px;padding:1px 6px;opacity:0.4";
+          arrowToggle.textContent = child.showArrowAfter ? "🔽 הסר חץ" : "➕ חץ";
+          arrowToggle.onclick = function(e){ e.stopPropagation(); child.showArrowAfter = !child.showArrowAfter; renderAll(); };
+          detailPanel.appendChild(arrowToggle);
         }
       });
       if(appState.editing){
