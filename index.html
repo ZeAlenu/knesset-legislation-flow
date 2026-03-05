@@ -1750,31 +1750,37 @@ function moveStep(id, direction){
 
 function promoteStep(id){
   pushUndo();
-  // First check if it's a direct child of a stage — if so, promote to new stage
-  for(let si = 0; si < appState.stages.length; si++){
-    const stage = appState.stages[si];
-    const idx = (stage.children||[]).findIndex(c => c.id === id);
-    if(idx >= 0){
-      // Direct child of stage — promote to separate stage
-      const step = stage.children.splice(idx, 1)[0];
-      const newStage = {
-        id: "stage_" + genId(),
-        name: step.title,
-        children: [step]
-      };
-      // Insert after current stage
-      appState.stages.splice(si + 1, 0, newStage);
-      renderAll();
-      showToast("⬆️ השלב הפך לשלב ראשי עצמאי!");
-      return;
+  // Deep search: find the step and remove it from its parent, insert into grandparent
+  function findAndPromote(children, parent, grandparentArr, stageIdx){
+    if(!children) return false;
+    for(let i = 0; i < children.length; i++){
+      if(children[i].id === id){
+        const step = children.splice(i, 1)[0];
+        if(grandparentArr){
+          // Find parent in grandparent and insert after it
+          const parentObj = grandparentArr.find(p => p.children === children);
+          const pi = parentObj ? grandparentArr.indexOf(parentObj) : grandparentArr.length - 1;
+          grandparentArr.splice(pi + 1, 0, step);
+          renderAll();
+          showToast("⬆️ השלב קודם לרמה שמעל");
+        } else {
+          // Parent is a stage — create new stage
+          const newStage = { id: "stage_" + genId(), name: step.title, children: [step] };
+          appState.stages.splice(stageIdx + 1, 0, newStage);
+          renderAll();
+          showToast("⬆️ השלב הפך לשלב ראשי!");
+        }
+        return true;
+      }
+      // Recurse into children
+      if(children[i].children && findAndPromote(children[i].children, children[i], children, stageIdx)) return true;
     }
+    return false;
   }
-  // Otherwise promote within nested children
-  for(const stage of appState.stages){
-    const result = _promoteInChildren(stage.children, id, null, stage);
-    if(result) { renderAll(); showToast("⬆️ השלב קודם לרמה שמעל"); return; }
+  for(let si = 0; si < appState.stages.length; si++){
+    if(findAndPromote(appState.stages[si].children, appState.stages[si], null, si)) return;
   }
-  showToast("⚠️ השלב כבר ברמה העליונה");
+  showToast("⚠️ לא נמצא");
 }
 function _promoteInChildren(children, id, grandparentArr, parentStage){
   if(!children) return false;
