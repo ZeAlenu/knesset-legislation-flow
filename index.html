@@ -34,7 +34,7 @@ header p{font-size:13px;opacity:.85}
 /* LAYOUT */
 .container{display:flex;gap:30px;padding:24px 40px;max-width:1900px;margin:0 auto}
 .hierarchy-panel{flex:1;min-width:0}
-.flow-panel{width:500px;flex-shrink:0;position:sticky;top:20px;align-self:flex-start}
+.flow-panel{width:600px;flex-shrink:0;position:sticky;top:20px;align-self:flex-start}
 
 /* LEGEND */
 .legend{background:#fff;border-radius:12px;padding:14px 20px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.08);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -97,7 +97,7 @@ header p{font-size:13px;opacity:.85}
 .editing .inline-edit-hint{display:inline;font-size:10px;color:#999;margin-right:6px}
 
 /* FLOW CHART */
-.flow-card{background:#fff;border-radius:12px;padding:18px 18px 18px 180px;box-shadow:0 1px 6px rgba(0,0,0,.08);max-height:calc(100vh - 80px);overflow-y:auto;overflow-x:visible;scroll-behavior:smooth}
+.flow-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 6px rgba(0,0,0,.08);max-height:calc(100vh - 80px);overflow-y:auto;scroll-behavior:smooth}
 .flow-card h3{font-size:15px;font-weight:700;color:#1B2A4A;margin-bottom:10px;text-align:center}
 
 /* Shape legend */
@@ -1653,21 +1653,21 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
     const hasNoteAnnotation = nextStep && nextStep.type === "note";
 
     if(hasNoteAnnotation){
-      // Render step wrapper with absolute positioned note on OUTER side (left in LTR coords)
-      html += `<div style="position:relative;text-align:center;margin:4px 0">`;
+      // Flex row: step on the right (RTL start), note on the left (outer side)
+      html += `<div style="display:flex;align-items:center;gap:10px;direction:rtl;margin:4px 0">`;
       
-      // Note positioned absolutely to the LEFT (outer side), keeping step centered
-      html += `<div style="position:absolute;left:0;top:50%;transform:translate(-110%, -50%);max-width:130px;z-index:10">`;
-      html += renderNoteAnnotation(nextStep);
-      // Connecting line pointing right toward the step
-      html += `<div style="position:absolute;top:50%;right:-14px;width:12px;height:2px;background:#999"></div>`;
-      html += `<div style="position:absolute;top:calc(50% - 5px);right:-18px;color:#999;font-size:10px;">→</div>`;
-      html += `</div>`;
-      
-      // Main step stays in normal flow position
-      html += `<div class="flow-step" id="${step.id}" style="position:relative">`;
+      // Main step (right side in RTL = inner/center side)
+      html += `<div class="flow-step" id="${step.id}" style="position:relative;flex:1;min-width:0">`;
       html += renderFlowStepElement(step, isInBranch);
       if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
+      html += `</div>`;
+      
+      // Connecting arrow
+      html += `<div style="color:#999;font-size:10px;flex-shrink:0">◂</div>`;
+      
+      // Note annotation (left side in RTL = outer side)
+      html += `<div style="flex-shrink:0;max-width:140px">`;
+      html += renderNoteAnnotation(nextStep);
       html += `</div>`;
       
       html += `</div>`;
@@ -1724,22 +1724,24 @@ function renderFlowSplit(step, mainIndex){
       const hasNoteAnnotation = nextBStep && nextBStep.type === "note";
       
       if(hasNoteAnnotation){
-        // Render step wrapper with absolute positioned note on OUTER side of branch
-        html += `<div style="position:relative;text-align:center;margin:2px 0">`;
-        // bi=0 is left branch → note goes LEFT; bi>0 is right branch → note goes RIGHT
-        const outerSide = bi === 0 ? 'left:0;transform:translate(-110%,-50%)' : 'right:0;transform:translate(110%,-50%)';
-        const lineDir = bi === 0 ? 'right:-10px' : 'left:-10px';
-        const arrowChar = bi === 0 ? '→' : '←';
-        const arrowPos = bi === 0 ? 'right:-14px' : 'left:-14px';
-        html += `<div style="position:absolute;${outerSide};top:50%;max-width:100px;z-index:10">`;
-        html += renderNoteAnnotation(nextBStep).replace(/width:85px;height:85px/, 'width:60px;height:60px').replace(/font-size:9px/, 'font-size:8px').replace(/max-width:130px/, 'max-width:90px');
-        html += `<div style="position:absolute;top:50%;${lineDir};width:8px;height:1px;background:#999"></div>`;
-        html += `<div style="position:absolute;top:calc(50% - 4px);${arrowPos};color:#999;font-size:8px">${arrowChar}</div>`;
-        html += `</div>`;
-        // Main step stays in normal branch flow position
-        html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
+        // Flex row: step inner, note outer. bi=0 (right branch in RTL) note goes right; bi>0 note goes left
+        const noteFirst = bi > 0; // left branch = note on left (first in RTL flex)
+        html += `<div style="display:flex;align-items:center;gap:6px;direction:rtl;margin:2px 0">`;
+        if(noteFirst){
+          html += `<div style="flex-shrink:0;max-width:90px">`;
+          html += renderNoteAnnotation(nextBStep).replace(/width:85px;height:85px/, 'width:60px;height:60px').replace(/font-size:9px/, 'font-size:8px').replace(/max-width:130px/, 'max-width:90px');
+          html += `</div>`;
+          html += `<div style="color:#999;font-size:8px;flex-shrink:0">◂</div>`;
+        }
+        html += `<div class="flow-step" id="${bStep.id}" style="position:relative;flex:1;min-width:0">`;
         html += renderFlowStepElement(bStep, true);
         html += `</div>`;
+        if(!noteFirst){
+          html += `<div style="color:#999;font-size:8px;flex-shrink:0">▸</div>`;
+          html += `<div style="flex-shrink:0;max-width:90px">`;
+          html += renderNoteAnnotation(nextBStep).replace(/width:85px;height:85px/, 'width:60px;height:60px').replace(/font-size:9px/, 'font-size:8px').replace(/max-width:130px/, 'max-width:90px');
+          html += `</div>`;
+        }
         html += `</div>`;
       } else {
         html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
