@@ -26,7 +26,7 @@ header p{font-size:13px;opacity:.85}
 .header-actions button:hover{background:rgba(255,255,255,.3)}
 
 /* TOOLBAR */
-.toolbar{background:#fff;border-bottom:1px solid #e0e0e0;padding:10px 40px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toolbar{background:#fff;border-bottom:1px solid #e0e0e0;padding:10px 40px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:90;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 .toolbar button{background:#f0f0f0;border:1px solid #ddd;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;transition:all .2s}
 .toolbar button:hover{background:#e0e0e0}
 .toolbar .sep{width:1px;height:24px;background:#ddd;margin:0 4px}
@@ -247,6 +247,50 @@ header p{font-size:13px;opacity:.85}
     <p style="font-size:12px;color:#888;margin-bottom:14px">שינוי צבע/צורה כאן → עדכון אוטומטי בכל הקופסאות המשויכות</p>
     <div class="cat-list" id="catList"></div>
     <button class="cat-add-btn" onclick="addCategory()">➕ הוסף קטגוריה</button>
+  </div>
+</div>
+
+<!-- BACK ARROWS MODAL -->
+<div class="modal-overlay" id="backArrowModal">
+  <div class="modal">
+    <h2>↩️ ניהול חצי חזרה <button class="modal-close" onclick="closeBackArrowModal()">✕</button></h2>
+    <p style="font-size:12px;color:#888;margin-bottom:14px">חצי חזרה — חיבור מחוזר מתקדם לשלב מוקדם יותר בזרימה</p>
+    
+    <div style="margin-bottom:20px">
+      <h3 style="font-size:14px;margin-bottom:10px">➕ הוסף חץ חזרה חדש</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label style="font-size:12px;color:#666">מאיפה?</label>
+          <select id="backArrowFrom" style="width:100%;padding:6px;font-size:12px;border:1px solid #ddd;border-radius:4px;font-family:inherit">
+            <option value="">בחר שלב...</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;color:#666">לאיפה?</label>
+          <select id="backArrowTo" style="width:100%;padding:6px;font-size:12px;border:1px solid #ddd;border-radius:4px;font-family:inherit">
+            <option value="">בחר שלב...</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label style="font-size:12px;color:#666">תווית</label>
+          <input type="text" id="backArrowLabel" placeholder="הכנס תיאור..." style="width:100%;padding:6px;font-size:12px;border:1px solid #ddd;border-radius:4px;font-family:inherit;direction:rtl">
+        </div>
+        <div>
+          <label style="font-size:12px;color:#666">צבע</label>
+          <input type="color" id="backArrowColor" value="#CC0000" style="width:100%;height:34px;border:1px solid #ddd;border-radius:4px;cursor:pointer">
+        </div>
+      </div>
+      <button onclick="addBackArrow()" style="background:var(--teal-dark);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">➕ הוסף חץ</button>
+    </div>
+    
+    <div>
+      <h3 style="font-size:14px;margin-bottom:10px">חצי חזרה קיימים</h3>
+      <div id="backArrowList" style="max-height:200px;overflow-y:auto">
+        <!-- List will be populated here -->
+      </div>
+    </div>
   </div>
 </div>
 
@@ -781,6 +825,115 @@ function addCategory(){
   const id = "cat_" + genId();
   appState.categories.push({id, name:"קטגוריה חדשה", color:"#607D8B", shape:"rounded-rect", logo:null});
   renderCatList();
+}
+
+// ============================================================
+// BACK ARROWS
+// ============================================================
+
+function openBackArrowModal(){
+  document.getElementById("backArrowModal").classList.add("show");
+  populateBackArrowDropdowns();
+  renderBackArrowList();
+}
+
+function closeBackArrowModal(){
+  document.getElementById("backArrowModal").classList.remove("show");
+  renderAll();
+}
+
+function populateBackArrowDropdowns(){
+  const fromSelect = document.getElementById("backArrowFrom");
+  const toSelect = document.getElementById("backArrowTo");
+  
+  let options = '<option value="">בחר שלב...</option>';
+  
+  // Collect all flow steps with their labels
+  function collectSteps(steps, prefix = ""){
+    for(const step of steps){
+      if(step.type !== "note" && step.label){
+        options += `<option value="${step.id}">${prefix}${escH(step.label)}</option>`;
+      }
+      if(step.branches){
+        for(const branch of step.branches){
+          collectSteps(branch.steps, prefix + "  ↳ ");
+        }
+      }
+    }
+  }
+  
+  collectSteps(appState.flowSteps);
+  fromSelect.innerHTML = options;
+  toSelect.innerHTML = options;
+}
+
+function renderBackArrowList(){
+  const list = document.getElementById("backArrowList");
+  
+  if(appState.flowBackLinks.length === 0){
+    list.innerHTML = '<div style="color:#999;font-size:12px;text-align:center;padding:20px">אין חצי חזרה</div>';
+    return;
+  }
+  
+  list.innerHTML = appState.flowBackLinks.map((arrow, index) => {
+    const fromStep = findFlowStep(arrow.fromId);
+    const toStep = findFlowStep(arrow.toId);
+    const fromLabel = fromStep ? fromStep.label : "שלב לא נמצא";
+    const toLabel = toStep ? toStep.label : "שלב לא נמצא";
+    
+    return `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid #eee;border-radius:6px;margin-bottom:6px">
+        <div style="width:12px;height:12px;background:${arrow.color};border-radius:2px;flex-shrink:0"></div>
+        <div style="flex:1;font-size:12px;line-height:1.4">
+          <strong>${escH(arrow.label)}</strong><br>
+          <span style="color:#666">מ-"${escH(fromLabel)}" ל-"${escH(toLabel)}"</span>
+        </div>
+        <button onclick="deleteBackArrow(${index})" style="background:#f0f0f0;border:1px solid #ccc;border-radius:4px;padding:4px 8px;cursor:pointer;color:#c00;font-size:11px">🗑️</button>
+      </div>
+    `;
+  }).join("");
+}
+
+function addBackArrow(){
+  const fromId = document.getElementById("backArrowFrom").value;
+  const toId = document.getElementById("backArrowTo").value;
+  const label = document.getElementById("backArrowLabel").value.trim();
+  const color = document.getElementById("backArrowColor").value;
+  
+  if(!fromId || !toId){
+    showToast("❌ יש לבחור שני שלבים");
+    return;
+  }
+  
+  if(fromId === toId){
+    showToast("❌ לא ניתן לחבר שלב לעצמו");
+    return;
+  }
+  
+  if(!label){
+    showToast("❌ יש להכניס תווית");
+    return;
+  }
+  
+  appState.flowBackLinks.push({
+    fromId, toId, label, color
+  });
+  
+  // Reset form
+  document.getElementById("backArrowFrom").value = "";
+  document.getElementById("backArrowTo").value = "";
+  document.getElementById("backArrowLabel").value = "";
+  document.getElementById("backArrowColor").value = "#CC0000";
+  
+  renderBackArrowList();
+  showToast("➕ חץ חזרה נוסף");
+}
+
+function deleteBackArrow(index){
+  if(!confirm("למחוק את חץ החזרה?")) return;
+  appState.flowBackLinks.splice(index, 1);
+  renderBackArrowList();
+  showToast("🗑️ חץ חזרה נמחק");
 }
 
 // ============================================================
@@ -1607,6 +1760,111 @@ function renderFlowSplit(step, mainIndex){
   return html;
 }
 
+function renderBackArrows(){
+  const flowCard = document.querySelector(".flow-card");
+  if(!flowCard) return;
+  
+  // Remove existing SVG
+  const existingSvg = flowCard.querySelector(".back-arrows-svg");
+  if(existingSvg) existingSvg.remove();
+  
+  if(appState.flowBackLinks.length === 0) return;
+  
+  // Create SVG overlay
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.className = "back-arrows-svg";
+  svg.style.position = "absolute";
+  svg.style.top = "0";
+  svg.style.left = "0";
+  svg.style.width = "100%";
+  svg.style.height = "100%";
+  svg.style.pointerEvents = "none";
+  svg.style.zIndex = "1";
+  
+  // Create defs for arrowhead marker
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  
+  appState.flowBackLinks.forEach((arrow, index) => {
+    // Create arrowhead marker for this arrow
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+    marker.id = `arrowhead-${index}`;
+    marker.setAttribute("markerWidth", "8");
+    marker.setAttribute("markerHeight", "6");
+    marker.setAttribute("refX", "8");
+    marker.setAttribute("refY", "3");
+    marker.setAttribute("orient", "auto");
+    
+    const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    polygon.setAttribute("points", "0,0 8,3 0,6");
+    polygon.setAttribute("fill", arrow.color);
+    
+    marker.appendChild(polygon);
+    defs.appendChild(marker);
+  });
+  
+  svg.appendChild(defs);
+  
+  // Position SVG correctly within the flow card
+  const cardRect = flowCard.getBoundingClientRect();
+  
+  appState.flowBackLinks.forEach((arrow, index) => {
+    const fromEl = document.getElementById(arrow.fromId);
+    const toEl = document.getElementById(arrow.toId);
+    
+    if(!fromEl || !toEl) return;
+    
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect = toEl.getBoundingClientRect();
+    
+    // Calculate positions relative to flow card
+    const fromY = fromRect.top - cardRect.top + fromRect.height / 2 + flowCard.scrollTop;
+    const toY = toRect.top - cardRect.top + toRect.height / 2 + flowCard.scrollTop;
+    
+    // Start from left edge of from-step, curve to the left, then to left edge of to-step
+    const leftOffset = 60; // Distance to curve out to the left
+    const fromX = 180; // Left edge relative to flow card (considering padding)
+    const toX = 180;
+    const curveX = 120; // How far left to curve
+    
+    // Create curved path
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    
+    const pathData = `
+      M ${fromX} ${fromY}
+      L ${curveX} ${fromY}
+      Q ${curveX - 20} ${fromY - 20} ${curveX - 20} ${(fromY + toY) / 2}
+      Q ${curveX - 20} ${toY + 20} ${curveX} ${toY}
+      L ${toX} ${toY}
+    `;
+    
+    path.setAttribute("d", pathData);
+    path.setAttribute("stroke", arrow.color);
+    path.setAttribute("stroke-width", "2");
+    path.setAttribute("fill", "none");
+    path.setAttribute("marker-end", `url(#arrowhead-${index})`);
+    
+    svg.appendChild(path);
+    
+    // Add label along the curve
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", curveX - 35);
+    text.setAttribute("y", (fromY + toY) / 2);
+    text.setAttribute("font-family", "Heebo, sans-serif");
+    text.setAttribute("font-size", "10");
+    text.setAttribute("font-weight", "600");
+    text.setAttribute("fill", arrow.color);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("dominant-baseline", "middle");
+    text.setAttribute("transform", `rotate(-90 ${curveX - 35} ${(fromY + toY) / 2})`);
+    text.textContent = arrow.label;
+    
+    svg.appendChild(text);
+  });
+  
+  flowCard.style.position = "relative";
+  flowCard.appendChild(svg);
+}
+
 function renderFlowChart(){
   const panel = document.getElementById("flowPanel");
   let html = `<div class="flow-card"><h3>תרשים זרימה — הליך חקיקה פרטית</h3>`;
@@ -1644,6 +1902,9 @@ function renderFlowChart(){
 
   html += `</div>`;
   panel.innerHTML = html;
+  
+  // Re-render back arrows after DOM updates
+  setTimeout(renderBackArrows, 50);
 }
 
 // ============================================================
@@ -1958,6 +2219,8 @@ function renderAll(){
   renderLegend();
   renderHierarchy();
   renderFlowChart();
+  // Delay back arrows rendering to ensure DOM is updated
+  setTimeout(renderBackArrows, 100);
 }
 
 // ============================================================
@@ -1975,6 +2238,7 @@ for(const s of appState.stages){
     break;
   }
 }
+initializeDefaultBackArrow();
 renderAll();
 // Initial highlight
 setTimeout(highlightFlowStep, 300);
