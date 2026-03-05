@@ -916,13 +916,11 @@ function renderCatList(){
 }
 
 function pickCatColor(catId, swatchEl){
-  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  document.querySelectorAll(".color-picker-popup").forEach(p=>{ if(p.parentElement && p.parentElement.style.inset==="0px") p.parentElement.remove(); else p.remove(); });
   const cat = getCat(catId);
   const presets = ["#FFFFFF","#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B","#E67E22","#8E44AD","#2C3E50"];
   const popup = document.createElement("div");
   popup.className = "color-picker-popup show";
-  popup.style.position = "fixed";
-  popup.style.zIndex = "900";
   popup.style.width = "210px";
   popup.innerHTML = `
     <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:600">צבע רקע:</div>
