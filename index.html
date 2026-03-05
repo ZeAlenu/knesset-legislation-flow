@@ -1224,8 +1224,9 @@ function renderStep(step, stage, index){
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepFont(event,'${step.id}')" title="עיצוב טקסט">🔤</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();moveStep('${step.id}',-1)" title="הזז למעלה">⬆️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();moveStep('${step.id}',1)" title="הזז למטה">⬇️</span>
-      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',-1)" title="העלה רמה">⬅️</span>
-      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',1)" title="הורד רמה">➡️</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',-1)" title="העלה רמה (רמה ${step.depth})">⬅️</span>
+      <span class="edit-btn-sm" style="font-size:9px;pointer-events:none;opacity:0.6">${step.depth}</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',1)" title="הורד רמה (רמה ${step.depth})">➡️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepIcon(event,'${step.id}')" title="סמל מובנה">⛔</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();uploadStepImage('${step.id}')" title="תמונה/לוגו">🖼️</span>
