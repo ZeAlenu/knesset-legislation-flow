@@ -48,8 +48,8 @@ header p{font-size:13px;opacity:.85}
 .stage-btn.active{background:#e6f7f9;border-color:var(--teal-dark)}
 .stage-btn .number{background:var(--teal-dark);color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
 .stage-btn .label{font-size:17px;font-weight:700;color:var(--teal-dark)}
-.stage-btn .arrow{margin-right:auto;font-size:18px;transition:transform .3s;color:var(--teal-dark)}
-.stage-btn.active .arrow{transform:rotate(90deg)}
+.stage-btn .arrow{margin-right:auto;font-size:18px;transition:transform .3s;color:var(--teal-dark);display:inline-block}
+.stage-btn.active .arrow{transform:rotate(-90deg)}
 .stage-btn .edit-actions{display:none;gap:4px;margin-right:8px}
 .editing .stage-btn .edit-actions{display:flex}
 .edit-btn-sm{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;transition:background .2s}
@@ -65,8 +65,8 @@ header p{font-size:13px;opacity:.85}
 .sub-step-header:hover{filter:brightness(.95)}
 .sub-step-header .icon{font-size:16px;flex-shrink:0}
 .sub-step-header .text{font-size:14px;font-weight:600;flex:1}
-.sub-step-header .expand-arrow{font-size:13px;transition:transform .3s;opacity:.6}
-.sub-step.open>.sub-step-header .expand-arrow{transform:rotate(90deg)}
+.sub-step-header .expand-arrow{font-size:13px;transition:transform .3s;opacity:.6;display:inline-block}
+.sub-step.open>.sub-step-header .expand-arrow{transform:rotate(-90deg)}
 .sub-step-header .cat-logo{width:20px;height:20px;border-radius:3px;object-fit:contain;flex-shrink:0}
 .sub-step-header .override-badge{font-size:10px;opacity:.7;cursor:help}
 .sub-step-header .step-edit-actions{display:none;gap:3px;margin-right:4px}
