@@ -1653,15 +1653,15 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
     const hasNoteAnnotation = nextStep && nextStep.type === "note";
 
     if(hasNoteAnnotation){
-      // Render step wrapper with absolute positioned note
+      // Render step wrapper with absolute positioned note on OUTER side (left in LTR coords)
       html += `<div style="position:relative;text-align:center;margin:4px 0">`;
       
-      // Note annotation positioned absolutely to the left (RTL outer side)
-      html += `<div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:16px;max-width:140px;z-index:10">`;
+      // Note positioned absolutely to the LEFT (outer side), keeping step centered
+      html += `<div style="position:absolute;left:0;top:50%;transform:translate(-110%, -50%);max-width:130px;z-index:10">`;
       html += renderNoteAnnotation(nextStep);
-      // Add connecting line/arrow to the step
-      html += `<div style="position:absolute;top:50%;left:100%;width:12px;height:2px;background:#999;margin-left:4px;"></div>`;
-      html += `<div style="position:absolute;top:50%;left:100%;margin-left:14px;color:#999;font-size:10px;">←</div>`;
+      // Connecting line pointing right toward the step
+      html += `<div style="position:absolute;top:50%;right:-14px;width:12px;height:2px;background:#999"></div>`;
+      html += `<div style="position:absolute;top:calc(50% - 5px);right:-18px;color:#999;font-size:10px;">→</div>`;
       html += `</div>`;
       
       // Main step stays in normal flow position
@@ -1724,14 +1724,17 @@ function renderFlowSplit(step, mainIndex){
       const hasNoteAnnotation = nextBStep && nextBStep.type === "note";
       
       if(hasNoteAnnotation){
-        // Render step wrapper with absolute positioned note for branches
+        // Render step wrapper with absolute positioned note on OUTER side of branch
         html += `<div style="position:relative;text-align:center;margin:2px 0">`;
-        // Note annotation positioned absolutely to the left (smaller for branches)
-        html += `<div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:12px;max-width:100px;z-index:10">`;
+        // bi=0 is left branch → note goes LEFT; bi>0 is right branch → note goes RIGHT
+        const outerSide = bi === 0 ? 'left:0;transform:translate(-110%,-50%)' : 'right:0;transform:translate(110%,-50%)';
+        const lineDir = bi === 0 ? 'right:-10px' : 'left:-10px';
+        const arrowChar = bi === 0 ? '→' : '←';
+        const arrowPos = bi === 0 ? 'right:-14px' : 'left:-14px';
+        html += `<div style="position:absolute;${outerSide};top:50%;max-width:100px;z-index:10">`;
         html += renderNoteAnnotation(nextBStep).replace(/width:85px;height:85px/, 'width:60px;height:60px').replace(/font-size:9px/, 'font-size:8px').replace(/max-width:130px/, 'max-width:90px');
-        // Connecting line
-        html += `<div style="position:absolute;top:50%;left:100%;width:8px;height:1px;background:#999;margin-left:2px;"></div>`;
-        html += `<div style="position:absolute;top:50%;left:100%;margin-left:8px;color:#999;font-size:8px;">←</div>`;
+        html += `<div style="position:absolute;top:50%;${lineDir};width:8px;height:1px;background:#999"></div>`;
+        html += `<div style="position:absolute;top:calc(50% - 4px);${arrowPos};color:#999;font-size:8px">${arrowChar}</div>`;
         html += `</div>`;
         // Main step stays in normal branch flow position
         html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
