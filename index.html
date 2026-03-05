@@ -1078,6 +1078,14 @@ function renderHierarchy(){
     if(isOpen){
       stage.steps.forEach((step, stepi) => {
         content.appendChild(renderStep(step, stage, stepi));
+        // Arrow between top-level steps (not after last)
+        if(stepi < stage.steps.length - 1){
+          const stepArrow = document.createElement("div");
+          stepArrow.className = "stage-arrow";
+          stepArrow.style.margin = "1px 0";
+          stepArrow.innerHTML = '<div class="arrow-line" style="height:14px"></div><div class="arrow-head" style="border-left-width:7px;border-right-width:7px;border-top-width:8px"></div>';
+          content.appendChild(stepArrow);
+        }
       });
       const addBtn = document.createElement("button");
       addBtn.className = "add-step-btn";
@@ -1204,6 +1212,14 @@ function renderStep(step, stage, index){
     if(step.children){
       step.children.forEach((child, ci) => {
         detailPanel.appendChild(renderStep(child, stage, ci));
+        // Arrow between children (not after last)
+        if(ci < step.children.length - 1){
+          const childArrow = document.createElement("div");
+          childArrow.className = "stage-arrow";
+          childArrow.style.margin = "1px 0";
+          childArrow.innerHTML = '<div class="arrow-line" style="height:12px"></div><div class="arrow-head" style="border-left-width:6px;border-right-width:6px;border-top-width:7px"></div>';
+          detailPanel.appendChild(childArrow);
+        }
       });
       if(appState.editing){
         const addBtn = document.createElement("button");
