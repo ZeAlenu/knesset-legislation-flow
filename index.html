@@ -1750,7 +1750,26 @@ function moveStep(id, direction){
 
 function promoteStep(id){
   pushUndo();
-  // Find the step and its parent chain
+  // First check if it's a direct child of a stage — if so, promote to new stage
+  for(let si = 0; si < appState.stages.length; si++){
+    const stage = appState.stages[si];
+    const idx = (stage.children||[]).findIndex(c => c.id === id);
+    if(idx >= 0){
+      // Direct child of stage — promote to separate stage
+      const step = stage.children.splice(idx, 1)[0];
+      const newStage = {
+        id: "stage_" + genId(),
+        name: step.title,
+        children: [step]
+      };
+      // Insert after current stage
+      appState.stages.splice(si + 1, 0, newStage);
+      renderAll();
+      showToast("⬆️ השלב הפך לשלב ראשי עצמאי!");
+      return;
+    }
+  }
+  // Otherwise promote within nested children
   for(const stage of appState.stages){
     const result = _promoteInChildren(stage.children, id, null, stage);
     if(result) { renderAll(); showToast("⬆️ השלב קודם לרמה שמעל"); return; }
