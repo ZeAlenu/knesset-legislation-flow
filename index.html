@@ -510,23 +510,25 @@ const DEFAULT_STAGES = [
 ];
 
 const DEFAULT_FLOW_STEPS = [
-  {id:"f1",label:"כתיבת החוק",type:"box",category:"chk",stageId:"s1",note:"",noteType:""},
-  {id:"f2",label:"🔒 לשכה משפטית / נסחות",type:"pill",category:"waiting",stageId:"s1",note:"",noteType:""},
-  {id:"f2b",label:"הגשה לנשיאות",type:"box",category:"",stageId:"s1",note:"",noteType:"",color:"#FFFFFF",textColor:"#CC0000",specialBorder:"#CC0000"},
-  {id:"f2c",label:"",type:"note",stageId:"s1",note:"🔒 ח\"כ לא יכול להגיש ישירות — סנהדרין",noteType:"warning"},
+  {id:"f1",label:"כתיבת החוק",type:"box",category:"process",stageId:"s1",note:"",noteType:"",color:"#FFFFFF",textColor:"#0A5E6E",specialBorder:"#0A5E6E"},
+  {id:"f2",label:"🔒 לשכה משפטית / נסחות",type:"pill",category:"waiting",stageId:"s1",note:"",noteType:"",color:"#C8962E"},
+  {id:"f2b",label:"הגשה לנשיאות",type:"box",category:"chriga",stageId:"s1",note:"",noteType:"",color:"#CC0000",textColor:"#FFFFFF"},
+  {id:"f2c",label:"",type:"note",stageId:"s1",note:"🔒 ח\"כ לא יכול להגיש\nישירות — סנהדרין",noteType:"warning"},
   {id:"f3",label:"אישור נשיאות?",type:"diamond",category:"nesiut",stageId:"s1",rejectLabel:"נפסלה",approveLabel:"",note:"",noteType:""},
-  {id:"f4",label:"הנחה על שולחן הכנסת",type:"box",category:"mazkir",stageId:"s1",note:"",noteType:""},
+  {id:"f4",label:"הנחה על שולחן הכנסת",type:"box",category:"process",stageId:"s1",note:"",noteType:"",color:"#0A5E6E",textColor:"#FFFFFF"},
   {id:"f5",label:"",type:"split",stageId:"",note:"",noteType:"",branches:[
     {label:"",steps:[
-      {id:"f5a",label:"ניתנה עמדת ממשלה",type:"circle",category:"gov",stageId:"s1",note:"🔒 ועדת השרים ממתינה מעבר ל-45 יום\nללא עיגון חוקי",noteType:"warning"}
+      {id:"f5a",label:"ניתנה עמדת\nממשלה",type:"pill",category:"gov",stageId:"s1",note:"",noteType:"",color:"#DAA520",textColor:"#FFFFFF"},
+      {id:"f5a2",label:"",type:"note",stageId:"",note:"🔒 בשל נוהג חסר עיגון,\nהממשלה ככלל לא\nדנה בהצעת חוק לפני\nשחלפו 45 הימים.\n\"פטור מחובת הנחה\"\n\"שימושיאל\" בין קואליציה\nואופוזיציה בלי הסדרה.",noteType:"warning-circle"}
     ]},
     {label:"",steps:[
-      {id:"f5b1",label:"45 יום",type:"pill",category:"waiting",stageId:"",note:"",noteType:""},
-      {id:"f5b2",label:"קיצור דחיפות",type:"pill",category:"waiting",stageId:"",note:"",noteType:"",color:"#CC0000"},
-      {id:"f5b3",label:"הצמדה",type:"pill",category:"chk",stageId:"",note:"🔒 לשכה מתערבת בקביעת דמיון",noteType:"warning"}
+      {id:"f5b1",label:"⏳ 45 יום",type:"box",category:"process",stageId:"",note:"",noteType:"",color:"#0A5E6E",textColor:"#FFFFFF"},
+      {id:"f5b2",label:"קיצור דחיפות",type:"box",category:"waiting",stageId:"",note:"",noteType:"",color:"#FFD700",textColor:"#1B2A4A"},
+      {id:"f5b3",label:"הצמדה",type:"box",category:"chk",stageId:"",note:"",noteType:"",color:"#8B9A3A",textColor:"#FFFFFF"},
+      {id:"f5b4",label:"",type:"note",stageId:"",note:"🔒 לשכה משפטית\nמתערבת בקביעת דמיון",noteType:"warning-box"}
     ]}
   ]},
-  {id:"f6",label:"קביעת דיון מוקדם",type:"box",category:"yoresh",stageId:"s2",note:"",noteType:""},
+  {id:"f6",label:"קביעת דיון מוקדם",type:"box",category:"yoresh",stageId:"s2",note:"",noteType:"",color:"#1B2A4A",textColor:"#FFFFFF"},
   {id:"f7",label:"דיון מוקדם",type:"diamond",category:"yoresh",stageId:"s3",rejectLabel:"נדחתה",approveLabel:"",note:"",noteType:""},
   {id:"f8",label:"קביעת ועדה מכינה",type:"box",category:"yoresh",stageId:"s4",note:"",noteType:""},
   {id:"f9",label:"הכנה לקריאה ראשונה",type:"box",category:"vaadat",stageId:"s5",note:"",noteType:""},
@@ -1383,9 +1385,18 @@ function renderFlowStepElement(step, isInBranch){
   } else if(step.type === "pill"){
     html += `<div style="${smallStyle}font-size:${isInBranch?'10':'11'}px;padding:${isInBranch?'5px 8px':'6px 14px'};background:${color};color:${textColor};border-radius:14px;font-weight:600;display:inline-block;cursor:pointer" ${stageClick}>${label}</div>`;
   } else if(step.type === "note"){
-    // Floating note text (no box)
-    const noteColor = step.noteType === "warning" ? "#C8962E" : "#666";
-    html += `<div class="flow-note" style="color:${noteColor};font-size:10px;padding:2px 8px">${escH(step.note||step.label)}</div>`;
+    const noteText = escH(step.note||step.label).replace(/\n/g,"<br>");
+    if(step.noteType === "warning-circle"){
+      // Red circle annotation (like the ממשלה explanation)
+      html += `<div style="background:#CC0000;color:white;border-radius:50%;width:110px;height:110px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:8px;line-height:1.3;padding:10px;margin:4px auto">${noteText}</div>`;
+    } else if(step.noteType === "warning-box"){
+      // Dark blue small annotation box
+      html += `<div style="background:#1B2A4A;color:white;border-radius:6px;font-size:9px;padding:5px 8px;text-align:center;line-height:1.3;margin:4px auto;max-width:120px">${noteText}</div>`;
+    } else if(step.noteType === "warning"){
+      html += `<div style="background:#CC0000;color:white;border-radius:8px;font-size:9px;padding:5px 10px;text-align:center;line-height:1.3;margin:4px auto;max-width:160px">${noteText}</div>`;
+    } else {
+      html += `<div class="flow-note" style="color:#666;font-size:10px;padding:2px 8px">${noteText}</div>`;
+    }
   } else {
     // box (default)
     const catId = step.category;
