@@ -72,7 +72,7 @@ header p{font-size:13px;opacity:.85}
 .sub-step.open>.sub-step-header .expand-arrow{transform:rotate(90deg)}
 .sub-step-header .cat-logo{width:20px;height:20px;border-radius:3px;object-fit:contain;flex-shrink:0}
 .sub-step-header .override-badge{font-size:10px;opacity:.7;cursor:help}
-.sub-step-header .step-edit-actions{display:none;gap:3px;margin-right:4px}
+.sub-step-header .step-edit-actions{display:none;gap:3px;margin-right:4px;flex-wrap:wrap}
 .editing .sub-step-header .step-edit-actions{display:flex}
 
 /* Depth border colors */
@@ -1630,7 +1630,13 @@ function renderStep(step, stage, index){
         addSiblingBtn.className = "add-step-btn";
         addSiblingBtn.style.cssText = "margin:4px 10px;background:#E8F5E9";
         addSiblingBtn.textContent = "➕ הוסף שלב באותה רמה";
-        addSiblingBtn.onclick = function(e){ e.stopPropagation(); addStepTo(findParentArray(step.id) || stage.children, stage, Math.max(0, (step.depth||0) - 1)); };
+        addSiblingBtn.onclick = function(e){ 
+          e.stopPropagation(); 
+          const parentArr = findParentArray(step.id);
+          const targetArr = parentArr || stage.children || stage.steps || [];
+          const targetDepth = Math.max(0, (step.depth||0) - 1);
+          addStepTo(targetArr, stage, targetDepth); 
+        };
         detailPanel.appendChild(addSiblingBtn);
       }
     }
@@ -1745,7 +1751,8 @@ function deleteStage(id){
 
 function findParentArray(stepId){
   for(const stage of appState.stages){
-    const result = _findParentArr(stage.children, stepId);
+    const arr = stage.children || stage.steps || [];
+    const result = _findParentArr(arr, stepId);
     if(result) return result;
   }
   return null;
