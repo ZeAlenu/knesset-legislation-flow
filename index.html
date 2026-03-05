@@ -1451,13 +1451,53 @@ function renderStep(step, stage, index){
         const parallelRow = document.createElement("div");
         parallelRow.style.cssText = "display:flex;gap:8px;align-items:flex-start;margin:4px 0";
         step.children.forEach((child, ci) => {
+          // "או" separator between parallel columns
+          if(ci > 0){
+            const orLabel = document.createElement("div");
+            orLabel.style.cssText = "display:flex;align-items:center;font-size:14px;font-weight:700;color:#888;padding:0 2px";
+            orLabel.textContent = step.parallelLabel || "או";
+            if(appState.editing){
+              orLabel.style.cursor = "pointer";
+              orLabel.title = "לחץ לשנות";
+              orLabel.onclick = function(){ const v = prompt("טקסט מחבר:", step.parallelLabel||"או"); if(v!==null){ step.parallelLabel = v; renderAll(); } };
+            }
+            parallelRow.appendChild(orLabel);
+          }
           const col = document.createElement("div");
           col.style.cssText = "flex:1;min-width:0;border:1px dashed #ccc;border-radius:6px;padding:4px";
           col.appendChild(renderStep(child, stage, ci));
-          // Render sub-steps of each branch
+          // Render sub-steps of each branch with connectors
           if(child.children){
             child.children.forEach((gc, gci) => {
+              // Connector between branch children
+              if(gc.showArrowAfter || gc.connector){
+                if(gc.showArrowAfter){
+                  const arr = document.createElement("div");
+                  arr.className = "stage-arrow"; arr.style.margin = "1px 0";
+                  arr.innerHTML = '<div class="arrow-line" style="height:10px"></div><div class="arrow-head" style="border-left-width:5px;border-right-width:5px;border-top-width:6px"></div>';
+                  col.appendChild(arr);
+                } else if(gc.connector && gc.connector !== "arrow"){
+                  const sym = document.createElement("div");
+                  sym.style.cssText = "text-align:center;font-size:16px;font-weight:700;color:#555;margin:2px 0";
+                  sym.textContent = gc.connector;
+                  col.appendChild(sym);
+                }
+              }
               col.appendChild(renderStep(gc, stage, gci));
+              // Edit connectors in branch
+              if(appState.editing && gci < child.children.length - 1){
+                const cd = document.createElement("div");
+                cd.style.cssText = "display:flex;gap:2px;justify-content:center;margin:1px 0;opacity:0.4";
+                [{v:"arrow",l:"↓"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"",l:"✕"}].forEach(s=>{
+                  const b = document.createElement("button"); b.className = "add-step-btn";
+                  const cur = gc.connector||(gc.showArrowAfter?"arrow":"");
+                  b.style.cssText = "padding:1px 4px;font-size:9px;min-width:18px;"+(cur===s.v?"background:#E6F6FB;":"");
+                  b.textContent = s.l;
+                  b.onclick = function(e){ e.stopPropagation(); gc.showArrowAfter=(s.v==="arrow"); gc.connector=s.v||undefined; renderAll(); };
+                  cd.appendChild(b);
+                });
+                col.appendChild(cd);
+              }
             });
           }
           // Add button inside each branch
@@ -1506,7 +1546,7 @@ function renderStep(step, stage, index){
           if(appState.editing && ci < step.children.length - 1){
             const connDiv = document.createElement("div");
             connDiv.style.cssText = "display:flex;gap:2px;justify-content:center;margin:1px 0;opacity:0.5";
-            [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(sym=>{
+            [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"+",l:"+"},{v:"או",l:"או"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(sym=>{
               const b = document.createElement("button");
               b.className = "add-step-btn";
               const cur = child.connector || (child.showArrowAfter ? "arrow" : "");
