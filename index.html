@@ -50,6 +50,7 @@ header p{font-size:13px;opacity:.85}
 .stage-btn .label{font-size:17px;font-weight:700;color:var(--teal-dark)}
 .stage-btn .arrow{margin-right:auto;font-size:18px;transition:transform .3s;color:var(--teal-dark)}
 .stage-btn.active .arrow{transform:rotate(90deg)}
+.stage-arrow{text-align:center;color:var(--teal-dark);font-size:20px;line-height:1;margin:2px 0;opacity:.6}
 .stage-btn .edit-actions{display:none;gap:4px;margin-right:8px}
 .editing .stage-btn .edit-actions{display:flex}
 .edit-btn-sm{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;transition:background .2s}
@@ -555,8 +556,9 @@ let appState = {
   categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
   stages: JSON.parse(JSON.stringify(DEFAULT_STAGES)),
   flowSteps: JSON.parse(JSON.stringify(DEFAULT_FLOW_STEPS)),
+  flowBackLinks: [],  // Array of {fromId, toId, label, color}
   editing: false,
-  openStages: new Set(["s1"]),
+  openStages: new Set(),
   activeFlowStage: null  // tracks which stage is highlighted in flow
 };
 
@@ -591,6 +593,18 @@ function getStageFlowMap(){ return buildFlowStageMaps().stageToFlow; }
 // LOAD / SAVE
 // ============================================================
 
+// Initialize default back-arrow if flowBackLinks is empty
+function initializeDefaultBackArrow(){
+  if(appState.flowBackLinks.length === 0){
+    appState.flowBackLinks.push({
+      fromId: "f7",
+      toId: "f2b", 
+      label: "נדחתה — 6 חודשים המתנה",
+      color: "#CC0000"
+    });
+  }
+}
+
 function loadFromStorage(){
   try {
     const raw = localStorage.getItem("knesset-legislation-v2");
@@ -599,6 +613,7 @@ function loadFromStorage(){
       if(d.categories) appState.categories = d.categories;
       if(d.stages) appState.stages = d.stages;
       if(d.flowSteps) appState.flowSteps = d.flowSteps;
+      if(d.flowBackLinks) appState.flowBackLinks = d.flowBackLinks;
       if(d.nextId) nextId = d.nextId;
       showToast("נטען מאחסון מקומי");
     }
@@ -611,6 +626,7 @@ function saveToStorage(){
       categories: appState.categories,
       stages: appState.stages,
       flowSteps: appState.flowSteps,
+      flowBackLinks: appState.flowBackLinks,
       nextId
     }));
     showToast("💾 נשמר בהצלחה");
@@ -618,7 +634,7 @@ function saveToStorage(){
 }
 
 function exportJSON(){
-  const blob = new Blob([JSON.stringify({categories:appState.categories,stages:appState.stages,flowSteps:appState.flowSteps,nextId,exportDate:new Date().toISOString()},null,2)],{type:"application/json"});
+  const blob = new Blob([JSON.stringify({categories:appState.categories,stages:appState.stages,flowSteps:appState.flowSteps,flowBackLinks:appState.flowBackLinks,nextId,exportDate:new Date().toISOString()},null,2)],{type:"application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "knesset-legislation-"+new Date().toISOString().slice(0,10)+".json";
@@ -636,6 +652,7 @@ function importJSON(ev){
       if(d.categories) appState.categories = d.categories;
       if(d.stages) appState.stages = d.stages;
       if(d.flowSteps) appState.flowSteps = d.flowSteps;
+      if(d.flowBackLinks) appState.flowBackLinks = d.flowBackLinks;
       if(d.nextId) nextId = d.nextId;
       renderAll();
       showToast("📥 יובא בהצלחה");
@@ -911,6 +928,14 @@ function renderHierarchy(){
     }
 
     panel.appendChild(content);
+
+    // Arrow between stages (except after last)
+    if(si < appState.stages.length - 1){
+      const arrow = document.createElement("div");
+      arrow.className = "stage-arrow";
+      arrow.innerHTML = "▼";
+      panel.appendChild(arrow);
+    }
   });
 }
 
@@ -1446,19 +1471,19 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
     const hasNoteAnnotation = nextStep && nextStep.type === "note";
 
     if(hasNoteAnnotation){
-      // Render step + note in flex container for RTL side annotation
-      html += `<div style="display:flex;align-items:flex-start;gap:12px;justify-content:center;position:relative;margin:4px 0">`;
+      // Render step wrapper with absolute positioned note
+      html += `<div style="position:relative;text-align:center;margin:4px 0">`;
       
-      // Note annotation on the left (RTL)
-      html += `<div style="flex-shrink:0;max-width:140px;position:relative">`;
+      // Note annotation positioned absolutely to the left (RTL outer side)
+      html += `<div style="position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:16px;max-width:140px;z-index:10">`;
       html += renderNoteAnnotation(nextStep);
       // Add connecting line/arrow to the step
-      html += `<div style="position:absolute;top:50%;left:100%;width:8px;height:2px;background:#999;margin-left:2px;"></div>`;
-      html += `<div style="position:absolute;top:50%;left:100%;margin-left:8px;color:#999;font-size:10px;">←</div>`;
+      html += `<div style="position:absolute;top:50%;left:100%;width:12px;height:2px;background:#999;margin-left:4px;"></div>`;
+      html += `<div style="position:absolute;top:50%;left:100%;margin-left:14px;color:#999;font-size:10px;">←</div>`;
       html += `</div>`;
       
-      // Main step on the right
-      html += `<div class="flow-step" id="${step.id}" style="position:relative;flex-shrink:0">`;
+      // Main step stays in normal flow position
+      html += `<div class="flow-step" id="${step.id}" style="position:relative">`;
       html += renderFlowStepElement(step, isInBranch);
       if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
       html += `</div>`;
@@ -1937,7 +1962,7 @@ function renderAll(){
 
 loadFromStorage();
 if(!localStorage.getItem("knesset-legislation-v2")){
-  appState.stages[0].steps.forEach(s => { s._open = true; if(s.children) s.children.forEach(c => c._open = false); });
+  // Default: all sub-steps closed
 }
 // Set initial active flow stage from open stages
 for(const s of appState.stages){
