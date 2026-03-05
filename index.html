@@ -1386,6 +1386,7 @@ function renderStep(step, stage, index){
       <span class="edit-btn-sm" onclick="event.stopPropagation();showCatAssign(event,'${step.id}')" title="שייך קטגוריה">🏷️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepColor(event,'${step.id}')" title="צבע">🎨</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepFont(event,'${step.id}')" title="עיצוב טקסט">🔤</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();addOrEditDetails('${step.id}')" title="הוסף/ערוך פירוט">📝</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();moveStep('${step.id}',-1)" title="הזז למעלה">⬆️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();moveStep('${step.id}',1)" title="הזז למטה">⬇️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();promoteStep('${step.id}')" title="קדם לרמת האב" style="font-size:11px">🔼</span>
@@ -2145,6 +2146,40 @@ function pickStepFont(event, stepId){
 function setStepProp(stepId, prop, value){
   const found = findStepAndParent(stepId);
   if(found) found.step[prop] = value;
+}
+
+function addOrEditDetails(stepId){
+  const step = findStepById(stepId);
+  if(!step) return;
+  pushUndo();
+  // Open a modal with textarea for multiline editing
+  const modal = document.createElement("div");
+  modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;display:flex;align-items:center;justify-content:center";
+  const box = document.createElement("div");
+  box.style.cssText = "background:#fff;border-radius:12px;padding:20px;width:90%;max-width:500px;direction:rtl";
+  box.innerHTML = `<h3 style="margin:0 0 8px">📝 פירוט — ${escH(step.title)}</h3>
+    <textarea id="detailTextarea" style="width:100%;height:200px;border:1px solid #ddd;border-radius:8px;padding:10px;font-family:inherit;font-size:13px;direction:rtl;resize:vertical">${escH(step.details||"")}</textarea>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <select id="detailTypeSelect" style="padding:6px;border-radius:6px;border:1px solid #ddd;font-family:inherit">
+        <option value="expand" ${(step.detailType||"expand")==="expand"?"selected":""}>📋 פירוט רגיל</option>
+        <option value="chriga" ${step.detailType==="chriga"?"selected":""}>🛑 חריגה מתקנון</option>
+      </select>
+      <button onclick="saveDetails('${stepId}')" style="flex:1;padding:8px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-weight:600">✅ שמור</button>
+      <button onclick="this.closest('[style*=inset]').remove()" style="padding:8px 16px;border:1px solid #ddd;border-radius:6px;background:#fff;cursor:pointer;font-family:inherit">ביטול</button>
+    </div>`;
+  modal.appendChild(box);
+  modal.onclick = function(e){ if(e.target===modal) modal.remove(); };
+  document.body.appendChild(modal);
+  document.getElementById("detailTextarea").focus();
+}
+function saveDetails(stepId){
+  const step = findStepById(stepId);
+  if(!step) return;
+  step.details = document.getElementById("detailTextarea").value;
+  step.detailType = document.getElementById("detailTypeSelect").value;
+  document.querySelector("[style*=inset]").remove();
+  renderAll();
+  showToast("📝 פירוט נשמר");
 }
 
 function editStepDetails(stepId){
