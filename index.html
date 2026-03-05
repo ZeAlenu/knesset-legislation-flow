@@ -1328,22 +1328,33 @@ function renderStep(step, stage, index){
       } else {
         step.children.forEach((child, ci) => {
           detailPanel.appendChild(renderStep(child, stage, ci));
-          // Show arrow if child has showArrowAfter flag
+          // Show connector between steps
           if(child.showArrowAfter){
             const childArrow = document.createElement("div");
             childArrow.className = "stage-arrow";
             childArrow.style.margin = "1px 0";
             childArrow.innerHTML = '<div class="arrow-line" style="height:12px"></div><div class="arrow-head" style="border-left-width:6px;border-right-width:6px;border-top-width:7px"></div>';
             detailPanel.appendChild(childArrow);
+          } else if(child.connector && child.connector !== "arrow"){
+            const symEl = document.createElement("div");
+            symEl.style.cssText = "text-align:center;font-size:18px;font-weight:700;color:#555;margin:2px 0;line-height:1";
+            symEl.textContent = child.connector;
+            detailPanel.appendChild(symEl);
           }
-          // In edit mode: toggle arrow button
+          // In edit mode: connector symbols between steps
           if(appState.editing && ci < step.children.length - 1){
-            const arrowToggle = document.createElement("button");
-            arrowToggle.className = "add-step-btn";
-            arrowToggle.style.cssText = "margin:1px auto;display:block;font-size:10px;padding:1px 6px;opacity:0.4";
-            arrowToggle.textContent = child.showArrowAfter ? "🔽 הסר חץ" : "➕ חץ";
-            arrowToggle.onclick = function(e){ e.stopPropagation(); child.showArrowAfter = !child.showArrowAfter; renderAll(); };
-            detailPanel.appendChild(arrowToggle);
+            const connDiv = document.createElement("div");
+            connDiv.style.cssText = "display:flex;gap:2px;justify-content:center;margin:1px 0;opacity:0.5";
+            [{v:"arrow",l:"↓"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(sym=>{
+              const b = document.createElement("button");
+              b.className = "add-step-btn";
+              const cur = child.connector || (child.showArrowAfter ? "arrow" : "");
+              b.style.cssText = "padding:1px 5px;font-size:10px;min-width:20px;" + (cur===sym.v?"background:#E6F6FB;border-color:var(--teal-dark);":"");
+              b.textContent = sym.l; b.title = sym.v||"הסר";
+              b.onclick = function(e){ e.stopPropagation(); child.showArrowAfter = sym.v==="arrow"; child.connector = sym.v||undefined; renderAll(); };
+              connDiv.appendChild(b);
+            });
+            detailPanel.appendChild(connDiv);
           }
         });
       }
@@ -1466,13 +1477,46 @@ function deleteStage(id){
 }
 
 function addStepTo(arr, stage, parentDepth){
+  const types = [
+    {label:"📋 שלב רגיל", type:"expand"},
+    {label:"🛑 חריגה מתקנון", type:"chriga"},
+    {label:"📝 הערה/הסבר", type:"note"},
+    {label:"🔀 פיצול מקביל", type:"parallel"}
+  ];
+  
+  const choice = prompt(
+    "סוג תת-שלב:\n1 — שלב רגיל\n2 — חריגה מתקנון\n3 — הערה/הסבר\n4 — פיצול מקביל",
+    "1"
+  );
+  if(!choice) return;
+  
   pushUndo();
   const id = "step_"+genId();
   const depth = parentDepth !== undefined ? parentDepth + 1 : (arr.length > 0 ? (arr[0].depth || 0) : 0);
-  arr.push({
-    id, title:"שלב חדש", icon:"", catId:"process", chpiqa:false, depth,
-    details:"", detailType:"expand", children:[], _open:true
-  });
+  const picked = parseInt(choice) || 1;
+  
+  if(picked === 4){
+    // Parallel split
+    arr.push({
+      id, title:"פיצול מקביל", icon:"🔀", catId:"process", chpiqa:false, depth,
+      details:"", detailType:"expand", parallel:true,
+      children:[
+        {id:"step_"+genId(), title:"מסלול א׳", icon:"", catId:"process", depth:depth+1, details:"", detailType:"expand", children:[], _open:true},
+        {id:"step_"+genId(), title:"מסלול ב׳", icon:"", catId:"process", depth:depth+1, details:"", detailType:"expand", children:[], _open:true}
+      ], _open:true
+    });
+  } else {
+    const isChriga = picked === 2;
+    const isNote = picked === 3;
+    arr.push({
+      id, title: isChriga ? "חריגה חדשה" : isNote ? "הערה חדשה" : "שלב חדש",
+      icon: isChriga ? "🛑" : isNote ? "📝" : "",
+      catId:"process", chpiqa:isChriga, depth,
+      details: isChriga ? "תקנון:\nבפועל:" : "",
+      detailType: isChriga ? "chriga" : "expand",
+      children:[], _open:true
+    });
+  }
   renderAll();
 }
 
