@@ -510,35 +510,37 @@ const DEFAULT_STAGES = [
 ];
 
 const DEFAULT_FLOW_STEPS = [
-  {id:"f1",label:"📝 כתיבת הצעת החוק",type:"box",category:"chk",stageId:"s1",note:"",noteType:""},
-  {id:"f2",label:"🛑 לשכה משפטית / נסחות",type:"box",category:"chriga",stageId:"s1",note:"חריגה: ח\"כ לא יכול להגיש ישירות לנשיאות",noteType:"warning"},
-  {id:"f3",label:"אישור נשיאות?",type:"diamond",category:"nesiut",stageId:"s1",rejectLabel:"נפסלה",approveLabel:"אושרה",note:"",noteType:""},
-  {id:"f4",label:"📋 הנחה על שולחן הכנסת",type:"box",category:"mazkir",stageId:"s1",note:"",noteType:""},
+  {id:"f1",label:"כתיבת החוק",type:"box",category:"chk",stageId:"s1",note:"",noteType:""},
+  {id:"f2",label:"🔒 לשכה משפטית / נסחות",type:"pill",category:"waiting",stageId:"s1",note:"",noteType:""},
+  {id:"f2b",label:"הגשה לנשיאות",type:"box",category:"",stageId:"s1",note:"",noteType:"",color:"#FFFFFF",textColor:"#CC0000",specialBorder:"#CC0000"},
+  {id:"f2c",label:"",type:"note",stageId:"s1",note:"🔒 ח\"כ לא יכול להגיש ישירות — סנהדרין",noteType:"warning"},
+  {id:"f3",label:"אישור נשיאות?",type:"diamond",category:"nesiut",stageId:"s1",rejectLabel:"נפסלה",approveLabel:"",note:"",noteType:""},
+  {id:"f4",label:"הנחה על שולחן הכנסת",type:"box",category:"mazkir",stageId:"s1",note:"",noteType:""},
   {id:"f5",label:"",type:"split",stageId:"",note:"",noteType:"",branches:[
-    {label:"מסלול ממשלתי",steps:[
-      {id:"f5a",label:"🛑 ועדת שרים",type:"circle",category:"gov",stageId:"s1",note:"ממתינה מעבר ל-45 יום\nללא סמכות חוקית",noteType:"warning"}
+    {label:"",steps:[
+      {id:"f5a",label:"ניתנה עמדת ממשלה",type:"circle",category:"gov",stageId:"s1",note:"🔒 ועדת השרים ממתינה מעבר ל-45 יום\nללא עיגון חוקי",noteType:"warning"}
     ]},
-    {label:"מסלול רגיל",steps:[
-      {id:"f5b1",label:"⏳ 45 יום המתנה",type:"pill",category:"waiting",stageId:"",note:"",noteType:""},
-      {id:"f5b2",label:"קיצור דחיפות",type:"box",category:"vaadat",stageId:"",note:"",noteType:""},
-      {id:"f5b3",label:"הצמדה להצ\"ח",type:"box",category:"chk",stageId:"",note:"",noteType:""}
+    {label:"",steps:[
+      {id:"f5b1",label:"45 יום",type:"pill",category:"waiting",stageId:"",note:"",noteType:""},
+      {id:"f5b2",label:"קיצור דחיפות",type:"pill",category:"waiting",stageId:"",note:"",noteType:"",color:"#CC0000"},
+      {id:"f5b3",label:"הצמדה",type:"pill",category:"chk",stageId:"",note:"🔒 לשכה מתערבת בקביעת דמיון",noteType:"warning"}
     ]}
   ]},
-  {id:"f6",label:"קביעת מועד דיון מוקדם",type:"box",category:"yoresh",stageId:"s2",note:"",noteType:""},
-  {id:"f7",label:"דיון מוקדם",type:"diamond",category:"yoresh",stageId:"s3",rejectLabel:"נדחתה ← 6 חודשים",approveLabel:"אושרה",note:"",noteType:""},
+  {id:"f6",label:"קביעת דיון מוקדם",type:"box",category:"yoresh",stageId:"s2",note:"",noteType:""},
+  {id:"f7",label:"דיון מוקדם",type:"diamond",category:"yoresh",stageId:"s3",rejectLabel:"נדחתה",approveLabel:"",note:"",noteType:""},
   {id:"f8",label:"קביעת ועדה מכינה",type:"box",category:"yoresh",stageId:"s4",note:"",noteType:""},
   {id:"f9",label:"הכנה לקריאה ראשונה",type:"box",category:"vaadat",stageId:"s5",note:"",noteType:""},
-  {id:"f10",label:"קריאה ראשונה",type:"diamond",category:"yoresh",stageId:"s6",rejectLabel:"הוסרה ← 6 חודשים",approveLabel:"עברה",note:"",noteType:""},
+  {id:"f10",label:"קריאה ראשונה",type:"diamond",category:"yoresh",stageId:"s6",rejectLabel:"נדחתה",approveLabel:"",note:"",noteType:""},
   {id:"f11",label:"קביעת ועדה לקריאה ב'+ג'",type:"box",category:"vaadat",stageId:"s7",note:"",noteType:""},
-  {id:"f12",label:"הכנה לקריאה ב'+ג'",type:"box",category:"vaadat",stageId:"s8",note:"מיזוג / פיצול / הסתייגויות",noteType:"info"},
-  {id:"f13",label:"קריאה שנייה",type:"diamond",category:"yoresh",stageId:"s9",note:"סעיף-סעיף + הסתייגויות",noteType:"info"},
-  {id:"f14",label:"קריאה שלישית",type:"diamond",category:"yoresh",stageId:"s10",specialBorder:"#FFD700",note:"",noteType:""},
+  {id:"f12",label:"הכנה לקריאה ב'+ג'",type:"box",category:"vaadat",stageId:"s8",note:"",noteType:""},
+  {id:"f13",label:"קריאה שנייה",type:"diamond",category:"yoresh",stageId:"s9",note:"",noteType:""},
+  {id:"f14",label:"קריאה שלישית",type:"diamond",category:"yoresh",stageId:"s10",note:"",noteType:""},
   {id:"f15",label:"",type:"split",stageId:"s10",note:"",noteType:"",branches:[
     {label:"",steps:[
       {id:"f15a",label:"✅ חוק!",type:"pill",category:"vaadat",stageId:"s10",color:"#2D7D46",note:"",noteType:""}
     ]},
     {label:"",steps:[
-      {id:"f15b",label:"❌ נדחה",type:"pill",category:"",stageId:"",color:"#f0f0f0",textColor:"#666",note:"",noteType:""}
+      {id:"f15b",label:"נדחה",type:"pill",category:"",stageId:"",color:"#C0C0C0",textColor:"#333",note:"",noteType:""}
     ]}
   ]}
 ];
@@ -1380,6 +1382,10 @@ function renderFlowStepElement(step, isInBranch){
     html += `<div class="flow-circle${actCls}" style="background:${color};color:${textColor};width:70px;height:70px" ${stageClick}><span style="font-size:10px;line-height:1.2;text-align:center">${circleLabel}</span></div>`;
   } else if(step.type === "pill"){
     html += `<div style="${smallStyle}font-size:${isInBranch?'10':'11'}px;padding:${isInBranch?'5px 8px':'6px 14px'};background:${color};color:${textColor};border-radius:14px;font-weight:600;display:inline-block;cursor:pointer" ${stageClick}>${label}</div>`;
+  } else if(step.type === "note"){
+    // Floating note text (no box)
+    const noteColor = step.noteType === "warning" ? "#C8962E" : "#666";
+    html += `<div class="flow-note" style="color:${noteColor};font-size:10px;padding:2px 8px">${escH(step.note||step.label)}</div>`;
   } else {
     // box (default)
     const catId = step.category;
@@ -1421,7 +1427,7 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
   }
 
   // Arrow after step (if not last and not in branch)
-  if(!isInBranch && index < arr.length - 1 && step.type !== "split"){
+  if(!isInBranch && index < arr.length - 1 && step.type !== "split" && step.type !== "note"){
     html += `<div class="flow-arrow">▼</div>`;
   }
 
