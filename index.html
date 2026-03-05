@@ -5,311 +5,168 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>הליך חקיקה פרטית — ריבונות הכנסת</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap');
-  
-  * { margin:0; padding:0; box-sizing:border-box; }
-  
-  body {
-    font-family: 'Heebo', sans-serif;
-    background: #f5f7fa;
-    color: #333;
-    direction: rtl;
-    min-height: 100vh;
-  }
-  
-  /* ===== HEADER ===== */
-  header {
-    background: linear-gradient(135deg, #0A5E6E 0%, #1A7A9A 100%);
-    color: white;
-    padding: 24px 40px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-  }
-  header h1 { font-size: 28px; font-weight: 800; }
-  header p { font-size: 14px; opacity: 0.85; }
-  
-  /* ===== LAYOUT ===== */
-  .container {
-    display: flex;
-    gap: 30px;
-    padding: 30px 40px;
-    max-width: 1600px;
-    margin: 0 auto;
-  }
-  
-  .hierarchy-panel {
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .flow-panel {
-    width: 380px;
-    flex-shrink: 0;
-  }
-  
-  /* ===== LEGEND ===== */
-  .legend {
-    background: white;
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-  }
-  .legend-title { font-weight: 700; font-size: 13px; color: #666; margin-left: 12px; }
-  .legend-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #555;
-  }
-  .legend-swatch {
-    width: 18px; height: 18px; border-radius: 4px;
-    display: inline-block;
-    flex-shrink: 0;
-  }
-  
-  /* ===== STAGE BUTTON (top level) ===== */
-  .stage-btn {
-    background: white;
-    border: 3px solid #0A5E6E;
-    border-radius: 12px;
-    padding: 18px 24px;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    width: 100%;
-  }
-  .stage-btn:hover { background: #f0fafb; transform: translateX(-3px); }
-  .stage-btn.active { background: #e6f7f9; border-color: #0A5E6E; }
-  .stage-btn .number {
-    background: #0A5E6E;
-    color: white;
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-  .stage-btn .label { font-size: 18px; font-weight: 700; color: #0A5E6E; }
-  .stage-btn .arrow {
-    margin-right: auto;
-    font-size: 20px;
-    transition: transform 0.3s;
-    color: #0A5E6E;
-  }
-  .stage-btn.active .arrow { transform: rotate(90deg); }
-  
-  /* ===== STAGE CONTENT ===== */
-  .stage-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease;
-    margin-bottom: 8px;
-    margin-right: 20px;
-    border-right: 3px solid #0A5E6E;
-    padding-right: 20px;
-  }
-  .stage-content.open { max-height: 5000px; }
-  
-  /* ===== SUB-STEP ===== */
-  .sub-step {
-    margin-bottom: 10px;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: all 0.2s;
-  }
-  
-  .sub-step-header {
-    padding: 14px 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-radius: 10px;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-  }
-  .sub-step-header:hover { filter: brightness(0.95); }
-  
-  /* Depth colors (border) */
-  .depth-0 .sub-step-header { border-color: #0A5E6E; }
-  .depth-1 .sub-step-header { border-color: #1A7A9A; }
-  .depth-2 .sub-step-header { border-color: #2E96B8; }
-  .depth-3 .sub-step-header { border-color: #4DB8D9; }
-  
-  /* Authority colors (background) */
-  .auth-chk .sub-step-header { background: #2E86AB; color: white; }
-  .auth-nesiut .sub-step-header { background: #8B5CF6; color: white; }
-  .auth-mazkir .sub-step-header { background: #5B7B9A; color: white; }
-  .auth-yoresh .sub-step-header { background: #1B3A6B; color: white; }
-  .auth-vaadat .sub-step-header { background: #2D7D46; color: white; }
-  .auth-default .sub-step-header { background: #f0f8fa; color: #0A5E6E; }
-  
-  /* חריגה — red border */
-  .chriga .sub-step-header { border-color: #CC0000 !important; }
-  .chriga-full .sub-step-header { 
-    background: #CC0000 !important; 
-    color: white !important;
-    border-color: #990000 !important;
-  }
-  
-  .sub-step-header .icon { font-size: 18px; flex-shrink: 0; }
-  .sub-step-header .text { font-size: 15px; font-weight: 600; }
-  .sub-step-header .expand-arrow {
-    margin-right: auto;
-    font-size: 14px;
-    transition: transform 0.3s;
-    opacity: 0.6;
-  }
-  .sub-step.open .expand-arrow { transform: rotate(90deg); }
-  
-  /* ===== DETAIL PANEL ===== */
-  .detail-panel {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-  }
-  .detail-panel.open { max-height: 2000px; }
-  
-  .detail-content {
-    padding: 14px 18px;
-    margin: 6px 10px 10px;
-    border-radius: 8px;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-  
-  /* Detail = expand (light) */
-  .detail-expand .detail-content {
-    background: #E6F6FB;
-    border: 2px solid #4DB8D9;
-    color: #333;
-  }
-  
-  /* Detail = חריגה explanation */
-  .detail-chriga .detail-content {
-    background: #3A0A0A;
-    border: 3px solid #CC0000;
-    color: white;
-  }
-  .detail-chriga .detail-content .stop-icon { font-size: 20px; margin-left: 8px; }
-  .detail-chriga .detail-content .reality { color: #FF6B6B; font-weight: 700; }
-  
-  /* ===== FLOW CHART ===== */
-  .flow-panel {
-    position: sticky;
-    top: 20px;
-    align-self: flex-start;
-  }
-  
-  .flow-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-  }
-  .flow-card h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1B2A4A;
-    margin-bottom: 16px;
-    text-align: center;
-  }
-  
-  .flow-step {
-    text-align: center;
-    margin-bottom: 4px;
-    position: relative;
-  }
-  .flow-step .box {
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: white;
-    min-width: 200px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .flow-step .box:hover { transform: scale(1.03); }
-  .flow-step .box.navy { background: #1B2A4A; }
-  .flow-step .box.gold { background: #C8962E; }
-  .flow-step .box.red-border { background: white; color: #CC0000; border: 2.5px solid #CC0000; font-weight: 700; }
-  .flow-step .box.purple { background: #7B3FA0; border-radius: 0; transform: rotate(45deg); padding: 14px; margin: 10px auto; min-width: 0; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; }
-  .flow-step .box.purple span { transform: rotate(-45deg); display: block; }
-  .flow-step .box.slate { background: #5A7089; }
-  .flow-step .box.red { background: #CC0000; }
-  .flow-step .box.crimson { background: #8B2222; border-radius: 50%; min-width: 0; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 11px; }
-  .flow-step .box.gray { background: #C0C0C0; color: #333; }
-  .flow-step .box.chk { background: #2E86AB; }
-  .flow-step .box.vaadat { background: #2D7D46; }
-  
-  .flow-arrow {
-    text-align: center;
-    color: #999;
-    font-size: 20px;
-    margin: 4px 0;
-  }
-  .flow-note {
-    font-size: 11px;
-    color: #C8962E;
-    text-align: center;
-    margin: 4px 0;
-    font-weight: 600;
-  }
-  .flow-split {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin: 8px 0;
-  }
-  .flow-track {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-  .flow-or {
-    background: #C8962E;
-    color: white;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .flow-side-note {
-    font-size: 10px;
-    color: #CC0000;
-    text-align: center;
-    background: #FFF0F0;
-    border: 1px solid #CC0000;
-    border-radius: 6px;
-    padding: 4px 8px;
-    margin: 2px 0;
-  }
-  
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 1000px) {
-    .container { flex-direction: column; padding: 16px; }
-    .flow-panel { width: 100%; position: static; }
-  }
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --teal-dark:#0A5E6E;--teal-mid:#1A7A9A;--teal-light:#2E96B8;--teal-pale:#4DB8D9;
+  --chk:#2E86AB;--nesiut:#8B5CF6;--mazkir:#5B7B9A;--yoresh:#1B3A6B;--vaadat:#2D7D46;
+  --gov:#C03928;--chriga:#CC0000;--process:#0A5E6E;--waiting:#B8860B;
+  --bg:#f5f7fa;--card:#fff;--text:#333;--text-light:#666;
+  --depth0:#0A5E6E;--depth1:#1A7A9A;--depth2:#2E96B8;--depth3:#4DB8D9;
+}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);direction:rtl;min-height:100vh;font-size:14px}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#0A5E6E 0%,#1A7A9A 100%);color:#fff;padding:18px 40px;display:flex;align-items:center;gap:20px;box-shadow:0 2px 12px rgba(0,0,0,.15);position:relative;z-index:100}
+header h1{font-size:26px;font-weight:800}
+header p{font-size:13px;opacity:.85}
+.header-actions{margin-right:auto;display:flex;gap:8px}
+.header-actions button{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;transition:all .2s;display:flex;align-items:center;gap:6px}
+.header-actions button:hover{background:rgba(255,255,255,.3)}
+
+/* TOOLBAR */
+.toolbar{background:#fff;border-bottom:1px solid #e0e0e0;padding:10px 40px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toolbar button{background:#f0f0f0;border:1px solid #ddd;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;transition:all .2s}
+.toolbar button:hover{background:#e0e0e0}
+.toolbar .sep{width:1px;height:24px;background:#ddd;margin:0 4px}
+
+/* LAYOUT */
+.container{display:flex;gap:30px;padding:24px 40px;max-width:1800px;margin:0 auto}
+.hierarchy-panel{flex:1;min-width:0}
+.flow-panel{width:360px;flex-shrink:0;position:sticky;top:20px;align-self:flex-start}
+
+/* LEGEND */
+.legend{background:#fff;border-radius:12px;padding:14px 20px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.08);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.legend-title{font-weight:700;font-size:12px;color:#666;margin-left:12px}
+.legend-item{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#555}
+.legend-swatch{width:16px;height:16px;border-radius:3px;display:inline-block;flex-shrink:0}
+
+/* STAGE BUTTON */
+.stage-btn{background:#fff;border:3px solid var(--teal-dark);border-radius:12px;padding:14px 20px;cursor:pointer;transition:all .2s;margin-bottom:8px;display:flex;align-items:center;gap:12px;width:100%;font-family:inherit;text-align:right;position:relative}
+.stage-btn:hover{background:#f0fafb;transform:translateX(-2px)}
+.stage-btn.active{background:#e6f7f9;border-color:var(--teal-dark)}
+.stage-btn .number{background:var(--teal-dark);color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+.stage-btn .label{font-size:17px;font-weight:700;color:var(--teal-dark)}
+.stage-btn .arrow{margin-right:auto;font-size:18px;transition:transform .3s;color:var(--teal-dark)}
+.stage-btn.active .arrow{transform:rotate(90deg)}
+.stage-btn .edit-actions{display:none;gap:4px;margin-right:8px}
+.editing .stage-btn .edit-actions{display:flex}
+.edit-btn-sm{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;transition:background .2s}
+.edit-btn-sm:hover{background:rgba(0,0,0,.1)}
+
+/* STAGE CONTENT */
+.stage-content{max-height:0;overflow:hidden;transition:max-height .4s ease;margin-bottom:6px;margin-right:18px;border-right:3px solid var(--teal-dark);padding-right:18px}
+.stage-content.open{max-height:none;overflow:visible}
+
+/* SUB-STEP */
+.sub-step{margin-bottom:8px;border-radius:10px;overflow:visible;transition:all .2s;position:relative}
+.sub-step-header{padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;border-radius:10px;transition:all .2s;border:2px solid transparent;position:relative;min-height:42px}
+.sub-step-header:hover{filter:brightness(.95)}
+.sub-step-header .icon{font-size:16px;flex-shrink:0}
+.sub-step-header .text{font-size:14px;font-weight:600;flex:1}
+.sub-step-header .expand-arrow{font-size:13px;transition:transform .3s;opacity:.6}
+.sub-step.open>.sub-step-header .expand-arrow{transform:rotate(90deg)}
+.sub-step-header .cat-logo{width:20px;height:20px;border-radius:3px;object-fit:contain;flex-shrink:0}
+.sub-step-header .override-badge{font-size:10px;opacity:.7;cursor:help}
+.sub-step-header .step-edit-actions{display:none;gap:3px;margin-right:4px}
+.editing .sub-step-header .step-edit-actions{display:flex}
+
+/* Depth border colors */
+.depth-0>.sub-step-header{border-color:var(--depth0)}
+.depth-1>.sub-step-header{border-color:var(--depth1)}
+.depth-2>.sub-step-header{border-color:var(--depth2)}
+.depth-3>.sub-step-header{border-color:var(--depth3)}
+
+/* DETAIL PANEL */
+.detail-panel{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.detail-panel.open{max-height:none;overflow:visible}
+.detail-content{padding:12px 16px;margin:4px 8px 8px;border-radius:8px;font-size:13px;line-height:1.7}
+.detail-expand .detail-content{background:#E6F6FB;border:2px solid var(--teal-pale);color:#333}
+.detail-chriga .detail-content{background:#3A0A0A;border:3px solid #CC0000;color:#fff}
+.detail-chriga .stop-icon{font-size:18px;margin-left:6px}
+.detail-chriga .reality{color:#FF6B6B;font-weight:700}
+
+/* EDITABLE */
+[contenteditable=true]{outline:2px dashed #2E86AB;outline-offset:2px;border-radius:4px;min-width:40px}
+[contenteditable=true]:focus{outline-color:#0A5E6E;background:rgba(46,134,171,.05)}
+.inline-edit-hint{display:none}
+.editing .inline-edit-hint{display:inline;font-size:10px;color:#999;margin-right:6px}
+
+/* FLOW CHART */
+.flow-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 6px rgba(0,0,0,.08);max-height:calc(100vh - 80px);overflow-y:auto}
+.flow-card h3{font-size:15px;font-weight:700;color:#1B2A4A;margin-bottom:14px;text-align:center}
+.flow-step{text-align:center;margin-bottom:3px}
+.flow-step .box{display:inline-block;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;color:#fff;min-width:180px;cursor:pointer;transition:all .2s}
+.flow-step .box:hover{transform:scale(1.03)}
+.flow-arrow{text-align:center;color:#999;font-size:18px;margin:3px 0}
+.flow-note{font-size:10px;color:var(--waiting);text-align:center;margin:3px 0;font-weight:600}
+.flow-split{display:flex;gap:10px;justify-content:center;margin:6px 0}
+.flow-track{display:flex;flex-direction:column;align-items:center;gap:4px}
+.flow-or{background:var(--waiting);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.flow-side-note{font-size:10px;color:#CC0000;text-align:center;background:#FFF0F0;border:1px solid #CC0000;border-radius:6px;padding:3px 6px;margin:2px 0}
+.flow-diamond{display:inline-flex;align-items:center;justify-content:center;width:100px;height:100px;transform:rotate(45deg);font-size:11px;font-weight:600;color:#fff;margin:8px auto}
+.flow-diamond span{transform:rotate(-45deg);display:block;text-align:center}
+
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;padding:24px;max-width:700px;width:95%;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.2);direction:rtl}
+.modal h2{font-size:20px;margin-bottom:16px;color:var(--teal-dark);display:flex;align-items:center;gap:8px}
+.modal-close{margin-right:auto;background:none;border:none;font-size:22px;cursor:pointer;color:#999}
+.modal-close:hover{color:#333}
+
+/* CATEGORY MANAGER */
+.cat-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.cat-row{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f8f9fa;border-radius:10px;border:1px solid #e8e8e8;transition:all .2s}
+.cat-row:hover{border-color:#ccc}
+.cat-row .cat-swatch{width:28px;height:28px;border-radius:4px;cursor:pointer;border:2px solid rgba(0,0,0,.1);flex-shrink:0}
+.cat-row .cat-name{font-weight:600;font-size:14px;flex:1;min-width:60px}
+.cat-row .cat-name input{font-family:inherit;font-size:14px;font-weight:600;border:none;background:transparent;width:100%;direction:rtl}
+.cat-row .cat-name input:focus{outline:none;background:#fff;border-radius:4px;padding:2px 4px}
+.cat-shape-sel{font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:6px;background:#fff;font-family:inherit;cursor:pointer}
+.cat-logo-preview{width:24px;height:24px;border-radius:3px;object-fit:contain;border:1px solid #ddd}
+.cat-logo-btn{font-size:11px;padding:3px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-family:inherit}
+.cat-delete{background:none;border:none;cursor:pointer;font-size:16px;color:#ccc;padding:4px}
+.cat-delete:hover{color:#CC0000}
+.cat-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:2px dashed #ccc;border-radius:10px;cursor:pointer;color:#999;font-weight:600;font-size:13px;transition:all .2s;background:none;width:100%;font-family:inherit}
+.cat-add-btn:hover{border-color:var(--teal-mid);color:var(--teal-mid)}
+
+/* CATEGORY ASSIGN DROPDOWN */
+.cat-assign{position:absolute;top:100%;right:0;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:50;min-width:200px;padding:6px;display:none}
+.cat-assign.show{display:block}
+.cat-assign-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px;transition:background .2s}
+.cat-assign-item:hover{background:#f0f0f0}
+.cat-assign-item .swatch{width:18px;height:18px;border-radius:3px;flex-shrink:0}
+.cat-assign-item.active{background:#e6f7f9;font-weight:700}
+.cat-assign-item.reset{color:#CC0000;font-weight:600;border-top:1px solid #eee;margin-top:4px;padding-top:10px}
+
+/* COLOR PICKER POPUP */
+.color-picker-popup{position:absolute;z-index:200;background:#fff;border-radius:12px;padding:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);display:none}
+.color-picker-popup.show{display:block}
+.color-picker-popup input[type=color]{width:50px;height:36px;border:none;cursor:pointer;border-radius:4px}
+.color-picker-popup .preset-colors{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.color-picker-popup .preset-color{width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:border-color .2s}
+.color-picker-popup .preset-color:hover{border-color:#333}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;font-size:13px;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.container{flex-direction:column;padding:16px}.flow-panel{width:100%;position:static}}
+@media(max-width:600px){header{padding:14px 16px}header h1{font-size:20px}.container{padding:12px}.toolbar{padding:8px 16px}}
+
+/* ADD STEP BUTTON */
+.add-step-btn{display:none;border:2px dashed #ccc;border-radius:8px;padding:8px;text-align:center;color:#999;cursor:pointer;margin:6px 0;font-size:12px;font-weight:600;transition:all .2s;background:none;width:100%;font-family:inherit}
+.add-step-btn:hover{border-color:var(--teal-mid);color:var(--teal-mid)}
+.editing .add-step-btn{display:block}
+
+/* FILE INPUT HIDDEN */
+.hidden-input{position:absolute;width:0;height:0;opacity:0;pointer-events:none}
+
+/* Print */
+@media print{.toolbar,.header-actions,.edit-actions,.step-edit-actions,.add-step-btn,.flow-panel{display:none!important}.stage-content{max-height:none!important;overflow:visible!important}.detail-panel{max-height:none!important;overflow:visible!important}}
 </style>
 </head>
 <body>
@@ -319,295 +176,1074 @@
     <h1>הליך חקיקה פרטית</h1>
     <p>מיפוי סמכויות, חריגות מתקנון, והפקעת ריבונות הכנסת</p>
   </div>
+  <div class="header-actions">
+    <button onclick="toggleEditing()" id="editToggle">✏️ עריכה</button>
+    <button onclick="openCatModal()">⚙️ קטגוריות</button>
+    <button onclick="saveToStorage()">💾 שמור</button>
+    <button onclick="exportJSON()">📤 ייצוא</button>
+    <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
+    <input type="file" id="importInput" accept=".json" class="hidden-input" onchange="importJSON(event)">
+  </div>
 </header>
 
-<!-- LEGEND -->
-<div style="padding: 20px 40px 0; max-width: 1600px; margin: 0 auto;">
-  <div class="legend">
-    <span class="legend-title">מקרא:</span>
-    <span class="legend-item"><span class="legend-swatch" style="background:#2E86AB"></span>ח"כ</span>
-    <span class="legend-item"><span class="legend-swatch" style="background:#8B5CF6"></span>נשיאות</span>
-    <span class="legend-item"><span class="legend-swatch" style="background:#5B7B9A"></span>מזכיר</span>
-    <span class="legend-item"><span class="legend-swatch" style="background:#1B3A6B"></span>יו"ר הכנסת</span>
-    <span class="legend-item"><span class="legend-swatch" style="background:#2D7D46"></span>ועדת הכנסת</span>
-    <span class="legend-item"><span class="legend-swatch" style="background:white;border:2px solid #C03928"></span>ממשלה</span>
-    <span class="legend-item"><span class="legend-swatch" style="background:#CC0000"></span>🔒 חריגה</span>
-    <span class="legend-item"><span class="legend-swatch" style="background:#C8962E"></span>⏳ המתנה</span>
-    <span class="legend-item"><span class="legend-swatch" style="background:white;border:2px solid #888"></span>סוף תהליך</span>
-    <span class="legend-item">🛑 = חריגה מתקנון</span>
-  </div>
+<div class="toolbar" id="toolbar" style="display:none">
+  <span style="font-size:12px;color:#666;font-weight:600">מצב עריכה:</span>
+  <button onclick="addStage()">➕ הוסף שלב</button>
+  <div class="sep"></div>
+  <span style="font-size:11px;color:#999">לחיצה כפולה על טקסט = עריכה | גרור לסידור מחדש</span>
+</div>
+
+<div style="padding:16px 40px 0;max-width:1800px;margin:0 auto">
+  <div class="legend" id="legendBar"></div>
 </div>
 
 <div class="container">
-  <!-- ===== HIERARCHY PANEL ===== -->
-  <div class="hierarchy-panel">
-    
-    <!-- שלב א': כתיבה -->
-    <button class="stage-btn active" onclick="toggleStage(this)">
-      <span class="number">א</span>
-      <span class="label">כתיבה</span>
-      <span class="arrow">◀</span>
-    </button>
-    <div class="stage-content open">
-      
-      <!-- (1) כתיבה וניסוח -->
-      <div class="sub-step depth-0 auth-default open" onclick="toggleSub(event, this)">
-        <div class="sub-step-header">
-          <span class="icon">📝</span>
-          <span class="text">(1) כתיבה וניסוח</span>
-          <span class="expand-arrow">◀</span>
-        </div>
-        <div class="detail-panel open">
-          
-          <!-- מי -->
-          <div class="sub-step depth-1 auth-chk" style="margin: 8px 10px;">
-            <div class="sub-step-header" onclick="event.stopPropagation()">
-              <span class="text">מי: ח"כ יוזם (או מספר חברי כנסת)</span>
-            </div>
-          </div>
-          
-          <!-- מה -->
-          <div class="sub-step depth-1 auth-default" style="margin: 8px 10px;">
-            <div class="sub-step-header" onclick="toggleSub(event, this.parentElement)">
-              <span class="text">מה: איך כותבים הצעת חוק?</span>
-              <span class="expand-arrow">◀</span>
-            </div>
-            <div class="detail-panel">
-              
-              <!-- כללי ניסוח -->
-              <div class="sub-step depth-2 auth-default" style="margin: 6px 10px;">
-                <div class="sub-step-header" onclick="toggleSub(event, this.parentElement)">
-                  <span class="text">כללי ניסוח מחייבים — אין</span>
-                  <span class="expand-arrow">◀</span>
-                </div>
-                <div class="detail-panel detail-expand">
-                  <div class="detail-content">
-                    <strong>נפתח לטקסט:</strong><br>
-                    • לינק לפורמט כתיבה<br>
-                    • המלצות נוסח של היועמ"ש (+ לינק)<br>
-                    • המלצות כתיבה — מרכז יכין (+ לינק)
-                  </div>
-                </div>
-              </div>
-              
-              <!-- מה אסור -->
-              <div class="sub-step depth-2 auth-default" style="margin: 6px 10px;">
-                <div class="sub-step-header" onclick="toggleSub(event, this.parentElement)">
-                  <span class="text">מה אסור?</span>
-                  <span class="expand-arrow">◀</span>
-                </div>
-                <div class="detail-panel detail-expand">
-                  <div class="detail-content">
-                    <strong>נפתח לרשימה:</strong><br>
-                    • הצעת חוק גזענית (+ לינק לתקנון + דוגמאות)<br>
-                    • הצעת חוק השוללת את יהדות המדינה (+ לינק לתקנון + הצעות שנדחו)
-                  </div>
-                </div>
-              </div>
-              
-              <!-- תוספות נדרשות -->
-              <div class="sub-step depth-2 auth-default" style="margin: 6px 10px;">
-                <div class="sub-step-header" onclick="toggleSub(event, this.parentElement)">
-                  <span class="text">תוספות נדרשות לכתיבה</span>
-                  <span class="expand-arrow">◀</span>
-                </div>
-                <div class="detail-panel detail-expand">
-                  <div class="detail-content">
-                    <strong>נפתח לטקסט:</strong><br>
-                    • שמות ח"כ היוזמים והמצטרפים (ניתן להוסיף עד מספר רשמי 'פ')<br>
-                    • דברי הסבר לחוק (לפרט מה נכלל לפי תקנון. אם דומה לקודמת — לציין)
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-          </div>
-          
-        </div>
-      </div>
-      
-      <!-- (2) הלשכה המשפטית — חריגה -->
-      <div class="sub-step depth-0 chriga-full" onclick="toggleSub(event, this)">
-        <div class="sub-step-header">
-          <span class="icon">🛑</span>
-          <span class="text">(2) הלשכה המשפטית</span>
-          <span class="expand-arrow">◀</span>
-        </div>
-        <div class="detail-panel detail-chriga">
-          <div class="detail-content">
-            <span class="stop-icon">🛑</span> <strong>נפתח לטקסט מסביר:</strong><br><br>
-            לפי התקנון, תפקיד היועמ"ש הוא <strong>ייעוץ בלבד</strong>. אין סמכות לעכב, לאשר נוסח או למנוע הגשה.<br><br>
-            <span class="reality">בפועל: 'הסנהדרין' מעניקה ליועמ"ש הרשאות ח"כ. הלשכה מעכבת ומתנה שינויים.</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- (3) נסחות — חריגה -->
-      <div class="sub-step depth-0 chriga-full" onclick="toggleSub(event, this)">
-        <div class="sub-step-header">
-          <span class="icon">🛑</span>
-          <span class="text">(3) נסחות</span>
-          <span class="expand-arrow">◀</span>
-        </div>
-        <div class="detail-panel detail-chriga">
-          <div class="detail-content">
-            <span class="stop-icon">🛑</span> <strong>נפתח לטקסט מסביר:</strong><br><br>
-            לפי התקנון, אין לנסחות שליטה בתהליך בשום צורה.<br><br>
-            <span class="reality">אבל בגלל מבנה הסנהדרין, יש לנסחות שליטה בתהליך הטכני ויכולת לעכב את ההגשה בשל פרוצדורות שאינן מעוגנות בתקנון.</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- (4) הגשה לנשיאות — חריגה -->
-      <div class="sub-step depth-0 chriga" onclick="toggleSub(event, this)">
-        <div class="sub-step-header">
-          <span class="icon">🛑</span>
-          <span class="text">הגשה לנשיאות הכנסת</span>
-          <span class="expand-arrow">◀</span>
-        </div>
-        <div class="detail-panel detail-chriga">
-          <div class="detail-content">
-            <span class="stop-icon">🛑</span> <strong>נפתח לטקסט מסביר:</strong><br><br>
-            לפי התקנון, הגשה לנשיאות היא בסמכות ח"כ היוזם.<br><br>
-            <span class="reality">בפועל, בגלל מבנה הסנהדרין, מועבר על ידי גורמים שאינם חלק מהתהליך הרשמי.</span>
-          </div>
-        </div>
-      </div>
-      
-    </div>
-    
-    <!-- שלב ב': אישור נשיאות -->
-    <button class="stage-btn" onclick="toggleStage(this)">
-      <span class="number">ב</span>
-      <span class="label">אישור נשיאות הכנסת</span>
-      <span class="arrow">◀</span>
-    </button>
-    <div class="stage-content">
-      
-      <div class="sub-step depth-0 auth-nesiut" onclick="toggleSub(event, this)">
-        <div class="sub-step-header">
-          <span class="text">מי?</span>
-          <span class="expand-arrow">◀</span>
-        </div>
-        <div class="detail-panel detail-expand">
-          <div class="detail-content">
-            <strong>סעיף 10 לחוק הכנסת תשנ"ד — 1994:</strong><br>
-            "יושב ראש הכנסת והסגנים ליושב ראש יהוו את נשיאות הכנסת; מספר הסגנים ליושב ראש הכנסת לא יעלה על תשעה."
-          </div>
-        </div>
-      </div>
-      
-      <div class="sub-step depth-0 auth-default" onclick="toggleSub(event, this)">
-        <div class="sub-step-header">
-          <span class="text">מתי?</span>
-          <span class="expand-arrow">◀</span>
-        </div>
-        <div class="detail-panel detail-expand">
-          <div class="detail-content">
-            הנשיאות דנה בהצ"ח בפגישתה הראשונה בראשון. סדר היום למליאה בשני נקבע שם.<br><br>
-            סדר היום של הנשיאות נקבע ביום חמישי.<br><br>
-            <strong>משמעות:</strong> חוק שלא נכלל ביום חמישי בסדר היום — יתעכב לפחות שני שבועות.
-          </div>
-        </div>
-      </div>
-      
-      <div class="sub-step depth-0 auth-nesiut" onclick="toggleSub(event, this)">
-        <div class="sub-step-header">
-          <span class="text">מה — סמכות הנשיאות?</span>
-          <span class="expand-arrow">◀</span>
-        </div>
-        <div class="detail-panel detail-expand">
-          <div class="detail-content">
-            <strong>נפתח לטקסט:</strong><br>
-            "נשיאות הכנסת לא תאשר הצעת חוק שלדעתה שוללת את קיומה של מדינת ישראל כמדינתו של העם היהודי או שהיא גזענית במהותה." (+ לינק)
-          </div>
-        </div>
-      </div>
-      
-    </div>
-    
-    <!-- שלב ג': הנחה על שולחן הכנסת (placeholder) -->
-    <button class="stage-btn" onclick="toggleStage(this)">
-      <span class="number">ג</span>
-      <span class="label">הנחה על שולחן הכנסת</span>
-      <span class="arrow">◀</span>
-    </button>
-    <div class="stage-content">
-      <div style="padding: 20px; color: #999; font-style: italic;">בקרוב...</div>
-    </div>
-    
-  </div>
-  
-  <!-- ===== FLOW CHART ===== -->
-  <div class="flow-panel">
-    <div class="flow-card">
-      <h3>תרשים זרימה</h3>
-      
-      <div class="flow-step"><div class="box navy">כתיבת החוק</div></div>
-      <div class="flow-arrow">▼</div>
-      <div class="flow-step"><div class="box gold">🔒 לשכה משפטית / נסחות</div></div>
-      <div class="flow-arrow">▼</div>
-      <div class="flow-step"><div class="box red-border">הגשה לנשיאות</div></div>
-      <div class="flow-note">🔒 ח"כ לא יכול להגיש ישירות — סנהדרין</div>
-      <div class="flow-arrow">▼</div>
-      
-      <div class="flow-step">
-        <div class="box purple"><span>אישור<br>נשיאות?</span></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;">
-        <div class="flow-step"><div class="box gray" style="min-width:80px;font-size:12px;">נפסלה</div></div>
-        <div class="flow-arrow">▼</div>
-      </div>
-      
-      <div class="flow-step"><div class="box slate">הנחה על שולחן הכנסת</div></div>
-      <div class="flow-arrow">▼</div>
-      
-      <div class="flow-split">
-        <div class="flow-track">
-          <div class="flow-step"><div class="box crimson">ניתנה עמדת<br>ממשלה</div></div>
-          <div class="flow-side-note">🔒 ממשלה לא נותנת עמדה תוך 45 יום</div>
-        </div>
-        <div class="flow-track">
-          <div class="flow-step"><div class="box red" style="min-width:100px;font-size:12px;">⏳ 45 יום</div></div>
-          <div class="flow-or">או</div>
-          <div class="flow-step"><div class="box vaadat" style="min-width:100px;font-size:12px;">קיצור דחיפות</div></div>
-          <div class="flow-or">או</div>
-          <div class="flow-step"><div class="box chk" style="min-width:100px;font-size:12px;">הצמדה</div></div>
-          <div class="flow-side-note">🔒 לשכה מתערבת בקביעת דמיון</div>
-        </div>
-      </div>
-      
-      <div class="flow-arrow">▼</div>
-      <div class="flow-step"><div class="box navy">קביעת דיון מוקדם</div></div>
-    </div>
-  </div>
-  
+  <div class="hierarchy-panel" id="hierarchyPanel"></div>
+  <div class="flow-panel" id="flowPanel"></div>
 </div>
 
+<!-- CATEGORY MODAL -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal">
+    <h2>⚙️ ניהול קטגוריות <button class="modal-close" onclick="closeCatModal()">✕</button></h2>
+    <p style="font-size:12px;color:#888;margin-bottom:14px">שינוי צבע/צורה כאן → עדכון אוטומטי בכל הקופסאות המשויכות</p>
+    <div class="cat-list" id="catList"></div>
+    <button class="cat-add-btn" onclick="addCategory()">➕ הוסף קטגוריה</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- HIDDEN FILE INPUT FOR LOGO -->
+<input type="file" id="logoInput" accept="image/*" class="hidden-input">
+
 <script>
-function toggleStage(btn) {
-  const content = btn.nextElementSibling;
-  const wasActive = btn.classList.contains('active');
-  
-  // Close all
-  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.stage-content').forEach(c => c.classList.remove('open'));
-  
-  if (!wasActive) {
-    btn.classList.add('active');
-    content.classList.add('open');
+// ============================================================
+// DATA MODEL
+// ============================================================
+
+const DEFAULT_CATEGORIES = [
+  {id:"chk",name:"ח\"כ",color:"#2E86AB",shape:"rounded-rect",logo:null},
+  {id:"nesiut",name:"נשיאות",color:"#8B5CF6",shape:"rounded-rect",logo:null},
+  {id:"mazkir",name:"מזכיר",color:"#5B7B9A",shape:"rounded-rect",logo:null},
+  {id:"yoresh",name:"יו\"ר הכנסת",color:"#1B3A6B",shape:"rounded-rect",logo:null},
+  {id:"vaadat",name:"ועדת הכנסת",color:"#2D7D46",shape:"rounded-rect",logo:null},
+  {id:"gov",name:"ממשלה",color:"#C03928",shape:"rounded-rect",logo:null},
+  {id:"chriga",name:"חריגה",color:"#CC0000",shape:"octagon",logo:null},
+  {id:"process",name:"תהליך",color:"#0A5E6E",shape:"rounded-rect",logo:null},
+  {id:"waiting",name:"המתנה",color:"#B8860B",shape:"pill",logo:null}
+];
+
+const DEFAULT_STAGES = [
+  {
+    id:"s1",letter:"א",title:"כתיבת הצעת חוק",subtitle:"מהיוזמה ועד להנחה",
+    steps:[
+      {id:"s1_1",title:"כתיבה וניסוח",icon:"📝",catId:"chk",chpiqa:false,depth:0,
+        details:"",
+        children:[
+          {id:"s1_1_1",title:"מי: ח\"כ יוזם (או מספר חברי כנסת)",icon:"",catId:"chk",chpiqa:false,depth:1,details:"",children:[]},
+          {id:"s1_1_2",title:"מה: איך כותבים הצעת חוק?",icon:"",catId:"process",chpiqa:false,depth:1,
+            details:"",
+            children:[
+              {id:"s1_1_2a",title:"כללי ניסוח מחייבים — אין",icon:"",catId:"process",chpiqa:false,depth:2,
+                details:"המלצות ניסוח: לינק לקובץ של יועמ\"ש 02/2018\nהמלצות כתיבה — מרכז יכין",detailType:"expand",children:[]},
+              {id:"s1_1_2b",title:"מה אסור?",icon:"",catId:"process",chpiqa:false,depth:2,
+                details:"• הצעת חוק גזענית (סעיף בתקנון)\n• הצעת חוק השוללת את המדינה היהודית (סעיף בתקנון)",detailType:"expand",children:[]},
+              {id:"s1_1_2c",title:"תוספות נדרשות לכתיבה",icon:"",catId:"process",chpiqa:false,depth:2,
+                details:"• שמות ח\"כ היוזמים והמצטרפים — ניתן להוסיף עד מספר רשמי 'פ' במערכת\n• אם ההצעה דומה להצעות שנדונו בעבר, יש לציין זאת בדברי ההסבר (סעיף בתקנון)",detailType:"expand",children:[]}
+            ]
+          }
+        ]
+      },
+      {id:"s1_2",title:"הלשכה המשפטית",icon:"🛑",catId:"chriga",chpiqa:true,depth:0,
+        details:"תקנון: תפקיד היועמ\"ש הוא ייעוץ בלבד. אין סמכות לעכב, לאשר נוסח או למנוע הגשה.\n\nבפועל: מערכת 'הסנהדרין' מעניקה ליועמ\"ש הרשאות ח\"כ. הלשכה המשפטית יכולה בכל שלב לעכב את ההגשה של חוק ולהתנות את ההגשה בהסכמה של ח\"כ לשינויים בחוק.",
+        detailType:"chriga",children:[]},
+      {id:"s1_3",title:"נסחות",icon:"🛑",catId:"chriga",chpiqa:true,depth:0,
+        details:"תקנון: אין לנסחות שליטה בתהליך.\n\nבפועל: הלשכה המשפטית מעבירה את הנוסח הסופי לנסחות שגם היא יכולה, בשל שליטתה בתהליך הטכני, לעכב את הנחת החוק בשל פרוצדורות שנקבעו ללא סמכות.",
+        detailType:"chriga",children:[]},
+      {id:"s1_4",title:"הגשה לנשיאות הכנסת",icon:"🛑",catId:"chk",chpiqa:true,depth:0,
+        details:"תקנון: הגשה על ידי ח\"כ, ישירות לנשיאות.\n\nבפועל: מועבר בסנהדרין מהח\"כ ← ליועמ\"ש ← לנסחות שמעבירה לנשיאות. ח\"כ אינו יכול להגיש ישירות.",
+        detailType:"chriga",children:[
+          {id:"s1_4_1",title:"מתי? לוח זמנים",icon:"📅",catId:"process",chpiqa:false,depth:1,
+            details:"יש להעביר עד יום חמישי לידי הנשיאות — לדיון בראשון, בשביל הנחה על שולחן הכנסת בשני.\n\nמשמעות: חוק שלא הועבר לנשיאות לפני פגישתה בראשון, לא יונח בשני (עיכוב של שבוע). ככלל, חוק שלא נכנס ללו\"ז הנשיאות בחמישי, יגיע רק במקרים נדירים ללו\"ז הנשיאות בראשון.",
+            detailType:"expand",children:[]}
+        ]},
+      {id:"s1_5",title:"סמכות הנשיאות",icon:"",catId:"nesiut",chpiqa:false,depth:0,
+        details:"לאשר / לפסול את ההצעה.\n\nאסור: לאשר הצעה גזענית או השוללת את המדינה היהודית.",
+        detailType:"expand",children:[]},
+      {id:"s1_6",title:"הנחה ושהייה על שולחן הכנסת",icon:"📋",catId:"mazkir",chpiqa:false,depth:0,
+        details:"לפי התקנון: יש להמתין 45 יום לפחות עד למועד הדיון בהצעה.\n\n45 הימים נועדו לאפשר לממשלה זמן לדון בהצעת החוק ולגבש את עמדתה.",
+        detailType:"expand",
+        children:[
+          {id:"s1_6_1",title:"קיצור המתנה",icon:"",catId:"process",chpiqa:false,depth:1,
+            details:"ניתן לקצר את ההמתנה אם:\n• הממשלה הודיעה על תמיכה / אי התנגדות / אי התנגדות לדיון\n• ועדת הכנסת, בנוכחות שליש חבריה, החליטה שהדיון דחוף\n• הדיון מוצמד להצ\"ח דומה (אפשרי גם בקריאה ראשונה), בתנאי שחלפו לפחות שבועיים מיום ההנחה",
+            detailType:"expand",children:[]}
+        ]},
+      {id:"s1_7",title:"ועדת השרים לענייני חקיקה",icon:"🛑",catId:"gov",chpiqa:true,depth:0,
+        details:"תקנון: הממשלה אמורה לגבש עמדה תוך 45 הימים.\n\nבפועל: ועדת השרים ממתינה עד אחרי שחלפו 45 ימי ההנחה כדי לדון בחוק (בלי סיבה חוקית). חקיקה של הקואליציה שזקוקה להסכמת ועדת השרים מתעכבת הרבה יותר מחקיקה של האופוזיציה. חקיקה פרטית של האופוזיציה נפסלת לעיתים קרובות פשוט כיוון שהיא 'של האופוזיציה'.\n\nדיון לפי מכסה של הצעת חוק אחת לסיעה לשבוע.",
+        detailType:"chriga",children:[]}
+    ]
+  },
+  {
+    id:"s2",letter:"ב",title:"קביעת מועד הדיון המוקדם",subtitle:"קריאה טרומית",
+    steps:[
+      {id:"s2_1",title:"יו\"ר הכנסת קובע את מועד הדיון",icon:"",catId:"yoresh",chpiqa:false,depth:0,
+        details:"הדיון ייקבע באחד משני אופנים:\n• ביום ד' לפי המכסה של הסיעה (הסיעה היא הקובעת את התור בין חבריה)\n• בדיון לציון נושא מיוחד שקובע היו\"ר — נדרשת הסכמת הממשלה, והיו\"ר יכול לקבוע שהדיון אינו על חשבון המכסה",
+        detailType:"expand",children:[]},
+      {id:"s2_2",title:"הצעה דומה להצעה קודמת",icon:"🛑",catId:"yoresh",chpiqa:true,depth:0,
+        details:"תקנון: לא כתוב בסמכות מי לקבוע דמיון.\n\nבפועל: הלשכה המשפטית של הכנסת נטלה לעצמה את הסמכות לקבוע דמיון.\n\nאם ההצעה הקודמת הוסרה מסדר היום לפני קריאה שניה, הוסרה בהמלצת ועדה מכינה, או נדונה כהצעה לסדר היום — יש להמתין 6 חודשים מסיום הטיפול בהצעה הקודמת.\n\nאם חל שינוי של ממש בנסיבות, יו\"ר הכנסת יכול להקדים את הדיון לבקשת היוזם.",
+        detailType:"chriga",children:[]}
+    ]
+  },
+  {
+    id:"s3",letter:"ג",title:"דיון מוקדם",subtitle:"קריאה טרומית",
+    steps:[
+      {id:"s3_1",title:"נימוק",icon:"🎤",catId:"chk",chpiqa:false,depth:0,
+        details:"אם היוזם נעדר והוא לא הסמיך מחליף, אין דיון. אם היו\"ר לא מוצא את ההעדרות מוצדקת, המכסה אבדה.\n\nאם היוזם או מחליפו נוכח, הם מנמקים את ההצעה.",
+        detailType:"expand",children:[]},
+      {id:"s3_2",title:"דיון",icon:"💬",catId:"yoresh",chpiqa:false,depth:0,
+        details:"אם חבר ממשלה הודיע בהסכמת יוזם ההצעה על הבעת עמדת הממשלה במועד אחר, ההצבעה נדחית.\n\nלבקשת היוזם היא תתקיים במועד אחר בישיבה יעודית להצעות חוק, או בישיבה אחרת כהצעה מוצמדת.",
+        detailType:"expand",
+        children:[
+          {id:"s3_2_1",title:"אם אין התנגדות",icon:"",catId:"process",chpiqa:false,depth:1,
+            details:"אין דיון — עוברים מיד להצבעה.",detailType:"expand",children:[]},
+          {id:"s3_2_2",title:"התנגדויות אפשריות",icon:"",catId:"process",chpiqa:false,depth:1,
+            details:"• התנגדות הממשלה\n• אם הממשלה לא התנגדה — חבר כנסת אחר יכול להתנגד\n• אם הובעה התנגדות, יוזם ההצעה יכול לבקש דיון לסדר היום בוועדה במקום הצבעה\n• אם המליאה מצביעה בעד — דיון בוועדה שתיקבע\n• אם הצביעה נגד — רק בחלוף 6 חודשים אפשר להעלות שוב",
+            detailType:"expand",children:[]}
+        ]},
+      {id:"s3_3",title:"הצבעה",icon:"🗳️",catId:"yoresh",chpiqa:false,depth:0,
+        details:"המליאה מצביעה אם לקבל את הצעת החוק או לדחותה.\n\n• אם ההצעה מתקבלת — ממשיכה לקביעת ועדה\n• אם ההצעה נדחית — רק בחלוף 6 חודשים אפשר להעלות שוב",
+        detailType:"expand",children:[]}
+    ]
+  },
+  {
+    id:"s4",letter:"ד",title:"קביעת הוועדה המכינה",subtitle:"לקריאה ראשונה",
+    steps:[
+      {id:"s4_1",title:"בסיום ההצבעה",icon:"",catId:"yoresh",chpiqa:false,depth:0,
+        details:"יו\"ר הכנסת מודיע לאיזו ועדה מוועדות הכנסת תעבור הצעת החוק לצורך הכנתה לקריאה הראשונה.\n\nאם חבר כנסת הציע על-אתר ועדה אחרת או ועדה משותפת — ועדת הכנסת תכריע באיזו ועדה ההצעה תידון, ואם זו ועדה משותפת — תקבע את הרכבה.",
+        detailType:"expand",children:[]},
+      {id:"s4_2",title:"אפשרות החלפת ועדה לאחר מעבר",icon:"🔄",catId:"vaadat",chpiqa:false,depth:0,
+        details:"יוזם ההצעה, ראש הוועדה אליה הועברה וראש ועדה אחרת יכולים לבקש החלפת ועדה.\n\n• אם הוועדה כבר החלה בדיונים — נדרש אישור יו\"ר הוועדה להליך ההחלפה\n• אם הדיונים עוד לא החלו — יושעו עד לסיום ההליך\n\nוועדת הכנסת תדון אם להמליץ על החלפה:\n• אם מחליטה שלא — הוועדה נקבעה סופית\n• אם ממליצה להחליף — מליאת הכנסת תצביע ללא דיון",
+        detailType:"expand",children:[]}
+    ]
+  },
+  {
+    id:"s5",letter:"ה",title:"הכנה לקריאה ראשונה",subtitle:"דיון בוועדה",
+    steps:[
+      {id:"s5_1",title:"קביעת זמן הישיבות לדיון בהצעה",icon:"📅",catId:"vaadat",chpiqa:false,depth:0,
+        details:"ליו\"ר הוועדה אסור להקדים הצעה שלו להצעות אחרות שהגיעו לוועדה לפניה, ולא נדונו בחצי השנה האחרונה.\n\nמותר לו להקדים את שלו אם יוזמי ההצעות המוקדמות מבקשים לדון קודם בהצעתו או אם חלפה יותר מחצי שנה מאז שהצעתו הגיעה לוועדה.",
+        detailType:"expand",children:[]},
+      {id:"s5_2",title:"דיון בהסרת ההצעה",icon:"❌",catId:"vaadat",chpiqa:false,depth:0,
+        details:"הוועדה יכולה לדון בהסרת ההצעה מסדר היום.\n\nאם רוב או חצי מחבריה תומכים בהסרה — ההצעה עוברת למסלול של הסרה מסדר היום.",
+        detailType:"expand",children:[]},
+      {id:"s5_3",title:"מיזוג, פיצול ושינוי נוסח (אופציונלי)",icon:"✂️",catId:"vaadat",chpiqa:false,depth:0,
+        details:"",
+        children:[
+          {id:"s5_3_1",title:"מיזוג",icon:"",catId:"vaadat",chpiqa:false,depth:1,
+            details:"הוועדה יכולה למזג את ההצעה הנידונה עם הצעה אחרת. ההצעה האחרת יכולה להיות אפילו הצעה שעברה רק קריאה טרומית.",
+            detailType:"expand",children:[]},
+          {id:"s5_3_2",title:"פיצול",icon:"",catId:"vaadat",chpiqa:false,depth:1,
+            details:"הוועדה יכולה להציע פיצול של ההצעה. ההצעה תונח על שולחן הכנסת והמליאה תצביע אם לפצל לפי ההצעה או לא.",
+            detailType:"expand",children:[]},
+          {id:"s5_3_3",title:"שינוי נוסח",icon:"",catId:"vaadat",chpiqa:false,depth:1,
+            details:"לא כתוב במפורש שהוועדה יכולה לשנות את נוסח ההצעה, אך מיזוג ופיצול — שבתחום סמכותה — גורמים פעמים רבות בהכרח לשינויי נוסח.",
+            detailType:"expand",children:[]}
+        ]},
+      {id:"s5_4",title:"דיון בעלות הכלכלית",icon:"💰",catId:"gov",chpiqa:false,depth:0,
+        details:"הוועדה תזמין נציג ממשרד האוצר להערכת עלותה של ההצעה.\n\n• אין עלות צפויה, או עלות מתחת ל~7 מלש\"ח לשנה — תיכתב בהצעה + מקור תקציבי\n• עלות מעל ~7 מלש\"ח בשנה — הצעה תקציבית, מסלול נפרד\n\n(הסכום מתעדכן לפי המדד)",
+        detailType:"expand",children:[]},
+      {id:"s5_5",title:"סיום הדיון — הנחה על שולחן הכנסת",icon:"✅",catId:"mazkir",chpiqa:false,depth:0,
+        details:"מזכיר הכנסת יניח את ההצעה על שולחן הכנסת.\n\nאם לאחר סיום הדיון ולפני ההנחה דורש חבר כנסת או ממשלה דיון מחודש (רוויזיה) בהצעה או בחלקה — היא מועברת למסלול 'דיון מחודש'.",
+        detailType:"expand",children:[]}
+    ]
+  },
+  {
+    id:"s6",letter:"ו",title:"קריאה ראשונה",subtitle:"הצבעה במליאה",
+    steps:[
+      {id:"s6_1",title:"קביעת מועד הדיון",icon:"📅",catId:"yoresh",chpiqa:false,depth:0,
+        details:"יו\"ר הכנסת קובע את המועד, ואינו מחויב לסד זמנים. ביכולתו לקבוע דיון משולב בכמה הצעות בנושא דומה.",
+        detailType:"expand",children:[]},
+      {id:"s6_2",title:"דיון",icon:"🎤",catId:"yoresh",chpiqa:false,depth:0,
+        details:"היוזם או מחליפו מנמק את ההצעה.\nחבר הממשלה רשאי להביע את דעתה.",
+        detailType:"expand",children:[]},
+      {id:"s6_3",title:"הצבעה",icon:"🗳️",catId:"yoresh",chpiqa:false,depth:0,
+        details:"יו\"ר הכנסת יכול לדחות את ההצבעה למועד אחר בנסיבות מיוחדות, או לבקשת/בהסכמת היוזם.\n\nהמליאה מצביעה:\n• העברה לקריאה שנייה ושלישית ← ממשיך לשלב ז'\n• הסרה מסדר היום ← 6 חודשים עד העלאה מחדש",
+        detailType:"expand",children:[]}
+    ]
+  },
+  {
+    id:"s7",letter:"ז",title:"קביעת הוועדה המכינה",subtitle:"לקריאה שנייה ושלישית",
+    steps:[
+      {id:"s7_1",title:"ברירת המחדל",icon:"",catId:"vaadat",chpiqa:false,depth:0,
+        details:"הצעת החוק נשארת באותה הוועדה שהכינה אותה לקריאה הראשונה.",
+        detailType:"expand",children:[]},
+      {id:"s7_2",title:"אפשרות החלפת ועדה",icon:"🔄",catId:"vaadat",chpiqa:false,depth:0,
+        details:"יוזם ההצעה, ראש הוועדה אליה הועברה וראש ועדה אחרת יכולים לבקש החלפה.\n\n• אם הוועדה כבר החלה בדיונים — נדרש אישור יו\"ר הוועדה\n• אם לא החלו — יושעו עד סיום ההליך\n\nוועדת הכנסת תדון אם להמליץ על החלפה:\n• אם לא — הוועדה נקבעה סופית\n• אם כן — מליאת הכנסת תצביע ללא דיון",
+        detailType:"expand",children:[]}
+    ]
+  },
+  {
+    id:"s8",letter:"ח",title:"הכנה לקריאה שנייה ושלישית",subtitle:"דיון בוועדה",
+    steps:[
+      {id:"s8_1",title:"דיון בהסרת ההצעה",icon:"❌",catId:"vaadat",chpiqa:false,depth:0,
+        details:"הוועדה יכולה לדון בהסרת ההצעה מסדר היום.\n\nאם רוב או חצי מחבריה תומכים בהסרה — ההצעה עוברת למסלול של הסרה מסדר היום.",
+        detailType:"expand",children:[]},
+      {id:"s8_2",title:"מיזוג, פיצול ושינוי נוסח (אופציונלי)",icon:"✂️",catId:"vaadat",chpiqa:false,depth:0,
+        details:"",
+        children:[
+          {id:"s8_2_1",title:"מיזוג",icon:"",catId:"vaadat",chpiqa:false,depth:1,
+            details:"הוועדה יכולה למזג את ההצעה הנידונה עם הצעה אחרת, באישור ועדת הכנסת. ההצעה האחרת יכולה להיות אפילו הצעה שעברה רק קריאה טרומית.",
+            detailType:"expand",children:[]},
+          {id:"s8_2_2",title:"פיצול",icon:"",catId:"vaadat",chpiqa:false,depth:1,
+            details:"הוועדה יכולה להציע פיצול של ההצעה. ההצעה תונח על שולחן הכנסת והמליאה תצביע אם לפצל.",
+            detailType:"expand",children:[]},
+          {id:"s8_2_3",title:"שינוי נוסח",icon:"",catId:"vaadat",chpiqa:false,depth:1,
+            details:"הוועדה יכולה לתקן סעיפים בהצעה ולהוסיף סעיפים בתנאי שהם בתחום נושא ההצעה.",
+            detailType:"expand",children:[]},
+          {id:"s8_2_4",title:"'נושא חדש'",icon:"⚠️",catId:"vaadat",chpiqa:false,depth:1,
+            details:"עד לאישור ההצעה לקריאה שנייה ושלישית, חבר כנסת או ממשלה יכול לטעון שתיקון חורג מנושא ההצעה.\n\nוועדת הכנסת תכריע אם אכן מדובר בנושא חדש. חבר ממשלה שטען נדרש להגיש טענתו בכתב עד למועד הדיון.\n\nאם ועדת הכנסת הכריעה שזהו נושא חדש — התיקון יוסר ולא יוכל להופיע אפילו כהסתייגות.",
+            detailType:"expand",children:[]}
+        ]},
+      {id:"s8_3",title:"דיון בעלות הכלכלית",icon:"💰",catId:"gov",chpiqa:false,depth:0,
+        details:"הוועדה תזמין נציג ממשרד האוצר להערכת עלות.\n\n• עלות מתחת ל~7 מלש\"ח — הטיפול הסתיים\n• עלות מעל ~7 מלש\"ח — הצעה תקציבית, מסלול נפרד",
+        detailType:"expand",children:[]},
+      {id:"s8_4",title:"תיקונים והסתייגויות",icon:"📝",catId:"chk",chpiqa:false,depth:0,
+        details:"כל חבר כנסת וממשלה רשאי להציע תיקונים להצעה. הוועדה יכולה להכניס תיקוניו לנוסח החוק.\n\nאם הצעותיו נדחו — ביכולתו להגיש הסתייגות על הצעת החוק. ההסתייגות תנוסח ביחס לסעיף או נושא, ולא ביחס לכולה.",
+        detailType:"expand",
+        children:[
+          {id:"s8_4_1",title:"פסילת הסתייגויות",icon:"",catId:"nesiut",chpiqa:false,depth:1,
+            details:"נשיאות הכנסת תפסול הסתייגויות גזעניות, שוללות את המדינה היהודית, פוגעניות או מזלזלות בכנסת.\n\nהסתייגויות זהות יאוחדו תחת שמות כל מציעיהן או תחת שם הסיעה.",
+            detailType:"expand",children:[]},
+          {id:"s8_4_2",title:"עלות כלכלית של הסתייגויות",icon:"",catId:"gov",chpiqa:false,depth:1,
+            details:"הוועדה תבחן הסתייגויות מבחינת עלות כלכלית באותו אופן של בחינת ההצעה עצמה.",
+            detailType:"expand",children:[]},
+          {id:"s8_4_3",title:"בקשת רשות דיבור",icon:"",catId:"chk",chpiqa:false,depth:1,
+            details:"אם מציע תיקון לא הגיש הסתייגות, הוא רשאי — בעת הדיון או בכתב בחתימתו ליו\"ר הוועדה — לבקש רשות דיבור בעת הקריאה השנייה.",
+            detailType:"expand",children:[]}
+        ]},
+      {id:"s8_5",title:"סיום הדיון בהצעה",icon:"✅",catId:"vaadat",chpiqa:false,depth:0,
+        details:"הוועדה תצביע על הנוסח הסופי. לאחר ההצבעה תגיש את ההצעה ליו\"ר הכנסת, ותכלול בדף נלווה פרטים, הסתייגויות ובקשות דיבור לקריאה השנייה.\n\nיו\"ר הכנסת יניח את ההצעה על שולחן הכנסת.\n\nאם לאחר סיום הדיון ולפני ההנחה דורש ח\"כ או ממשלה דיון מחודש (רוויזיה) — מועבר למסלול 'דיון מחודש'.\n\nלאחר ההנחה ועד לתחילת הקריאה השנייה, הוועדה רשאית למשוך את ההצעה לדיון נוסף. בדיון הנוסף בסמכותה לשנות סעיפים ולהציע הסרה מסדר היום.",
+        detailType:"expand",children:[]}
+    ]
+  },
+  {
+    id:"s9",letter:"ט",title:"קריאה שנייה",subtitle:"דיון סעיף-סעיף והסתייגויות",
+    steps:[
+      {id:"s9_1",title:"קביעת מועד הדיון",icon:"📅",catId:"yoresh",chpiqa:false,depth:0,
+        details:"יו\"ר הכנסת קובע את המועד, ואינו מחויב לסד זמנים. ביכולתו לקבוע דיון משולב בכמה הצעות בנושא דומה.",
+        detailType:"expand",children:[]},
+      {id:"s9_2",title:"דיון",icon:"💬",catId:"yoresh",chpiqa:false,depth:0,
+        details:"יו\"ר הוועדה המכינה מנמק את ההצעה.",
+        detailType:"expand",
+        children:[
+          {id:"s9_2_1",title:"נימוק הסתייגויות",icon:"",catId:"chk",chpiqa:false,depth:1,
+            details:"כל מסתייג רשאי לנמק את הסתייגותו לפי הסדר. בהסכמת המסתייג היו\"ר יכול לקבוע שינמק במרוכז את כל הסתייגויותיו.\n\nהסתייגות שמתבטאת בכמה סעיפים מנומקת ככמה הסתייגויות.\n\nנימוק הסתייגות ח\"מ: על ידי כל שר / סגן שר במשרדו של שר מסתייג.\n\nמסתייג רשאי לחזור בו מהסתייגותו עד להצבעה.",
+            detailType:"expand",children:[]},
+          {id:"s9_2_2",title:"רשות דיבור",icon:"",catId:"yoresh",chpiqa:false,depth:1,
+            details:"רשות הדיבור נתנת לכל מי שביקש אותה מראש.\n\nיו\"ר הוועדה המכינה רשאי לענות להסתייגויות.",
+            detailType:"expand",children:[]},
+          {id:"s9_2_3",title:"החזרה לוועדה",icon:"🔄",catId:"gov",chpiqa:false,depth:1,
+            details:"לאורך כל הדיון, נציג הממשלה הנוכח בדיון או יו\"ר הוועדה המכינה רשאים להציע להחזיר את ההצעה או חלקה לדיון בוועדה.\n\nאם כך הציעו — המליאה תצביע. אם הוחלט להחזירה — נכנסת למסלול 'החזרה לדיון בוועדה מקריאה שנייה'.",
+            detailType:"expand",children:[]}
+        ]},
+      {id:"s9_3",title:"הצבעה — סעיף אחר סעיף",icon:"🗳️",catId:"yoresh",chpiqa:false,depth:0,
+        details:"אם יש רצף סעיפים בלי הסתייגויות — יו\"ר הכנסת יכול, אם אף ח\"כ אינו מתנגד, להחליט להצביע עליהם ביחד.",
+        detailType:"expand",
+        children:[
+          {id:"s9_3_1",title:"הצבעה על הסתייגות (אם יש)",icon:"",catId:"yoresh",chpiqa:false,depth:1,
+            details:"בתנאי שהמסתייגים או חלקם נוכחים (לחלופין מי שזכאי לנמק במקומם יכול לבקש הצבעה).\n\nההצבעה היא על קבלת ההסתייגות או דחייתה. ההצבעה היא יחידה, גם אם ההסתייגות היא על כמה סעיפים.\n\nלקבלת הסתייגות לא נדרש רוב מיוחד, מלבד להסתייגות תקציבית.",
+            detailType:"expand",children:[]},
+          {id:"s9_3_2",title:"התנגשות הסתייגויות",icon:"⚡",catId:"yoresh",chpiqa:false,depth:1,
+            details:"אם הסתייגות התקבלה והיא סותרת הסתייגות אחרת — תיערך מיד הצבעה להכרעה בין שתי ההסתייגויות.",
+            detailType:"expand",children:[]},
+          {id:"s9_3_3",title:"הצבעה על הסעיף",icon:"",catId:"yoresh",chpiqa:false,depth:1,
+            details:"הצבעה על הסעיף המקורי או המעודכן, אם לא התקבלה הסתייגות שמוחקת אותו.\n\nמעבר לסעיף הבא, וחוזר חלילה.",
+            detailType:"expand",children:[]}
+        ]}
+    ]
+  },
+  {
+    id:"s10",letter:"י",title:"קריאה שלישית",subtitle:"הצבעה סופית על כלל הנוסח",
+    steps:[
+      {id:"s10_1",title:"הצבעה יחידה על כלל הנוסח",icon:"🗳️",catId:"yoresh",chpiqa:false,depth:0,
+        details:"כברירת מחדל, הקריאה השלישית חלה מיד לאחר הקריאה השנייה.\n\nאם התקבלה לפחות הסתייגות אחת — יו\"ר הוועדה המכינה או נציג הממשלה יכולים לדרוש את דחיית ההצבעה לשבוע הבא.",
+        detailType:"expand",children:[]},
+      {id:"s10_2",title:"תוצאה",icon:"📜",catId:"process",chpiqa:false,depth:0,
+        details:"המליאה מצביעה על החוק כולו:\n\n✅ אושר — החוק נכנס לספר החוקים\n❌ נדחה — הוסר מסדר היום. הסרתו מונעת ל-6 חודשים את העלאתו מחדש.",
+        detailType:"expand",children:[]}
+    ]
+  }
+];
+
+// ============================================================
+// APP STATE
+// ============================================================
+
+let appState = {
+  categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+  stages: JSON.parse(JSON.stringify(DEFAULT_STAGES)),
+  editing: false,
+  openStages: new Set(["s1"])
+};
+
+let nextId = 1000;
+function genId(){ return "gen_" + (nextId++); }
+
+// ============================================================
+// LOAD / SAVE
+// ============================================================
+
+function loadFromStorage(){
+  try {
+    const raw = localStorage.getItem("knesset-legislation-v2");
+    if(raw){
+      const d = JSON.parse(raw);
+      if(d.categories) appState.categories = d.categories;
+      if(d.stages) appState.stages = d.stages;
+      if(d.nextId) nextId = d.nextId;
+      showToast("נטען מאחסון מקומי");
+    }
+  } catch(e){ console.error("Load error:",e); }
+}
+
+function saveToStorage(){
+  try {
+    localStorage.setItem("knesset-legislation-v2", JSON.stringify({
+      categories: appState.categories,
+      stages: appState.stages,
+      nextId
+    }));
+    showToast("💾 נשמר בהצלחה");
+  } catch(e){ showToast("❌ שגיאה בשמירה"); }
+}
+
+function exportJSON(){
+  const blob = new Blob([JSON.stringify({categories:appState.categories,stages:appState.stages,nextId,exportDate:new Date().toISOString()},null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "knesset-legislation-"+new Date().toISOString().slice(0,10)+".json";
+  a.click();
+  showToast("📤 קובץ JSON יוצא");
+}
+
+function importJSON(ev){
+  const f = ev.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = function(e){
+    try {
+      const d = JSON.parse(e.target.result);
+      if(d.categories) appState.categories = d.categories;
+      if(d.stages) appState.stages = d.stages;
+      if(d.nextId) nextId = d.nextId;
+      renderAll();
+      showToast("📥 יובא בהצלחה");
+    } catch(err){ showToast("❌ קובץ לא תקין"); }
+  };
+  r.readAsText(f);
+  ev.target.value = "";
+}
+
+// ============================================================
+// CATEGORIES
+// ============================================================
+
+function getCat(id){ return appState.categories.find(c=>c.id===id); }
+
+function openCatModal(){
+  document.getElementById("catModal").classList.add("show");
+  renderCatList();
+}
+function closeCatModal(){
+  document.getElementById("catModal").classList.remove("show");
+  renderAll();
+}
+
+function renderCatList(){
+  const el = document.getElementById("catList");
+  el.innerHTML = appState.categories.map((cat,i) => `
+    <div class="cat-row" data-cat="${cat.id}">
+      <div class="cat-swatch" style="background:${cat.color}" onclick="pickCatColor('${cat.id}',this)" title="לחץ לשנות צבע"></div>
+      <div class="cat-name"><input value="${escH(cat.name)}" onchange="updateCatName('${cat.id}',this.value)" /></div>
+      <select class="cat-shape-sel" onchange="updateCatShape('${cat.id}',this.value)">
+        <option value="rounded-rect" ${cat.shape==="rounded-rect"?"selected":""}>▢ מלבן</option>
+        <option value="diamond" ${cat.shape==="diamond"?"selected":""}>◇ מעוין</option>
+        <option value="circle" ${cat.shape==="circle"?"selected":""}>● עיגול</option>
+        <option value="octagon" ${cat.shape==="octagon"?"selected":""}>⬡ מתומן</option>
+        <option value="pill" ${cat.shape==="pill"?"selected":""}>⬭ כמוסה</option>
+      </select>
+      ${cat.logo ? `<img class="cat-logo-preview" src="${cat.logo}" />` : ""}
+      <button class="cat-logo-btn" onclick="uploadCatLogo('${cat.id}')">🖼️</button>
+      <button class="cat-delete" onclick="deleteCat('${cat.id}')" title="מחק">🗑️</button>
+    </div>
+  `).join("");
+}
+
+function pickCatColor(catId, swatchEl){
+  // Remove existing popups
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  const cat = getCat(catId);
+  const popup = document.createElement("div");
+  popup.className = "color-picker-popup show";
+  popup.innerHTML = `
+    <input type="color" value="${cat.color}" oninput="updateCatColorLive('${catId}',this.value,this.closest('.cat-row'))">
+    <div class="preset-colors">
+      ${["#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B","#E67E22","#8E44AD","#2C3E50"].map(c=>
+        `<div class="preset-color" style="background:${c}" onclick="updateCatColorLive('${catId}','${c}',this.closest('.cat-row'));this.closest('.color-picker-popup').querySelector('input').value='${c}'"></div>`
+      ).join("")}
+    </div>
+  `;
+  popup.style.position = "absolute";
+  popup.style.zIndex = "300";
+  swatchEl.parentElement.style.position = "relative";
+  swatchEl.parentElement.appendChild(popup);
+  // Close on outside click
+  setTimeout(()=>{
+    document.addEventListener("click",function handler(e){
+      if(!popup.contains(e.target) && e.target !== swatchEl){
+        popup.remove();
+        document.removeEventListener("click",handler);
+      }
+    });
+  },50);
+}
+
+function updateCatColorLive(catId, color, rowEl){
+  const cat = getCat(catId);
+  if(cat){ cat.color = color; }
+  if(rowEl){
+    const swatch = rowEl.querySelector(".cat-swatch");
+    if(swatch) swatch.style.background = color;
   }
 }
 
-function toggleSub(event, el) {
+function updateCatName(catId, name){
+  const cat = getCat(catId);
+  if(cat) cat.name = name;
+}
+
+function updateCatShape(catId, shape){
+  const cat = getCat(catId);
+  if(cat) cat.shape = shape;
+}
+
+function uploadCatLogo(catId){
+  const inp = document.getElementById("logoInput");
+  inp.onchange = function(e){
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = function(ev){
+      const cat = getCat(catId);
+      if(cat){ cat.logo = ev.target.result; }
+      renderCatList();
+    };
+    r.readAsDataURL(f);
+    inp.value = "";
+  };
+  inp.click();
+}
+
+function deleteCat(catId){
+  if(!confirm("למחוק את הקטגוריה?")) return;
+  appState.categories = appState.categories.filter(c=>c.id !== catId);
+  // Reset any steps assigned to this cat
+  function resetCat(steps){
+    steps.forEach(s => {
+      if(s.catId === catId) s.catId = "process";
+      if(s.children) resetCat(s.children);
+    });
+  }
+  appState.stages.forEach(st => resetCat(st.steps));
+  renderCatList();
+}
+
+function addCategory(){
+  const id = "cat_" + genId();
+  appState.categories.push({id, name:"קטגוריה חדשה", color:"#607D8B", shape:"rounded-rect", logo:null});
+  renderCatList();
+}
+
+// ============================================================
+// EDITING
+// ============================================================
+
+function toggleEditing(){
+  appState.editing = !appState.editing;
+  document.body.classList.toggle("editing", appState.editing);
+  document.getElementById("toolbar").style.display = appState.editing ? "flex" : "none";
+  document.getElementById("editToggle").innerHTML = appState.editing ? "✅ סיים עריכה" : "✏️ עריכה";
+  renderAll();
+}
+
+function makeEditable(text, onUpdate){
+  const span = document.createElement("span");
+  span.textContent = text;
+  span.addEventListener("dblclick", function(e){
+    if(!appState.editing) return;
+    e.stopPropagation();
+    span.contentEditable = "true";
+    span.focus();
+    // Select all text
+    const range = document.createRange();
+    range.selectNodeContents(span);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  });
+  span.addEventListener("blur", function(){
+    span.contentEditable = "false";
+    onUpdate(span.textContent);
+  });
+  span.addEventListener("keydown", function(e){
+    if(e.key === "Enter" && !e.shiftKey){
+      e.preventDefault();
+      span.blur();
+    }
+  });
+  return span;
+}
+
+// ============================================================
+// RENDER LEGEND
+// ============================================================
+
+function renderLegend(){
+  const el = document.getElementById("legendBar");
+  el.innerHTML = `<span class="legend-title">מקרא:</span>` +
+    appState.categories.map(c => `
+      <span class="legend-item">
+        <span class="legend-swatch" style="background:${c.color}${c.id==='gov'?';border:2px solid '+c.color:''}"></span>
+        ${c.logo?`<img src="${c.logo}" style="width:14px;height:14px;border-radius:2px">`:''}
+        ${escH(c.name)}
+      </span>
+    `).join("") +
+    `<span class="legend-item">🛑 = חריגה מתקנון</span>`;
+}
+
+// ============================================================
+// RENDER HIERARCHY
+// ============================================================
+
+function renderHierarchy(){
+  const panel = document.getElementById("hierarchyPanel");
+  panel.innerHTML = "";
+
+  appState.stages.forEach((stage, si) => {
+    const isOpen = appState.openStages.has(stage.id);
+
+    // Stage button
+    const btn = document.createElement("button");
+    btn.className = "stage-btn" + (isOpen ? " active" : "");
+    btn.innerHTML = `
+      <span class="number">${escH(stage.letter)}</span>
+      <span class="label">${escH(stage.title)}</span>
+      ${stage.subtitle ? `<span style="font-size:12px;color:#666;font-weight:400"> — ${escH(stage.subtitle)}</span>` : ""}
+      <span class="edit-actions">
+        <span class="edit-btn-sm" onclick="event.stopPropagation();deleteStage('${stage.id}')" title="מחק שלב">🗑️</span>
+      </span>
+      <span class="arrow">◀</span>
+    `;
+    // Make title editable
+    btn.addEventListener("click", function(e){
+      if(e.target.closest(".edit-actions")) return;
+      if(isOpen) appState.openStages.delete(stage.id);
+      else appState.openStages.add(stage.id);
+      renderHierarchy();
+    });
+    // Double-click label to edit
+    btn.addEventListener("dblclick", function(e){
+      if(!appState.editing) return;
+      e.stopPropagation();
+      const lbl = btn.querySelector(".label");
+      lbl.contentEditable = "true";
+      lbl.focus();
+      lbl.addEventListener("blur", function(){
+        lbl.contentEditable = "false";
+        stage.title = lbl.textContent;
+      },{once:true});
+    });
+    panel.appendChild(btn);
+
+    // Stage content
+    const content = document.createElement("div");
+    content.className = "stage-content" + (isOpen ? " open" : "");
+
+    if(isOpen){
+      stage.steps.forEach((step, stepi) => {
+        content.appendChild(renderStep(step, stage, stepi));
+      });
+      // Add step button
+      const addBtn = document.createElement("button");
+      addBtn.className = "add-step-btn";
+      addBtn.textContent = "➕ הוסף תת-שלב";
+      addBtn.onclick = function(){ addStepTo(stage.steps, stage); };
+      content.appendChild(addBtn);
+    }
+
+    panel.appendChild(content);
+  });
+}
+
+function renderStep(step, stage, index){
+  const cat = getCat(step.catId) || getCat("process");
+  const overrideColor = step.overrideColor;
+  const overrideBorder = step.overrideBorder;
+  const bgColor = overrideColor || cat.color;
+  const borderColor = overrideBorder || getDepthColor(step.depth);
+  const isChriga = step.chpiqa;
+  const hasChildren = (step.children && step.children.length > 0) || step.details;
+
+  const wrapper = document.createElement("div");
+  wrapper.className = `sub-step depth-${step.depth}${step._open ? " open" : ""}`;
+  if(isChriga && !step.details) wrapper.classList.add("chriga-full");
+  else if(isChriga) wrapper.classList.add("chriga");
+  wrapper.style.position = "relative";
+
+  // Header
+  const header = document.createElement("div");
+  header.className = "sub-step-header";
+  header.style.background = isChriga && !step.detailType ? "#CC0000" : (isLightStep(step) ? lighten(bgColor, 0.85) : bgColor);
+  header.style.color = isChriga && !step.detailType ? "#fff" : (isLightStep(step) ? darken(bgColor) : "#fff");
+  header.style.borderColor = isChriga ? "#CC0000" : borderColor;
+
+  let headerHTML = "";
+  if(cat.logo) headerHTML += `<img class="cat-logo" src="${cat.logo}" style="width:18px;height:18px;border-radius:2px;flex-shrink:0">`;
+  if(step.icon) headerHTML += `<span class="icon">${step.icon}</span>`;
+  headerHTML += `<span class="text">${escH(step.title)}</span>`;
+  if(overrideColor || overrideBorder) headerHTML += `<span class="override-badge" title="עקיפת קטגוריה">🎨</span>`;
+  headerHTML += `
+    <span class="step-edit-actions">
+      <span class="edit-btn-sm" onclick="event.stopPropagation();showCatAssign(event,'${step.id}')" title="שייך קטגוריה">🏷️</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepColor(event,'${step.id}')" title="צבע">🎨</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();deleteStep('${step.id}')" title="מחק">🗑️</span>
+    </span>
+  `;
+  if(hasChildren) headerHTML += `<span class="expand-arrow">◀</span>`;
+
+  header.innerHTML = headerHTML;
+
+  // Double-click text to edit
+  header.addEventListener("dblclick", function(e){
+    if(!appState.editing) return;
+    e.stopPropagation();
+    const textEl = header.querySelector(".text");
+    textEl.contentEditable = "true";
+    textEl.focus();
+    textEl.addEventListener("blur", function(){
+      textEl.contentEditable = "false";
+      step.title = textEl.textContent;
+    },{once:true});
+  });
+
+  // Click to expand
+  header.addEventListener("click", function(e){
+    if(e.target.closest(".step-edit-actions") || e.target.closest(".cat-assign") || e.target.closest(".color-picker-popup")) return;
+    e.stopPropagation();
+    if(!hasChildren) return;
+    step._open = !step._open;
+    renderHierarchy();
+  });
+
+  wrapper.appendChild(header);
+
+  // Detail panel
+  if(hasChildren && step._open){
+    const detailPanel = document.createElement("div");
+    detailPanel.className = "detail-panel open";
+
+    // Details text
+    if(step.details){
+      const detContent = document.createElement("div");
+      const dt = step.detailType || "expand";
+      detContent.className = dt === "chriga" ? "detail-chriga" : "detail-expand";
+      const textContent = step.details.split("\n").map(line => {
+        if(line.startsWith("•")) return line;
+        return line;
+      }).join("<br>");
+
+      if(dt === "chriga"){
+        detContent.innerHTML = `<div class="detail-content"><span class="stop-icon">🛑</span> ${textContent.replace(/בפועל:/g,'<span class="reality">בפועל:</span>')}</div>`;
+      } else {
+        detContent.innerHTML = `<div class="detail-content">${textContent}</div>`;
+      }
+      // Double-click detail to edit
+      detContent.addEventListener("dblclick", function(e){
+        if(!appState.editing) return;
+        e.stopPropagation();
+        const dc = detContent.querySelector(".detail-content");
+        dc.contentEditable = "true";
+        dc.focus();
+        dc.addEventListener("blur", function(){
+          dc.contentEditable = "false";
+          step.details = dc.innerText;
+        },{once:true});
+      });
+      detailPanel.appendChild(detContent);
+    }
+
+    // Child steps
+    if(step.children){
+      step.children.forEach((child, ci) => {
+        detailPanel.appendChild(renderStep(child, stage, ci));
+      });
+      // Add child button
+      if(appState.editing){
+        const addBtn = document.createElement("button");
+        addBtn.className = "add-step-btn";
+        addBtn.style.margin = "4px 10px";
+        addBtn.textContent = "➕ הוסף תת-שלב";
+        addBtn.onclick = function(e){ e.stopPropagation(); addStepTo(step.children, stage); };
+        detailPanel.appendChild(addBtn);
+      }
+    }
+
+    wrapper.appendChild(detailPanel);
+  }
+
+  return wrapper;
+}
+
+function isLightStep(step){
+  // Detail/expand sub-steps use lighter backgrounds
+  return step.depth > 0 && !step.chpiqa;
+}
+
+function getDepthColor(depth){
+  const colors = ["#0A5E6E","#1A7A9A","#2E96B8","#4DB8D9"];
+  return colors[Math.min(depth, colors.length-1)];
+}
+
+function lighten(hex, amount){
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  const nr = Math.round(r + (255-r)*amount);
+  const ng = Math.round(g + (255-g)*amount);
+  const nb = Math.round(b + (255-b)*amount);
+  return `rgb(${nr},${ng},${nb})`;
+}
+
+function darken(hex){
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return (r*0.299 + g*0.587 + b*0.114) > 160 ? "#333" : hex;
+}
+
+// ============================================================
+// STEP OPERATIONS
+// ============================================================
+
+function findStepById(id, steps){
+  for(const s of steps){
+    if(s.id === id) return s;
+    if(s.children){
+      const found = findStepById(id, s.children);
+      if(found) return found;
+    }
+  }
+  return null;
+}
+
+function findStepAndParent(id){
+  for(const stage of appState.stages){
+    const result = _findInArray(id, stage.steps, null);
+    if(result) return {...result, stage};
+  }
+  return null;
+}
+
+function _findInArray(id, arr, parent){
+  for(let i=0;i<arr.length;i++){
+    if(arr[i].id === id) return {step:arr[i], parent:arr, index:i};
+    if(arr[i].children){
+      const r = _findInArray(id, arr[i].children, arr[i]);
+      if(r) return r;
+    }
+  }
+  return null;
+}
+
+function addStage(){
+  const letters = "אבגדהוזחטיכלמנסעפצקרשת";
+  const usedLetters = new Set(appState.stages.map(s=>s.letter));
+  let letter = "";
+  for(const l of letters) if(!usedLetters.has(l)){letter=l;break;}
+  if(!letter) letter = (appState.stages.length+1).toString();
+
+  const id = "stage_"+genId();
+  appState.stages.push({
+    id, letter, title:"שלב חדש", subtitle:"",
+    steps:[]
+  });
+  appState.openStages.add(id);
+  renderAll();
+  showToast("➕ שלב חדש נוסף");
+}
+
+function deleteStage(id){
+  if(!confirm("למחוק את השלב?")) return;
+  appState.stages = appState.stages.filter(s=>s.id!==id);
+  appState.openStages.delete(id);
+  renderAll();
+}
+
+function addStepTo(arr, stage){
+  const id = "step_"+genId();
+  const depth = arr.length > 0 ? (arr[0].depth || 0) : 0;
+  arr.push({
+    id, title:"שלב חדש", icon:"", catId:"process", chpiqa:false, depth,
+    details:"", detailType:"expand", children:[], _open:true
+  });
+  renderAll();
+}
+
+function deleteStep(id){
+  if(!confirm("למחוק?")) return;
+  const found = findStepAndParent(id);
+  if(found) found.parent.splice(found.index, 1);
+  renderAll();
+}
+
+function toggleChpiqa(id){
+  const found = findStepAndParent(id);
+  if(found){
+    found.step.chpiqa = !found.step.chpiqa;
+    if(found.step.chpiqa && !found.step.detailType) found.step.detailType = "chriga";
+    renderAll();
+  }
+}
+
+// Category assign dropdown
+function showCatAssign(event, stepId){
   event.stopPropagation();
-  const panel = el.querySelector(':scope > .detail-panel');
-  if (panel) {
-    el.classList.toggle('open');
-    panel.classList.toggle('open');
+  // Remove existing
+  document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
+
+  const found = findStepAndParent(stepId);
+  if(!found) return;
+  const step = found.step;
+
+  const dropdown = document.createElement("div");
+  dropdown.className = "cat-assign show";
+  dropdown.innerHTML = appState.categories.map(cat => `
+    <div class="cat-assign-item ${step.catId===cat.id?'active':''}" onclick="event.stopPropagation();assignCat('${stepId}','${cat.id}')">
+      <span class="swatch" style="background:${cat.color}"></span>
+      ${escH(cat.name)}
+    </div>
+  `).join("") + `
+    <div class="cat-assign-item reset" onclick="event.stopPropagation();resetStepOverride('${stepId}')">
+      🔄 אפס עקיפות
+    </div>
+  `;
+
+  const header = event.target.closest(".sub-step-header");
+  header.style.position = "relative";
+  header.appendChild(dropdown);
+
+  setTimeout(()=>{
+    document.addEventListener("click", function handler(){
+      dropdown.remove();
+      document.removeEventListener("click",handler);
+    });
+  },50);
+}
+
+function assignCat(stepId, catId){
+  const found = findStepAndParent(stepId);
+  if(found){
+    found.step.catId = catId;
+    document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
+    renderAll();
   }
 }
-</script>
 
+function resetStepOverride(stepId){
+  const found = findStepAndParent(stepId);
+  if(found){
+    delete found.step.overrideColor;
+    delete found.step.overrideBorder;
+    document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
+    renderAll();
+  }
+}
+
+function pickStepColor(event, stepId){
+  event.stopPropagation();
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+
+  const found = findStepAndParent(stepId);
+  if(!found) return;
+  const step = found.step;
+  const cat = getCat(step.catId) || getCat("process");
+
+  const popup = document.createElement("div");
+  popup.className = "color-picker-popup show";
+  popup.style.position = "absolute";
+  popup.style.zIndex = "300";
+  popup.innerHTML = `
+    <div style="font-size:11px;color:#888;margin-bottom:6px">רקע:</div>
+    <input type="color" value="${step.overrideColor||cat.color}" oninput="setStepOverrideColor('${stepId}',this.value)">
+    <div style="font-size:11px;color:#888;margin:6px 0 4px">מסגרת:</div>
+    <input type="color" value="${step.overrideBorder||getDepthColor(step.depth)}" oninput="setStepOverrideBorder('${stepId}',this.value)">
+    <div class="preset-colors">
+      ${["#2E86AB","#8B5CF6","#5B7B9A","#1B3A6B","#2D7D46","#C03928","#CC0000","#0A5E6E","#B8860B"].map(c=>
+        `<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();setStepOverrideColor('${stepId}','${c}')"></div>`
+      ).join("")}
+    </div>
+  `;
+
+  const header = event.target.closest(".sub-step-header");
+  header.style.position = "relative";
+  header.appendChild(popup);
+
+  setTimeout(()=>{
+    document.addEventListener("click",function handler(e){
+      if(!popup.contains(e.target)){
+        popup.remove();
+        document.removeEventListener("click",handler);
+        renderAll();
+      }
+    });
+  },50);
+}
+
+function setStepOverrideColor(stepId, color){
+  const found = findStepAndParent(stepId);
+  if(found) found.step.overrideColor = color;
+}
+function setStepOverrideBorder(stepId, color){
+  const found = findStepAndParent(stepId);
+  if(found) found.step.overrideBorder = color;
+}
+
+// ============================================================
+// FLOW CHART
+// ============================================================
+
+function renderFlowChart(){
+  const panel = document.getElementById("flowPanel");
+  const getCatColor = (id) => { const c = getCat(id); return c ? c.color : "#0A5E6E"; };
+
+  panel.innerHTML = `
+  <div class="flow-card">
+    <h3>תרשים זרימה — הליך חקיקה פרטית</h3>
+
+    <div class="flow-step"><div class="box" style="background:${getCatColor('chk')}">כתיבת החוק</div></div>
+    <div class="flow-arrow">▼</div>
+    <div class="flow-step"><div class="box" style="background:${getCatColor('chriga')}">🛑 לשכה משפטית / נסחות</div></div>
+    <div class="flow-side-note">🛑 חריגה: ח"כ לא יכול להגיש ישירות</div>
+    <div class="flow-arrow">▼</div>
+
+    <div class="flow-step">
+      <div class="flow-diamond" style="background:${getCatColor('nesiut')}"><span>אישור<br>נשיאות?</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 20px">
+      <div style="font-size:11px;color:#999;background:#f0f0f0;padding:4px 10px;border-radius:6px;border:1px solid #ccc">נפסלה</div>
+      <div style="color:#999">▼ אושרה</div>
+    </div>
+
+    <div class="flow-step"><div class="box" style="background:${getCatColor('mazkir')}">הנחה על שולחן הכנסת</div></div>
+    <div class="flow-arrow">▼</div>
+
+    <div class="flow-split">
+      <div class="flow-track">
+        <div style="font-size:11px;padding:6px 10px;background:${getCatColor('waiting')};color:#fff;border-radius:20px;font-weight:600">⏳ 45 יום</div>
+        <div class="flow-or" style="background:${getCatColor('waiting')}">או</div>
+        <div style="font-size:11px;padding:5px 8px;background:${getCatColor('vaadat')};color:#fff;border-radius:6px;font-weight:600">קיצור דחיפות</div>
+        <div class="flow-or" style="background:${getCatColor('waiting')}">או</div>
+        <div style="font-size:11px;padding:5px 8px;background:${getCatColor('chk')};color:#fff;border-radius:6px;font-weight:600">הצמדה</div>
+      </div>
+      <div class="flow-track">
+        <div class="flow-side-note">🛑 ועדת השרים<br>ממתינה מעבר ל-45 יום</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">▼</div>
+    <div class="flow-step"><div class="box" style="background:${getCatColor('yoresh')}">קביעת מועד דיון מוקדם</div></div>
+    <div class="flow-arrow">▼</div>
+
+    <div class="flow-step">
+      <div class="flow-diamond" style="background:${getCatColor('yoresh')}"><span>דיון<br>מוקדם</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 20px">
+      <div style="font-size:11px;color:#CC0000;background:#fff0f0;padding:4px 10px;border-radius:6px;border:1px solid #CC0000">נדחתה (6 חודשים)</div>
+      <div style="color:#999">▼ אושרה</div>
+    </div>
+
+    <div class="flow-step"><div class="box" style="background:${getCatColor('yoresh')}">קביעת ועדה מכינה</div></div>
+    <div class="flow-arrow">▼</div>
+    <div class="flow-step"><div class="box" style="background:${getCatColor('vaadat')}">הכנה לקריאה ראשונה</div></div>
+    <div class="flow-arrow">▼</div>
+
+    <div class="flow-step">
+      <div class="flow-diamond" style="background:${getCatColor('yoresh')}"><span>קריאה<br>ראשונה</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 20px">
+      <div style="font-size:11px;color:#CC0000;background:#fff0f0;padding:4px 10px;border-radius:6px;border:1px solid #CC0000">הוסרה (6 חודשים)</div>
+      <div style="color:#999">▼ עברה</div>
+    </div>
+
+    <div class="flow-step"><div class="box" style="background:${getCatColor('vaadat')}">קביעת ועדה לקריאה ב'+ג'</div></div>
+    <div class="flow-arrow">▼</div>
+    <div class="flow-step"><div class="box" style="background:${getCatColor('vaadat')}">הכנה לקריאה ב'+ג'</div></div>
+    <div style="font-size:10px;color:#666;text-align:center;margin:2px 0">מיזוג / פיצול / הסתייגויות</div>
+    <div class="flow-arrow">▼</div>
+
+    <div class="flow-step">
+      <div class="flow-diamond" style="background:${getCatColor('yoresh')}"><span>קריאה<br>שנייה</span></div>
+    </div>
+    <div style="font-size:10px;color:#666;text-align:center;margin:2px 0">הצבעה סעיף-סעיף + הסתייגויות</div>
+    <div class="flow-arrow">▼</div>
+
+    <div class="flow-step">
+      <div class="flow-diamond" style="background:${getCatColor('yoresh')};border:3px solid #FFD700"><span>קריאה<br>שלישית</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-around;margin:8px 10px">
+      <div style="font-size:12px;padding:6px 14px;background:#2D7D46;color:#fff;border-radius:8px;font-weight:700">✅ חוק!</div>
+      <div style="font-size:11px;padding:6px 10px;background:#f0f0f0;color:#666;border-radius:8px;border:1px solid #ccc">❌ נדחה</div>
+    </div>
+  </div>
+  `;
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+
+function escH(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(()=>t.classList.remove("show"), 2500);
+}
+
+// ============================================================
+// RENDER ALL
+// ============================================================
+
+function renderAll(){
+  renderLegend();
+  renderHierarchy();
+  renderFlowChart();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+
+loadFromStorage();
+// If no saved data, open first sub-steps
+if(!localStorage.getItem("knesset-legislation-v2")){
+  appState.stages[0].steps.forEach(s => { s._open = true; if(s.children) s.children.forEach(c => c._open = false); });
+}
+renderAll();
+
+</script>
 </body>
 </html>
