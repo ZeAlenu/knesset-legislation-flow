@@ -1321,9 +1321,13 @@ function renderStep(step, stage, index){
 
   const header = document.createElement("div");
   header.className = "sub-step-header";
-  header.style.background = isChriga && !step.detailType ? "#CC0000" : (isLightStep(step) ? lighten(bgColor, 0.85) : bgColor);
-  header.style.color = step.overrideTextColor ? step.overrideTextColor : (isChriga && !step.detailType ? "#fff" : (isLightStep(step) ? darken(bgColor) : "#fff"));
-  header.style.borderColor = isChriga ? "#CC0000" : borderColor;
+  const catBorderColor = cat.borderColor || null;
+  const effectiveBorder = overrideBorder || catBorderColor || (isChriga ? "#CC0000" : getDepthColor(step.depth));
+  const effectiveBg = overrideColor || (isChriga && !step.detailType ? "#CC0000" : (isLightStep(step) ? lighten(bgColor, 0.85) : bgColor));
+  const effectiveText = step.overrideTextColor || cat.textColor || (isChriga && !step.detailType ? "#fff" : (isLightStep(step) ? darken(bgColor) : "#fff"));
+  header.style.background = effectiveBg;
+  header.style.color = effectiveText;
+  header.style.borderColor = effectiveBorder;
   if(step.fontSize) header.style.fontSize = step.fontSize + "px";
   if(step.fontWeight) header.style.fontWeight = step.fontWeight;
 
