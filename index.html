@@ -1344,14 +1344,14 @@ function renderHierarchy(){
   });
 }
 
-function renderStep(step, stage, index){
+function renderStep(step, stage, index, skipChildren){
   const cat = getCat(step.catId) || getCat("process");
   const overrideColor = step.overrideColor;
   const overrideBorder = step.overrideBorder;
   const bgColor = overrideColor || cat.color;
   const borderColor = overrideBorder || getDepthColor(step.depth);
   const isChriga = step.chpiqa;
-  const hasChildren = !step._skipChildren && ((step.children && step.children.length > 0) || step.details);
+  const hasChildren = !skipChildren && ((step.children && step.children.length > 0) || step.details);
 
   const wrapper = document.createElement("div");
   wrapper.className = `sub-step depth-${step.depth}${step._open ? " open" : ""}`;
@@ -1514,12 +1514,8 @@ function renderStep(step, stage, index){
           }
           const col = document.createElement("div");
           col.style.cssText = "flex:1;min-width:0;border:1px dashed #ccc;border-radius:6px;padding:4px";
-          // Render branch header WITHOUT its children (we render children explicitly below with connectors)
-          const savedChildren = child.children;
-          child._skipChildren = true;
-          col.appendChild(renderStep(child, stage, ci));
-          delete child._skipChildren;
-          child.children = savedChildren;
+          // Render branch header WITHOUT its children (skipChildren=true); we render children explicitly below with connectors
+          col.appendChild(renderStep(child, stage, ci, true));
           // Render sub-steps of each branch with connectors
           if(child.children){
             child.children.forEach((gc, gci) => {
@@ -1552,7 +1548,7 @@ function renderStep(step, stage, index){
                 if(appState.editing){
                   const cd = document.createElement("div");
                   cd.style.cssText = "display:flex;gap:2px;justify-content:center;margin:1px 0;opacity:0.5";
-                  [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"merge",l:"⑃"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"",l:"✕"}].forEach(s=>{
+                  [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"merge",l:"⑃"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(s=>{
                     const b = document.createElement("button"); b.className = "add-step-btn";
                     const cur = gc.connector||(gc.showArrowAfter?"arrow":"");
                     b.style.cssText = "padding:2px 5px;font-size:10px;min-width:20px;"+(cur===s.v?"background:#E6F6FB;border:1px solid #4ECDC4;":"");
@@ -1641,12 +1637,14 @@ function renderStep(step, stage, index){
         addSiblingBtn.className = "add-step-btn";
         addSiblingBtn.style.cssText = "margin:4px 10px;background:#E8F5E9";
         addSiblingBtn.textContent = "➕ הוסף שלב באותה רמה";
-        addSiblingBtn.onclick = function(e){ 
-          e.stopPropagation(); 
+        addSiblingBtn.onclick = function(e){
+          e.stopPropagation();
           const parentArr = findParentArray(step.id);
           const targetArr = parentArr || stage.children || stage.steps || [];
-          const targetDepth = Math.max(0, (step.depth||0) - 1);
-          addStepTo(targetArr, stage, targetDepth); 
+          // parentDepth = step.depth - 1 so addStepTo creates sibling at step.depth
+          // (for depth-0 steps this passes -1, giving depth = 0 correctly)
+          const targetDepth = (step.depth||0) - 1;
+          addStepTo(targetArr, stage, targetDepth);
         };
         detailPanel.appendChild(addSiblingBtn);
       }
@@ -1762,9 +1760,11 @@ function deleteStage(id){
 
 function findParentArray(stepId){
   for(const stage of appState.stages){
-    const arr = stage.children || stage.steps || [];
-    const result = _findParentArr(arr, stepId);
-    if(result) return result;
+    // Search both children and steps arrays so stages using either property work
+    for(const arr of [stage.children, stage.steps].filter(Boolean)){
+      const result = _findParentArr(arr, stepId);
+      if(result) return result;
+    }
   }
   return null;
 }
