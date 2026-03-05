@@ -215,6 +215,7 @@ header p{font-size:13px;opacity:.85}
     <button onclick="openCatModal()">⚙️ קטגוריות</button>
     <button onclick="saveToStorage()">💾 שמור</button>
     <button onclick="exportJSON()">📤 ייצוא</button>
+    <button onclick="publishState()" style="background:#2D7D46;color:#fff">🌐 פרסם לכולם</button>
     <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
     <input type="file" id="importInput" accept=".json" class="hidden-input" onchange="importJSON(event)">
   </div>
@@ -693,7 +694,21 @@ function initializeDefaultBackArrow(){
   }
 }
 
-function loadFromStorage(){
+async function loadFromStorage(){
+  // 1. Try loading shared state.json (visible to everyone)
+  try {
+    const resp = await fetch("state.json?t=" + Date.now());
+    if(resp.ok){
+      const d = await resp.json();
+      if(d.categories) appState.categories = d.categories;
+      if(d.stages) appState.stages = d.stages;
+      if(d.flowSteps) appState.flowSteps = d.flowSteps;
+      if(d.flowBackLinks) appState.flowBackLinks = d.flowBackLinks;
+      if(d.nextId) nextId = d.nextId;
+    }
+  } catch(e){ /* no shared state file, use defaults */ }
+  
+  // 2. Override with localStorage (personal edits)
   try {
     const raw = localStorage.getItem("knesset-legislation-v2");
     if(raw){
@@ -703,13 +718,14 @@ function loadFromStorage(){
       if(d.flowSteps) appState.flowSteps = d.flowSteps;
       if(d.flowBackLinks) appState.flowBackLinks = d.flowBackLinks;
       if(d.nextId) nextId = d.nextId;
-      // Reset all _open flags so steps default to closed on refresh
-      function closeAll(steps){ if(!steps) return; steps.forEach(s=>{ s._open = false; closeAll(s.children); }); }
-      appState.stages.forEach(st=>{ closeAll(st.steps); });
-      appState.openStages = new Set();
       showToast("נטען מאחסון מקומי");
     }
   } catch(e){ console.error("Load error:",e); }
+  
+  // Reset open state
+  function closeAll(steps){ if(!steps) return; steps.forEach(s=>{ s._open = false; closeAll(s.children); }); }
+  appState.stages.forEach(st=>{ closeAll(st.steps); });
+  appState.openStages = new Set();
 }
 
 function saveToStorage(){
@@ -723,6 +739,53 @@ function saveToStorage(){
     }));
     showToast("💾 נשמר בהצלחה");
   } catch(e){ showToast("❌ שגיאה בשמירה"); }
+}
+
+async function publishState(){
+  if(!confirm("לפרסם את המצב הנוכחי לכל מי שיש לו את הלינק?")) return;
+  const stateData = JSON.stringify({
+    categories: appState.categories,
+    stages: appState.stages,
+    flowSteps: appState.flowSteps,
+    flowBackLinks: appState.flowBackLinks,
+    nextId,
+    publishDate: new Date().toISOString()
+  }, null, 2);
+  
+  try {
+    // Try GitHub API (requires token set in localStorage)
+    const token = localStorage.getItem("gh-token");
+    if(token){
+      const content = btoa(unescape(encodeURIComponent(stateData)));
+      // Get current file SHA
+      let sha = "";
+      try {
+        const existing = await fetch("https://api.github.com/repos/ZeAlenu/knesset-legislation-flow/contents/state.json", {headers:{"Authorization":"token "+token}});
+        if(existing.ok){ const j = await existing.json(); sha = j.sha; }
+      } catch(e){}
+      
+      const resp = await fetch("https://api.github.com/repos/ZeAlenu/knesset-legislation-flow/contents/state.json", {
+        method: "PUT",
+        headers: {"Authorization": "token "+token, "Content-Type": "application/json"},
+        body: JSON.stringify({message: "publish: update shared state", content, sha: sha || undefined})
+      });
+      if(resp.ok){
+        showToast("🌐 פורסם בהצלחה! כולם יראו את השינויים");
+        return;
+      }
+    }
+    
+    // Fallback: download file + instructions
+    const blob = new Blob([stateData], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "state.json";
+    a.click();
+    showToast("📥 קובץ state.json הורד — שלחי אותו לאררט כדי לפרסם");
+  } catch(e){
+    console.error("Publish error:", e);
+    showToast("❌ שגיאה בפרסום");
+  }
 }
 
 function exportJSON(){
@@ -2844,21 +2907,18 @@ function renderAll(){
 // INIT
 // ============================================================
 
-loadFromStorage();
-if(!localStorage.getItem("knesset-legislation-v2")){
-  // Default: all sub-steps closed
-}
-// Set initial active flow stage from open stages
-for(const s of appState.stages){
-  if(appState.openStages.has(s.id)){
-    appState.activeFlowStage = s.id;
-    break;
+(async function init(){
+  await loadFromStorage();
+  for(const s of appState.stages){
+    if(appState.openStages.has(s.id)){
+      appState.activeFlowStage = s.id;
+      break;
+    }
   }
-}
-initializeDefaultBackArrow();
-renderAll();
-// Initial highlight
-setTimeout(highlightFlowStep, 300);
+  initializeDefaultBackArrow();
+  renderAll();
+  setTimeout(highlightFlowStep, 300);
+})();
 
 </script>
 </body>
