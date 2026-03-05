@@ -1208,6 +1208,7 @@ function renderStep(step, stage, index){
 
   let headerHTML = "";
   if(cat.logo) headerHTML += `<img class="cat-logo" src="${cat.logo}" style="width:18px;height:18px;border-radius:2px;flex-shrink:0">`;
+  if(step.builtinIcon && BUILTIN_ICONS[step.builtinIcon]) headerHTML += `<span style="flex-shrink:0;display:inline-flex;align-items:center">${BUILTIN_ICONS[step.builtinIcon]}</span>`;
   if(step.image) headerHTML += `<img src="${step.image}" style="width:24px;height:24px;object-fit:contain;flex-shrink:0;border-radius:3px" onclick="if(appState.editing){event.stopPropagation();if(confirm('להסיר תמונה?'))removeStepImage('${step.id}')}" title="${appState.editing?'לחץ להסיר':''}">`;
   if(step.icon) headerHTML += `<span class="icon">${step.icon}</span>`;
   headerHTML += `<span class="text">${escH(step.title)}</span>`;
@@ -1218,6 +1219,7 @@ function renderStep(step, stage, index){
       <span class="edit-btn-sm" onclick="event.stopPropagation();showCatAssign(event,'${step.id}')" title="שייך קטגוריה">🏷️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepColor(event,'${step.id}')" title="צבע">🎨</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepIcon(event,'${step.id}')" title="סמל מובנה">⛔</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();uploadStepImage('${step.id}')" title="תמונה/לוגו">🖼️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();splitStepParallel('${step.id}')" title="פצל למקביל">🔀</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();deleteStep('${step.id}')" title="מחק">🗑️</span>
@@ -1681,6 +1683,74 @@ function pickDetailColor(event, stepId){
       }
     });
   },50);
+}
+
+const BUILTIN_ICONS = {
+  "stop-hand": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,2 79,10 96,35 96,65 79,90 50,98 21,90 4,65 4,35 21,10" fill="#CC0000" stroke="#8B0000" stroke-width="2"/><polygon points="50,10 74,17 88,38 88,62 74,83 50,90 26,83 12,62 12,38 26,17" fill="none" stroke="white" stroke-width="2"/><g fill="white" transform="translate(30,22) scale(0.5)"><path d="M40,10 C40,4 48,4 48,10 L48,50 L40,50Z"/><path d="M52,6 C52,0 60,0 60,6 L60,48 L52,48Z"/><path d="M64,10 C64,4 72,4 72,10 L72,48 L64,48Z"/><path d="M76,18 C76,12 84,12 84,18 L84,50 L76,50Z"/><path d="M28,28 C28,22 36,22 36,28 L36,70 C36,90 28,100 56,100 C80,100 84,85 84,70L84,50 L40,50 L40,28Z"/></g></svg>`,
+  "warning": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 95,90 5,90" fill="#FFD700" stroke="#B8860B" stroke-width="3"/><text x="50" y="78" text-anchor="middle" font-size="55" font-weight="bold" fill="#333">!</text></svg>`,
+  "check": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#2D7D46"/><polyline points="25,50 43,68 75,35" fill="none" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  "x-mark": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#CC0000"/><line x1="30" y1="30" x2="70" y2="70" stroke="white" stroke-width="10" stroke-linecap="round"/><line x1="70" y1="30" x2="30" y2="70" stroke="white" stroke-width="10" stroke-linecap="round"/></svg>`,
+  "info": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#2E86AB"/><text x="50" y="40" text-anchor="middle" font-size="30" font-weight="bold" fill="white">i</text><rect x="44" y="48" width="12" height="30" rx="3" fill="white"/></svg>`,
+  "clock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#1B3A6B" stroke="#0A5E6E" stroke-width="3"/><circle cx="50" cy="50" r="38" fill="none" stroke="white" stroke-width="2"/><line x1="50" y1="50" x2="50" y2="25" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="50" x2="68" y2="55" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="50" r="3" fill="white"/></svg>`,
+  "lock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="45" width="60" height="45" rx="6" fill="#B8860B"/><path d="M32,45 L32,32 C32,15 68,15 68,32 L68,45" fill="none" stroke="#B8860B" stroke-width="8"/><circle cx="50" cy="65" r="6" fill="white"/></svg>`,
+  "star": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 61,38 95,38 68,60 79,93 50,73 21,93 32,60 5,38 39,38" fill="#FFD700" stroke="#B8860B" stroke-width="2"/></svg>`
+};
+
+const BUILTIN_ICON_LABELS = {
+  "stop-hand": "🛑 עצור (יד)",
+  "warning": "⚠️ אזהרה",
+  "check": "✅ אישור",
+  "x-mark": "❌ דחייה",
+  "info": "ℹ️ מידע",
+  "clock": "🕐 שעון",
+  "lock": "🔒 נעילה",
+  "star": "⭐ כוכב"
+};
+
+function pickStepIcon(event, stepId){
+  event.stopPropagation();
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  const popup = document.createElement("div");
+  popup.className = "color-picker-popup show";
+  popup.style.position = "fixed";
+  popup.style.zIndex = "300";
+  popup.style.width = "220px";
+  
+  let html = '<div style="font-size:12px;font-weight:700;color:#333;margin-bottom:8px">בחר סמל:</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">';
+  for(const [key, svg] of Object.entries(BUILTIN_ICONS)){
+    html += `<div style="cursor:pointer;text-align:center;padding:6px;border:1px solid #eee;border-radius:6px;background:#fafafa" onclick="event.stopPropagation();setStepBuiltinIcon('${stepId}','${key}')" title="${BUILTIN_ICON_LABELS[key]}">${svg}</div>`;
+  }
+  html += '</div>';
+  html += `<button onclick="event.stopPropagation();clearStepBuiltinIcon('${stepId}')" style="margin-top:8px;width:100%;padding:5px;border:1px solid #ddd;border-radius:6px;background:#f8f8f8;cursor:pointer;font-family:inherit;font-size:11px">הסר סמל</button>`;
+  popup.innerHTML = html;
+  
+  const rect = event.target.getBoundingClientRect();
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 250) + "px";
+  popup.style.right = (window.innerWidth - rect.right) + "px";
+  document.body.appendChild(popup);
+  setTimeout(()=>{
+    document.addEventListener("click",function handler(e){
+      if(!popup.contains(e.target)){
+        popup.remove();
+        document.removeEventListener("click",handler);
+      }
+    });
+  },50);
+}
+
+function setStepBuiltinIcon(stepId, iconKey){
+  const found = findStepAndParent(stepId);
+  if(found) found.step.builtinIcon = iconKey;
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  renderAll();
+}
+
+function clearStepBuiltinIcon(stepId){
+  const found = findStepAndParent(stepId);
+  if(found) delete found.step.builtinIcon;
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  renderAll();
 }
 
 function uploadStepImage(stepId){
