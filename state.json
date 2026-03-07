@@ -544,14 +544,15 @@
           "details": "בשלב זה, ועד הדיון הראשון בועדה שמונתה, רשאי כל חבר כנסת, ללא הנמקה, להציע שתעבור ההצעה לדיון בועדה אחרת - או בועדה משותפת של ועדות.  ועדת הכנסת  מוסמכת לקבוע היכן תידון ההצעה. הועדה שנקבעה בועדת הכנסת כועדת הדיון, תקבל את ההצעה, מייד עם הודעת יו\"ר ועדת הכנסת למליאה על ההחלטה. אם הוחלט על ועדה משותפת - ועדת הכנסת קובעת את הרכבה. בהתאם לסעיף 110 לתקנון ",
           "detailType": "expand",
           "children": [],
-          "_open": true,
+          "_open": false,
           "builtinIcon": "clock",
           "detailIcon": "israel",
-          "detailsHtml": "בשלב זה, ועד הדיון הראשון בועדה שמונתה, <br>רשאי כל חבר כנסת, ללא הנמקה, להציע שתעבור ההצעה לדיון בועדה אחרת - או בועדה משותפת של ועדות. <br><br><span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/state-emblem.png\" width=\"28\" height=\"28\" style=\"object-fit:contain\"></span>&nbsp;ועדת הכנסת  מוסמכת לקבוע היכן תידון ההצעה. <br><br>הועדה שנקבעה בועדת הכנסת כועדת הדיון, תקבל את ההצעה, מייד עם הודעת יו\"ר ועדת הכנסת למליאה על ההחלטה. <br><br>אם הוחלט על ועדה משותפת - ועדת הכנסת קובעת את הרכבה. בהתאם לסעיף 110 לתקנון "
+          "detailsHtml": "בשלב זה, ועד הדיון הראשון בועדה שמונתה, <br>רשאי כל חבר כנסת, ללא הנמקה, להציע שתעבור ההצעה לדיון בועדה אחרת - או בועדה משותפת של ועדות. <br><br><span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/state-emblem.png\" width=\"28\" height=\"28\" style=\"object-fit:contain\"></span>&nbsp;ועדת הכנסת  מוסמכת לקבוע היכן תידון ההצעה. <br><br>הועדה שנקבעה בועדת הכנסת כועדת הדיון, תקבל את ההצעה, מייד עם הודעת יו\"ר ועדת הכנסת למליאה על ההחלטה. <br><br>אם הוחלט על ועדה משותפת - ועדת הכנסת קובעת את הרכבה. בהתאם לסעיף 110 לתקנון ",
+          "showArrowAfter": false
         },
         {
           "id": "s4_2",
-          "title": "אפשרות החלפת ועדה לאחר מעבר",
+          "title": "החלפת ועדה לאחר שהחל הדיון בהצעת החוק",
           "icon": "🔄",
           "catId": "vaadat",
           "chpiqa": false,
@@ -1383,7 +1384,7 @@
     }
   ],
   "nextId": 1044,
-  "publishDate": "2026-03-07T20:54:01.804Z",
+  "publishDate": "2026-03-07T20:55:36.536Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-07T22:54:01.934166"
+  "mergedAt": "2026-03-07T22:55:36.613427"
 }
