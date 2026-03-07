@@ -29,6 +29,13 @@
       "logo": null
     },
     {
+      "id": "cat_gen_1046",
+      "name": "סיעה ",
+      "color": "#276786",
+      "shape": "rounded-rect",
+      "logo": null
+    },
+    {
       "id": "mazkir",
       "name": "מזכיר הכנסת",
       "color": "#5B7B9A",
@@ -295,13 +302,13 @@
         },
         {
           "id": "gen_gen_1015",
-          "title": "תום שהיה על שולחן הכנסת",
+          "title": "שהיה על שולחן הכנסת",
           "icon": "🔀",
           "catId": "process",
           "depth": 0,
           "details": "",
           "detailType": "expand",
-          "_open": false,
+          "_open": true,
           "parallel": true,
           "children": [
             {
@@ -347,7 +354,7 @@
                 }
               ],
               "showArrowAfter": true,
-              "_open": false,
+              "_open": true,
               "builtinIcon": "check"
             },
             {
@@ -356,7 +363,7 @@
               "icon": "",
               "catId": "process",
               "depth": 0,
-              "details": "",
+              "details": "45 הימים הללו כוללים את יום ההנחה ואת יום הדיון המוקדם (ההצבעה הטרומית). \n\nסעיף 76 (ג) לתקנון",
               "detailType": "expand",
               "children": [
                 {
@@ -388,8 +395,10 @@
                   "connector": "או"
                 }
               ],
-              "_open": false,
-              "builtinIcon": "hourglass"
+              "_open": true,
+              "builtinIcon": "hourglass",
+              "showArrowAfter": false,
+              "connector": "או"
             }
           ],
           "builtinIcon": "hourglass"
@@ -409,17 +418,42 @@
       "subtitle": "קריאה טרומית",
       "steps": [
         {
-          "id": "s2_1",
-          "title": "יו\"ר הכנסת קובע את מועד הדיון",
+          "id": "gen_gen_1044",
+          "title": "מכסה או לא? ",
           "icon": "",
-          "catId": "yoresh",
-          "chpiqa": false,
+          "catId": "process",
           "depth": 0,
-          "details": "הדיון ייקבע באחד משני אופנים:\n• ביום ד' לפי המכסה של הסיעה (הסיעה היא הקובעת את התור בין חבריה)\n• בדיון לציון נושא מיוחד שקובע היו\"ר — נדרשת הסכמת הממשלה, והיו\"ר יכול לקבוע שהדיון אינו על חשבון המכסה\n📜 מקור: [סעיף 76 לתקנון הכנסת — מועד הדיון המוקדם והצמדה](https://www.nevo.co.il/law/72248#Seif58)",
+          "details": "",
           "detailType": "expand",
-          "children": [],
-          "_open": true,
-          "detailsHtml": "הדיון ייקבע באחד משני אופנים:<br>• ביום ד' לפי המכסה של הסיעה (הסיעה היא הקובעת את התור בין חבריה)<br>• בדיון לציון נושא מיוחד שקובע היו\"ר — נדרשת הסכמת הממשלה, והיו\"ר יכול לקבוע שהדיון אינו על חשבון המכסה<br>📜 מקור: <a href=\"https://www.nevo.co.il/law/72248#Seif58\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 76 לתקנון הכנסת — מועד הדיון המוקדם והצמדה</a>"
+          "_open": false,
+          "parallel": true,
+          "children": [
+            {
+              "id": "s2_1",
+              "title": "הדיון נקבע ליום ד' ",
+              "icon": "",
+              "catId": "cat_gen_1046",
+              "chpiqa": false,
+              "depth": 0,
+              "details": "בימי ד' דנה מליאת הכנסת בהצ\"ח פרטיות בשלב הדיון המוקדם (\"טרומי\")סעיף 25(ד) (ז). לכל סיעה יש מכסה של חוקים שהיא רשאית להעלות לדיון במהלך דיון זה, הנקבעת על ידי ועדת הכנסת בכפוף לסעיף 99 לתקנון. הסיעה קובעת את \"התור\" בין חבריה ובין החוקים שהם מבקשים לקדם. סעיף 76(א) לתקנון ",
+              "detailType": "expand",
+              "children": [],
+              "_open": true,
+              "detailsHtml": "<div>בימי ד' דנה מליאת הכנסת בהצ\"ח פרטיות בשלב הדיון המוקדם (\"טרומי\")</div><div>סעיף 25(ד) (ז).&nbsp;</div><div><br></div><div>לכל סיעה יש מכסה של חוקים שהיא רשאית להעלות לדיון במהלך דיון זה, הנקבעת על ידי ועדת הכנסת בכפוף לסעיף 99 לתקנון.&nbsp;<br><br></div><div>הסיעה קובעת את \"התור\" בין חבריה ובין החוקים שהם מבקשים לקדם.&nbsp;<br>סעיף 76(א) לתקנון&nbsp;</div>"
+            },
+            {
+              "id": "gen_gen_1045",
+              "title": "יו\"ר הכנסת קובע דיון בחוק במסגרת \"דיון מיוחד\"",
+              "icon": "",
+              "catId": "yoresh",
+              "depth": 1,
+              "details": " היו\"ר רשאי לקבוע דיון חריג ורשאי לקבוע שהדיון לא יכלל במכסת הדיונים לפי סעיף 99 לתקנון.  נדרשת הסכמת הממשלה בכתב, לחוק או לקיום הדיון החריג.סעיף 76 (ב) ",
+              "detailType": "expand",
+              "children": [],
+              "_open": true,
+              "detailsHtml": "<span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/shield-menorah.png\" width=\"42\" height=\"42\" style=\"object-fit:contain\"></span>&nbsp;היו\"ר רשאי לקבוע דיון חריג ורשאי לקבוע שהדיון לא יכלל במכסת הדיונים לפי סעיף 99 לתקנון.&nbsp;<br><br><span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/stop-sign.png\" width=\"28\" height=\"28\" style=\"object-fit:contain\"></span>&nbsp;<br>נדרשת הסכמת הממשלה בכתב, לחוק או לקיום הדיון החריג.<br>סעיף 76 (ב)&nbsp;"
+            }
+          ]
         },
         {
           "id": "s2_2",
@@ -461,7 +495,7 @@
         {
           "id": "s3_2",
           "title": "דיון",
-          "icon": "💬",
+          "icon": "",
           "catId": "process",
           "chpiqa": false,
           "depth": 0,
@@ -500,7 +534,7 @@
         {
           "id": "s3_3",
           "title": "הצבעה",
-          "icon": "🗳️",
+          "icon": "",
           "catId": "plenum",
           "chpiqa": false,
           "depth": 0,
@@ -1383,8 +1417,8 @@
       "color": "#CC0000"
     }
   ],
-  "nextId": 1044,
-  "publishDate": "2026-03-07T20:57:10.291Z",
+  "nextId": 1047,
+  "publishDate": "2026-03-07T21:25:34.821Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-07T22:57:10.559808"
+  "mergedAt": "2026-03-07T23:25:35.016600"
 }
