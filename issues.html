@@ -7,7 +7,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#f5f7fa;color:#333;direction:rtl}
-.container{max-width:700px;margin:0 auto;padding:20px}
+.container{max-width:750px;margin:0 auto;padding:20px}
 h1{text-align:center;color:#0A5E6E;margin-bottom:8px;font-size:22px}
 .subtitle{text-align:center;color:#888;font-size:13px;margin-bottom:24px}
 .form-card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:20px}
@@ -27,18 +27,20 @@ textarea{min-height:120px;resize:vertical}
 .submit-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#0A5E6E;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
 .submit-btn:hover{background:#087080}
 .submit-btn:disabled{background:#ccc;cursor:not-allowed}
-.send-report-btn{width:100%;padding:12px;border:2px solid #E67E22;border-radius:10px;background:#FEF3C7;color:#92400E;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:12px}
+.send-report-btn{width:100%;padding:12px;border:2px solid #E67E22;border-radius:10px;background:#FEF3C7;color:#92400E;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:16px}
 .send-report-btn:hover{background:#E67E22;color:#fff}
 .send-report-btn:disabled{opacity:.5;cursor:not-allowed}
 .success-msg{text-align:center;padding:16px;background:#d4edda;border-radius:10px;color:#155724;font-weight:600;display:none;margin-top:12px}
-.issues-list{margin-top:24px}
 .issue-card{background:#fff;border-radius:10px;padding:16px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-right:4px solid #0A5E6E}
-.issue-card.resolved{opacity:.6;border-right-color:#28a745}
+.issue-card.status-open{border-right-color:#E67E22}
+.issue-card.status-fixed{border-right-color:#2196F3}
+.issue-card.status-verified{border-right-color:#28a745}
+.issue-card.status-reopened{border-right-color:#CC0000}
 .issue-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .issue-title{font-weight:700;font-size:14px}
 .issue-meta{font-size:11px;color:#888}
 .issue-desc{font-size:13px;color:#555;line-height:1.6}
-.issue-tags{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.issue-tags{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;align-items:center}
 .tag{font-size:10px;padding:2px 8px;border-radius:10px;background:#f0f0f0;color:#555;font-weight:600}
 .tag.cat-system{background:#E6F6FB;color:#0A5E6E}
 .tag.cat-func{background:#FEF3C7;color:#92400E}
@@ -47,9 +49,18 @@ textarea{min-height:120px;resize:vertical}
 .tag.p-high{background:#FEE2E2;color:#991B1B}
 .tag.p-medium{background:#FEF3C7;color:#92400E}
 .tag.p-low{background:#E0E7FF;color:#3730A3}
-.resolve-btn{font-size:11px;padding:4px 10px;border:1px solid #28a745;border-radius:6px;background:#fff;color:#28a745;cursor:pointer;font-family:inherit}
-.resolve-btn:hover{background:#28a745;color:#fff}
-.tab-bar{display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid #eee;padding-bottom:8px}
+.tag.s-open{background:#FEF3C7;color:#92400E}
+.tag.s-fixed{background:#DBEAFE;color:#1E40AF}
+.tag.s-verified{background:#DCFCE7;color:#166534}
+.tag.s-reopened{background:#FEE2E2;color:#991B1B}
+.action-btn{font-size:11px;padding:4px 10px;border:1px solid #ddd;border-radius:6px;background:#fff;cursor:pointer;font-family:inherit;transition:all .2s}
+.action-btn:hover{background:#f0f0f0}
+.action-btn.verify{border-color:#28a745;color:#28a745}
+.action-btn.verify:hover{background:#28a745;color:#fff}
+.action-btn.reopen{border-color:#CC0000;color:#CC0000}
+.action-btn.reopen:hover{background:#CC0000;color:#fff}
+.action-btn.delete{border-color:#999;color:#999}
+.tab-bar{display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid #eee;padding-bottom:8px;flex-wrap:wrap}
 .tab{padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-size:13px;font-weight:600;color:#888;border:none;background:transparent;font-family:inherit}
 .tab.active{color:#0A5E6E;background:#E6F6FB;border-bottom:2px solid #0A5E6E}
 .count-badge{background:#0A5E6E;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-right:4px}
@@ -57,6 +68,12 @@ textarea{min-height:120px;resize:vertical}
 .id-bar label{margin:0;white-space:nowrap}
 .id-bar input{flex:1;margin:0}
 .reporter-name{font-size:11px;color:#0A5E6E;font-weight:600}
+.feedback-area{margin-top:8px;display:none}
+.feedback-area textarea{min-height:60px;font-size:12px}
+.feedback-area button{margin-top:4px}
+.history-item{font-size:11px;color:#666;padding:4px 8px;background:#f8f9fa;border-radius:4px;margin-top:4px;border-right:3px solid #ddd}
+.history-item.verified{border-right-color:#28a745}
+.history-item.reopened{border-right-color:#CC0000}
 </style>
 </head>
 <body>
@@ -65,16 +82,16 @@ textarea{min-height:120px;resize:vertical}
   <h1>📋 דיווח בעיות ובקשות</h1>
   <p class="subtitle">ריבונות הכנסת — מערכת הליך חקיקה פרטית</p>
 
-  <!-- Identification -->
   <div class="id-bar">
-    <label>👤 שם המדווח/ת:</label>
+    <label>👤 שם:</label>
     <input type="text" id="reporterName" placeholder="השם שלך..." style="font-size:14px">
   </div>
 
   <div class="tab-bar">
     <button class="tab active" onclick="showTab('new',this)">➕ דיווח חדש</button>
-    <button class="tab" onclick="showTab('open',this)">📋 פתוחות <span class="count-badge" id="openCount">0</span></button>
-    <button class="tab" onclick="showTab('resolved',this)">✅ טופלו</button>
+    <button class="tab" onclick="showTab('open',this)">📋 ממתינות <span class="count-badge" id="openCount">0</span></button>
+    <button class="tab" onclick="showTab('review',this)">🔍 לאימות <span class="count-badge" id="reviewCount">0</span></button>
+    <button class="tab" onclick="showTab('done',this)">✅ הושלמו</button>
   </div>
 
   <!-- New Issue Form -->
@@ -89,7 +106,7 @@ textarea{min-height:120px;resize:vertical}
     </div>
     <div class="form-group">
       <label>קטגוריה</label>
-      <div class="cat-select" id="catSelect">
+      <div class="cat-select">
         <span class="cat-option selected" data-cat="func" onclick="selectCat(this)">🔧 פונקציונליות</span>
         <span class="cat-option" data-cat="design" onclick="selectCat(this)">🎨 עיצוב</span>
         <span class="cat-option" data-cat="content" onclick="selectCat(this)">📝 תוכן</span>
@@ -105,30 +122,37 @@ textarea{min-height:120px;resize:vertical}
       </div>
     </div>
     <button class="submit-btn" onclick="submitIssue()">💾 שמור דיווח</button>
-    <div class="success-msg" id="successMsg">✅ הדיווח נשמר בהצלחה!</div>
+    <div class="success-msg" id="successMsg">✅ הדיווח נשמר!</div>
   </div>
 
-  <!-- Open Issues -->
-  <div id="tab-open" class="issues-list" style="display:none"></div>
+  <!-- Open (waiting for fix) -->
+  <div id="tab-open" style="display:none"></div>
 
-  <!-- Resolved Issues -->
-  <div id="tab-resolved" class="issues-list" style="display:none"></div>
+  <!-- Review (fixed, awaiting verification) -->
+  <div id="tab-review" style="display:none"></div>
 
-  <!-- Send Report Button (always visible at bottom) -->
-  <button class="send-report-btn" id="sendReportBtn" onclick="sendReport()">📤 שגר דוח בעיות פתוחות לטיפול</button>
+  <!-- Done (verified) -->
+  <div id="tab-done" style="display:none"></div>
+
+  <!-- Send Report -->
+  <button class="send-report-btn" id="sendReportBtn" onclick="sendReport()">📤 שגר דוח לטיפול</button>
   <div class="success-msg" id="reportSentMsg">✅ הדוח נשלח לטיפול!</div>
 </div>
 
 <script>
 const STORAGE_KEY = "knesset-issues-v1";
 const REPORTER_KEY = "knesset-reporter-name";
-// Publish URL — same server as main site publish
 const PUBLISH_BASE = document.location.origin;
 
-// Load saved reporter name
+/* Status flow:
+   open → fixed (by admin) → verified (by reporter) = done
+   open → fixed → reopened (by reporter, with feedback) → fixed → ...
+*/
+
 document.addEventListener("DOMContentLoaded", function(){
   const saved = localStorage.getItem(REPORTER_KEY);
   if(saved) document.getElementById("reporterName").value = saved;
+  renderAll();
 });
 document.getElementById("reporterName").addEventListener("change", function(){
   localStorage.setItem(REPORTER_KEY, this.value.trim());
@@ -136,43 +160,32 @@ document.getElementById("reporterName").addEventListener("change", function(){
 
 function getReporter(){
   const name = document.getElementById("reporterName").value.trim();
-  if(!name){ alert("נא למלא את שם המדווח/ת"); document.getElementById("reporterName").focus(); return null; }
+  if(!name){ alert("נא למלא שם"); document.getElementById("reporterName").focus(); return null; }
   localStorage.setItem(REPORTER_KEY, name);
   return name;
 }
 
-function getIssues(){
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
-  catch(e){ return []; }
-}
-function saveIssues(issues){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(issues));
-}
+function getIssues(){ try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch(e){ return []; } }
+function saveIssues(issues){ localStorage.setItem(STORAGE_KEY, JSON.stringify(issues)); }
+function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
 
-function selectCat(el){
-  el.parentElement.querySelectorAll(".cat-option").forEach(e=>e.classList.remove("selected"));
-  el.classList.add("selected");
-}
-function selectPriority(el){
-  el.parentElement.querySelectorAll(".priority-btn").forEach(e=>e.classList.remove("selected"));
-  el.classList.add("selected");
-}
+function selectCat(el){ el.parentElement.querySelectorAll(".cat-option").forEach(e=>e.classList.remove("selected")); el.classList.add("selected"); }
+function selectPriority(el){ el.parentElement.querySelectorAll(".priority-btn").forEach(e=>e.classList.remove("selected")); el.classList.add("selected"); }
 
 function submitIssue(){
-  const reporter = getReporter();
-  if(!reporter) return;
+  const reporter = getReporter(); if(!reporter) return;
   const title = document.getElementById("issueTitle").value.trim();
-  const desc = document.getElementById("issueDesc").value.trim();
   if(!title){ alert("נא למלא כותרת"); return; }
+  const desc = document.getElementById("issueDesc").value.trim();
   const cat = document.querySelector(".cat-option.selected")?.dataset.cat || "func";
   const priority = document.querySelector(".priority-btn.selected")?.dataset.p || "medium";
   const issues = getIssues();
   issues.unshift({
-    id: Date.now(),
-    title, desc, cat, priority, reporter,
+    id: Date.now(), title, desc, cat, priority, reporter,
+    status: "open", // open | fixed | verified | reopened
     date: new Date().toLocaleDateString("he-IL"),
     time: new Date().toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"}),
-    resolved: false
+    history: [{action:"opened", by:reporter, at:new Date().toISOString()}]
   });
   saveIssues(issues);
   document.getElementById("issueTitle").value = "";
@@ -180,85 +193,126 @@ function submitIssue(){
   const msg = document.getElementById("successMsg");
   msg.style.display = "block";
   setTimeout(()=>{ msg.style.display="none"; }, 3000);
-  renderIssues();
+  renderAll();
 }
 
 const catLabels = {func:"🔧 פונקציונליות",design:"🎨 עיצוב",content:"📝 תוכן",system:"🖥️ מערכת"};
 const pLabels = {high:"🔴 דחוף",medium:"🟡 רגיל",low:"🔵 נמוך"};
+const sLabels = {open:"⏳ ממתין",fixed:"🔧 טופל — ממתין לאימות",verified:"✅ אומת",reopened:"🔄 נפתח מחדש"};
 
-function renderIssueCard(issue){
-  return `<div class="issue-card ${issue.resolved?'resolved':''}">
+function renderCard(issue){
+  const hist = (issue.history||[]).map(h=>{
+    const cls = h.action==="verified"?"verified":h.action==="reopened"?"reopened":"";
+    const icons = {opened:"📝",fixed:"🔧",verified:"✅",reopened:"🔄"};
+    const d = new Date(h.at);
+    const dateStr = d.toLocaleDateString("he-IL") + " " + d.toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});
+    return `<div class="history-item ${cls}">${icons[h.action]||"📌"} ${esc(h.by)} — ${dateStr}${h.note?' — '+esc(h.note):''}</div>`;
+  }).join("");
+
+  let actions = '';
+  if(issue.status === "open" || issue.status === "reopened"){
+    actions = `<button class="action-btn delete" onclick="deleteIssue(${issue.id})">🗑️ מחק</button>`;
+  } else if(issue.status === "fixed"){
+    actions = `
+      <button class="action-btn verify" onclick="verifyIssue(${issue.id})">✅ אושר — הבעיה תוקנה</button>
+      <button class="action-btn reopen" onclick="toggleFeedback(${issue.id})">❌ הבעיה נמשכת</button>
+      <div class="feedback-area" id="feedback-${issue.id}">
+        <textarea id="feedbackText-${issue.id}" placeholder="מה עדיין לא עובד?"></textarea>
+        <button class="action-btn reopen" onclick="reopenIssue(${issue.id})">📤 שלח ופתח מחדש</button>
+      </div>`;
+  } else if(issue.status === "verified"){
+    actions = `<span style="color:#28a745;font-weight:600;font-size:12px">✅ אומת ונסגר</span>`;
+  }
+
+  return `<div class="issue-card status-${issue.status}">
     <div class="issue-header">
       <span class="issue-title">${esc(issue.title)}</span>
-      <span class="issue-meta">${esc(issue.reporter||'?')} · ${issue.date} ${issue.time}</span>
+      <span class="issue-meta">👤 ${esc(issue.reporter)} · ${issue.date} ${issue.time}</span>
     </div>
     ${issue.desc?`<div class="issue-desc">${esc(issue.desc).replace(/\n/g,'<br>')}</div>`:''}
     <div class="issue-tags">
       <span class="tag cat-${issue.cat}">${catLabels[issue.cat]||issue.cat}</span>
       <span class="tag p-${issue.priority}">${pLabels[issue.priority]||issue.priority}</span>
-      <span class="reporter-name">👤 ${esc(issue.reporter||'?')}</span>
+      <span class="tag s-${issue.status}">${sLabels[issue.status]||issue.status}</span>
     </div>
-    <div style="margin-top:8px;text-align:left">
-      ${issue.resolved
-        ?`<span style="color:#28a745;font-size:12px;font-weight:600">✅ טופל</span>`
-        :`<button class="resolve-btn" onclick="resolveIssue(${issue.id})">סמן כטופל</button>
-           <button class="resolve-btn" style="border-color:#c00;color:#c00;margin-right:4px" onclick="deleteIssue(${issue.id})">🗑️ מחק</button>`}
-    </div>
+    ${hist?'<div style="margin-top:8px">'+hist+'</div>':''}
+    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">${actions}</div>
   </div>`;
 }
 
-function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
-
-function renderIssues(){
+function renderAll(){
   const issues = getIssues();
-  const open = issues.filter(i=>!i.resolved);
-  const resolved = issues.filter(i=>i.resolved);
-  document.getElementById("tab-open").innerHTML = open.length
-    ? open.map(renderIssueCard).join("")
-    : '<p style="text-align:center;color:#888;padding:20px">🎉 אין בעיות פתוחות</p>';
-  document.getElementById("tab-resolved").innerHTML = resolved.length
-    ? resolved.map(renderIssueCard).join("")
-    : '<p style="text-align:center;color:#888;padding:20px">אין דיווחים שטופלו</p>';
+  const open = issues.filter(i=>i.status==="open"||i.status==="reopened");
+  const review = issues.filter(i=>i.status==="fixed");
+  const done = issues.filter(i=>i.status==="verified");
+
+  document.getElementById("tab-open").innerHTML = open.length ? open.map(renderCard).join("") : '<p style="text-align:center;color:#888;padding:20px">🎉 אין בעיות ממתינות</p>';
+  document.getElementById("tab-review").innerHTML = review.length ? '<p style="color:#1E40AF;font-size:13px;font-weight:600;margin-bottom:12px;padding:0 4px">הבעיות הבאות סומנו כ"טופל". בדקי ואשרי או דווחי שהבעיה נמשכת:</p>' + review.map(renderCard).join("") : '<p style="text-align:center;color:#888;padding:20px">אין בעיות לאימות</p>';
+  document.getElementById("tab-done").innerHTML = done.length ? done.map(renderCard).join("") : '<p style="text-align:center;color:#888;padding:20px">אין בעיות שאומתו</p>';
+
   document.getElementById("openCount").textContent = open.length;
-  document.getElementById("sendReportBtn").disabled = open.length === 0;
+  document.getElementById("reviewCount").textContent = review.length;
+  document.getElementById("sendReportBtn").disabled = (open.length + review.length) === 0;
 }
 
-function resolveIssue(id){
+function verifyIssue(id){
+  const reporter = getReporter(); if(!reporter) return;
   const issues = getIssues();
   const issue = issues.find(i=>i.id===id);
-  if(issue) issue.resolved = true;
+  if(!issue) return;
+  issue.status = "verified";
+  if(!issue.history) issue.history = [];
+  issue.history.push({action:"verified", by:reporter, at:new Date().toISOString()});
   saveIssues(issues);
-  renderIssues();
+  renderAll();
+}
+
+function toggleFeedback(id){
+  const el = document.getElementById("feedback-"+id);
+  el.style.display = el.style.display==="none"||!el.style.display ? "block" : "none";
+}
+
+function reopenIssue(id){
+  const reporter = getReporter(); if(!reporter) return;
+  const issues = getIssues();
+  const issue = issues.find(i=>i.id===id);
+  if(!issue) return;
+  const note = document.getElementById("feedbackText-"+id)?.value.trim() || "";
+  issue.status = "reopened";
+  if(!issue.history) issue.history = [];
+  issue.history.push({action:"reopened", by:reporter, at:new Date().toISOString(), note});
+  saveIssues(issues);
+  renderAll();
 }
 
 function deleteIssue(id){
-  if(!confirm("למחוק את הדיווח?")) return;
-  const issues = getIssues().filter(i=>i.id!==id);
-  saveIssues(issues);
-  renderIssues();
+  if(!confirm("למחוק?")) return;
+  saveIssues(getIssues().filter(i=>i.id!==id));
+  renderAll();
 }
 
 async function sendReport(){
-  const reporter = getReporter();
-  if(!reporter) return;
+  const reporter = getReporter(); if(!reporter) return;
   const issues = getIssues();
-  const open = issues.filter(i=>!i.resolved);
-  if(open.length === 0){ alert("אין בעיות פתוחות לשליחה"); return; }
+  const active = issues.filter(i=>i.status!=="verified");
+  if(active.length===0){ alert("אין בעיות פעילות"); return; }
 
   const btn = document.getElementById("sendReportBtn");
-  btn.disabled = true;
-  btn.textContent = "📤 שולח...";
+  btn.disabled = true; btn.textContent = "📤 שולח...";
 
   try {
     const resp = await fetch(PUBLISH_BASE + "/report", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
-        reporter,
-        sentAt: new Date().toISOString(),
-        openIssues: open,
-        totalOpen: open.length,
-        totalResolved: issues.filter(i=>i.resolved).length
+        reporter, sentAt: new Date().toISOString(),
+        issues: active,
+        summary: {
+          open: issues.filter(i=>i.status==="open").length,
+          reopened: issues.filter(i=>i.status==="reopened").length,
+          fixed: issues.filter(i=>i.status==="fixed").length,
+          verified: issues.filter(i=>i.status==="verified").length
+        }
       })
     });
     const result = await resp.json();
@@ -266,14 +320,9 @@ async function sendReport(){
       const msg = document.getElementById("reportSentMsg");
       msg.style.display = "block";
       setTimeout(()=>{ msg.style.display="none"; }, 5000);
-    } else {
-      alert("שגיאה בשליחה: " + (result.error||"unknown"));
-    }
-  } catch(e){
-    alert("שגיאה בשליחה: " + e.message);
-  }
-  btn.disabled = false;
-  btn.textContent = "📤 שגר דוח בעיות פתוחות לטיפול";
+    } else { alert("שגיאה: " + (result.error||"")); }
+  } catch(e){ alert("שגיאה: " + e.message); }
+  btn.disabled = false; btn.textContent = "📤 שגר דוח לטיפול";
 }
 
 function showTab(name, tabEl){
@@ -282,8 +331,6 @@ function showTab(name, tabEl){
   if(tabEl) tabEl.classList.add("active");
   document.getElementById("tab-"+name).style.display = "block";
 }
-
-renderIssues();
 </script>
 </body>
 </html>
