@@ -2082,7 +2082,7 @@ function showCatAssign(event, stepId){
   const rect = event.target.getBoundingClientRect();
   dropdown.style.top = Math.min(rect.bottom + 4, window.innerHeight - 350) + "px";
   dropdown.style.right = (window.innerWidth - rect.right) + "px";
-  document.body.appendChild(dropdown);
+  document.body.appendChild(dropdown);ensurePopupVisible(dropdown);
 
   setTimeout(()=>{
     document.addEventListener("click", function handler(e){
@@ -2161,7 +2161,7 @@ function pickStepColor(event, stepId){
   const rect = event.target.getBoundingClientRect();
   popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 380) + "px";
   popup.style.right = (window.innerWidth - rect.right) + "px";
-  document.body.appendChild(popup);
+  document.body.appendChild(popup);ensurePopupVisible(popup);
 
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
@@ -2219,7 +2219,7 @@ function pickStepFont(event, stepId){
   const rect = event.target.getBoundingClientRect();
   popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 250) + "px";
   popup.style.right = (window.innerWidth - rect.right) + "px";
-  document.body.appendChild(popup);
+  document.body.appendChild(popup);ensurePopupVisible(popup);
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
       if(!popup.contains(e.target)){
@@ -2326,6 +2326,28 @@ document.addEventListener("selectionchange", function(){
   }
 });
 
+function ensurePopupVisible(popup){
+  requestAnimationFrame(()=>{
+    const r = popup.getBoundingClientRect();
+    if(r.bottom > window.innerHeight){
+      popup.style.top = Math.max(4, window.innerHeight - r.height - 8) + "px";
+    }
+    if(r.top < 0){
+      popup.style.top = "4px";
+    }
+    if(r.right > window.innerWidth){
+      popup.style.right = "4px";
+      popup.style.left = "auto";
+    }
+    if(r.left < 0){
+      popup.style.left = "4px";
+      popup.style.right = "auto";
+    }
+    popup.style.maxHeight = (window.innerHeight - 16) + "px";
+    popup.style.overflowY = "auto";
+  });
+}
+
 function showInlineIconPicker(event, stepId){
   event.stopPropagation();
   
@@ -2380,7 +2402,7 @@ function showInlineIconPicker(event, stepId){
   const rect = event.target.getBoundingClientRect();
   popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 300) + "px";
   popup.style.right = (window.innerWidth - rect.right) + "px";
-  document.body.appendChild(popup);
+  document.body.appendChild(popup);ensurePopupVisible(popup);
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
       if(!popup.contains(e.target)){popup.remove();document.removeEventListener("click",handler);}
@@ -2498,7 +2520,7 @@ function pickDetailColor(event, stepId){
   const rect = event.target.getBoundingClientRect();
   popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 420) + "px";
   popup.style.right = (window.innerWidth - rect.right) + "px";
-  document.body.appendChild(popup);
+  document.body.appendChild(popup);ensurePopupVisible(popup);
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
       if(!popup.contains(e.target)){
@@ -2577,7 +2599,7 @@ function pickStepIcon(event, stepId){
   const rect = event.target.getBoundingClientRect();
   popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 250) + "px";
   popup.style.right = (window.innerWidth - rect.right) + "px";
-  document.body.appendChild(popup);
+  document.body.appendChild(popup);ensurePopupVisible(popup);
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
       if(!popup.contains(e.target)){
@@ -2619,7 +2641,7 @@ function pickStageIcon(event, stageId){
   const rect = event.target.getBoundingClientRect();
   popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 250) + "px";
   popup.style.right = (window.innerWidth - rect.right) + "px";
-  document.body.appendChild(popup);
+  document.body.appendChild(popup);ensurePopupVisible(popup);
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
       if(!popup.contains(e.target)){popup.remove();document.removeEventListener("click",handler);}
@@ -3305,7 +3327,7 @@ function flowEditColor(id, btnEl){
   // Viewport-aware positioning
   popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 450) + "px";
   popup.style.left = Math.max(4, rect.left - 100) + "px";
-  document.body.appendChild(popup);
+  document.body.appendChild(popup);ensurePopupVisible(popup);
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
       if(!popup.contains(e.target) && e.target !== btnEl){
@@ -3380,7 +3402,7 @@ function flowAssignCategory(id, btnEl){
     </div>
   `;
 
-  document.body.appendChild(dropdown);
+  document.body.appendChild(dropdown);ensurePopupVisible(dropdown);
   setTimeout(()=>{
     document.addEventListener("click",function handler(e){
       if(!dropdown.contains(e.target)){
