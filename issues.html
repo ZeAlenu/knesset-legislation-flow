@@ -27,6 +27,9 @@ textarea{min-height:120px;resize:vertical}
 .submit-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#0A5E6E;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
 .submit-btn:hover{background:#087080}
 .submit-btn:disabled{background:#ccc;cursor:not-allowed}
+.send-report-btn{width:100%;padding:12px;border:2px solid #E67E22;border-radius:10px;background:#FEF3C7;color:#92400E;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:12px}
+.send-report-btn:hover{background:#E67E22;color:#fff}
+.send-report-btn:disabled{opacity:.5;cursor:not-allowed}
 .success-msg{text-align:center;padding:16px;background:#d4edda;border-radius:10px;color:#155724;font-weight:600;display:none;margin-top:12px}
 .issues-list{margin-top:24px}
 .issue-card{background:#fff;border-radius:10px;padding:16px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-right:4px solid #0A5E6E}
@@ -50,6 +53,10 @@ textarea{min-height:120px;resize:vertical}
 .tab{padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-size:13px;font-weight:600;color:#888;border:none;background:transparent;font-family:inherit}
 .tab.active{color:#0A5E6E;background:#E6F6FB;border-bottom:2px solid #0A5E6E}
 .count-badge{background:#0A5E6E;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-right:4px}
+.id-bar{background:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.id-bar label{margin:0;white-space:nowrap}
+.id-bar input{flex:1;margin:0}
+.reporter-name{font-size:11px;color:#0A5E6E;font-weight:600}
 </style>
 </head>
 <body>
@@ -58,10 +65,16 @@ textarea{min-height:120px;resize:vertical}
   <h1>📋 דיווח בעיות ובקשות</h1>
   <p class="subtitle">ריבונות הכנסת — מערכת הליך חקיקה פרטית</p>
 
+  <!-- Identification -->
+  <div class="id-bar">
+    <label>👤 שם המדווח/ת:</label>
+    <input type="text" id="reporterName" placeholder="השם שלך..." style="font-size:14px">
+  </div>
+
   <div class="tab-bar">
-    <button class="tab active" onclick="showTab('new')">➕ דיווח חדש</button>
-    <button class="tab" onclick="showTab('open')">📋 פתוחות <span class="count-badge" id="openCount">0</span></button>
-    <button class="tab" onclick="showTab('resolved')">✅ טופלו</button>
+    <button class="tab active" onclick="showTab('new',this)">➕ דיווח חדש</button>
+    <button class="tab" onclick="showTab('open',this)">📋 פתוחות <span class="count-badge" id="openCount">0</span></button>
+    <button class="tab" onclick="showTab('resolved',this)">✅ טופלו</button>
   </div>
 
   <!-- New Issue Form -->
@@ -91,8 +104,8 @@ textarea{min-height:120px;resize:vertical}
         <button class="priority-btn" data-p="low" onclick="selectPriority(this)">🔵 נמוך</button>
       </div>
     </div>
-    <button class="submit-btn" onclick="submitIssue()">📤 שלח דיווח</button>
-    <div class="success-msg" id="successMsg">✅ הדיווח נשלח בהצלחה!</div>
+    <button class="submit-btn" onclick="submitIssue()">💾 שמור דיווח</button>
+    <div class="success-msg" id="successMsg">✅ הדיווח נשמר בהצלחה!</div>
   </div>
 
   <!-- Open Issues -->
@@ -100,10 +113,33 @@ textarea{min-height:120px;resize:vertical}
 
   <!-- Resolved Issues -->
   <div id="tab-resolved" class="issues-list" style="display:none"></div>
+
+  <!-- Send Report Button (always visible at bottom) -->
+  <button class="send-report-btn" id="sendReportBtn" onclick="sendReport()">📤 שגר דוח בעיות פתוחות לטיפול</button>
+  <div class="success-msg" id="reportSentMsg">✅ הדוח נשלח לטיפול!</div>
 </div>
 
 <script>
 const STORAGE_KEY = "knesset-issues-v1";
+const REPORTER_KEY = "knesset-reporter-name";
+// Publish URL — same server as main site publish
+const PUBLISH_BASE = document.location.origin;
+
+// Load saved reporter name
+document.addEventListener("DOMContentLoaded", function(){
+  const saved = localStorage.getItem(REPORTER_KEY);
+  if(saved) document.getElementById("reporterName").value = saved;
+});
+document.getElementById("reporterName").addEventListener("change", function(){
+  localStorage.setItem(REPORTER_KEY, this.value.trim());
+});
+
+function getReporter(){
+  const name = document.getElementById("reporterName").value.trim();
+  if(!name){ alert("נא למלא את שם המדווח/ת"); document.getElementById("reporterName").focus(); return null; }
+  localStorage.setItem(REPORTER_KEY, name);
+  return name;
+}
 
 function getIssues(){
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
@@ -123,6 +159,8 @@ function selectPriority(el){
 }
 
 function submitIssue(){
+  const reporter = getReporter();
+  if(!reporter) return;
   const title = document.getElementById("issueTitle").value.trim();
   const desc = document.getElementById("issueDesc").value.trim();
   if(!title){ alert("נא למלא כותרת"); return; }
@@ -131,7 +169,7 @@ function submitIssue(){
   const issues = getIssues();
   issues.unshift({
     id: Date.now(),
-    title, desc, cat, priority,
+    title, desc, cat, priority, reporter,
     date: new Date().toLocaleDateString("he-IL"),
     time: new Date().toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"}),
     resolved: false
@@ -151,21 +189,25 @@ const pLabels = {high:"🔴 דחוף",medium:"🟡 רגיל",low:"🔵 נמוך"
 function renderIssueCard(issue){
   return `<div class="issue-card ${issue.resolved?'resolved':''}">
     <div class="issue-header">
-      <span class="issue-title">${issue.title}</span>
-      <span class="issue-meta">${issue.date} ${issue.time}</span>
+      <span class="issue-title">${esc(issue.title)}</span>
+      <span class="issue-meta">${esc(issue.reporter||'?')} · ${issue.date} ${issue.time}</span>
     </div>
-    ${issue.desc?`<div class="issue-desc">${issue.desc.replace(/\n/g,'<br>')}</div>`:''}
+    ${issue.desc?`<div class="issue-desc">${esc(issue.desc).replace(/\n/g,'<br>')}</div>`:''}
     <div class="issue-tags">
       <span class="tag cat-${issue.cat}">${catLabels[issue.cat]||issue.cat}</span>
       <span class="tag p-${issue.priority}">${pLabels[issue.priority]||issue.priority}</span>
+      <span class="reporter-name">👤 ${esc(issue.reporter||'?')}</span>
     </div>
     <div style="margin-top:8px;text-align:left">
       ${issue.resolved
         ?`<span style="color:#28a745;font-size:12px;font-weight:600">✅ טופל</span>`
-        :`<button class="resolve-btn" onclick="resolveIssue(${issue.id})">סמן כטופל</button>`}
+        :`<button class="resolve-btn" onclick="resolveIssue(${issue.id})">סמן כטופל</button>
+           <button class="resolve-btn" style="border-color:#c00;color:#c00;margin-right:4px" onclick="deleteIssue(${issue.id})">🗑️ מחק</button>`}
     </div>
   </div>`;
 }
+
+function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
 
 function renderIssues(){
   const issues = getIssues();
@@ -178,6 +220,7 @@ function renderIssues(){
     ? resolved.map(renderIssueCard).join("")
     : '<p style="text-align:center;color:#888;padding:20px">אין דיווחים שטופלו</p>';
   document.getElementById("openCount").textContent = open.length;
+  document.getElementById("sendReportBtn").disabled = open.length === 0;
 }
 
 function resolveIssue(id){
@@ -188,10 +231,55 @@ function resolveIssue(id){
   renderIssues();
 }
 
-function showTab(name){
+function deleteIssue(id){
+  if(!confirm("למחוק את הדיווח?")) return;
+  const issues = getIssues().filter(i=>i.id!==id);
+  saveIssues(issues);
+  renderIssues();
+}
+
+async function sendReport(){
+  const reporter = getReporter();
+  if(!reporter) return;
+  const issues = getIssues();
+  const open = issues.filter(i=>!i.resolved);
+  if(open.length === 0){ alert("אין בעיות פתוחות לשליחה"); return; }
+
+  const btn = document.getElementById("sendReportBtn");
+  btn.disabled = true;
+  btn.textContent = "📤 שולח...";
+
+  try {
+    const resp = await fetch(PUBLISH_BASE + "/report", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        reporter,
+        sentAt: new Date().toISOString(),
+        openIssues: open,
+        totalOpen: open.length,
+        totalResolved: issues.filter(i=>i.resolved).length
+      })
+    });
+    const result = await resp.json();
+    if(result.ok){
+      const msg = document.getElementById("reportSentMsg");
+      msg.style.display = "block";
+      setTimeout(()=>{ msg.style.display="none"; }, 5000);
+    } else {
+      alert("שגיאה בשליחה: " + (result.error||"unknown"));
+    }
+  } catch(e){
+    alert("שגיאה בשליחה: " + e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = "📤 שגר דוח בעיות פתוחות לטיפול";
+}
+
+function showTab(name, tabEl){
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll("[id^=tab-]").forEach(el=>el.style.display="none");
-  event.target.classList.add("active");
+  if(tabEl) tabEl.classList.add("active");
   document.getElementById("tab-"+name).style.display = "block";
 }
 

@@ -19,6 +19,8 @@ class PublishHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
     
     def do_POST(self):
+        if self.path == "/report":
+            return self.handle_report()
         if self.path != "/publish":
             self.send_error(404)
             return
@@ -78,6 +80,31 @@ class PublishHandler(http.server.BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(b'{"ok":true}')
+        except Exception as e:
+            self.send_response(500)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
+
+    def handle_report(self):
+        """Receive issue reports and save to reports/ directory"""
+        length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(length)
+        try:
+            data = json.loads(body)
+            reports_dir = os.path.join(SITE_DIR, "reports")
+            os.makedirs(reports_dir, exist_ok=True)
+            ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            reporter = data.get("reporter", "unknown").replace("/","_").replace("..","")
+            filename = f"issues-{ts}-{reporter}.json"
+            filepath = os.path.join(reports_dir, filename)
+            with open(filepath, "w") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"ok": True, "file": filename}).encode())
         except Exception as e:
             self.send_response(500)
             self.send_header("Access-Control-Allow-Origin", "*")
