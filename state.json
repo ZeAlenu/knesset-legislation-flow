@@ -82,7 +82,7 @@
     {
       "id": "waiting",
       "name": "המתנה",
-      "color": "#B8860B",
+      "color": "#8E44AD",
       "shape": "pill",
       "logo": null
     }
@@ -1165,23 +1165,22 @@
               "id": "f5b1",
               "label": "⏳ 45 יום",
               "type": "box",
-              "category": "process",
-              "stageId": "",
-              "note": "",
-              "noteType": "",
-              "color": "#0A5E6E",
-              "textColor": "#FFFFFF"
-            },
-            {
-              "id": "f5b2",
-              "label": "קיצור דחיפות",
-              "type": "box",
               "category": "waiting",
               "stageId": "",
               "note": "",
               "noteType": "",
-              "color": "#FFD700",
-              "textColor": "#1B2A4A"
+              "textColor": "#FFFFFF"
+            },
+            {
+              "id": "f5b2",
+              "label": "קיצור דחיפות: אישור ועדת כנסת",
+              "type": "box",
+              "category": "vaadat",
+              "stageId": "",
+              "note": "",
+              "noteType": "",
+              "textColor": "#FFFFFF",
+              "branchConnector": "או"
             },
             {
               "id": "f5b3",
@@ -1191,7 +1190,6 @@
               "stageId": "",
               "note": "",
               "noteType": "",
-              "color": "#8B9A3A",
               "textColor": "#FFFFFF"
             },
             {
@@ -1368,7 +1366,7 @@
     }
   ],
   "nextId": 1043,
-  "publishDate": "2026-03-07T18:09:58.123Z",
+  "publishDate": "2026-03-07T20:04:41.927Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-07T20:09:58.223313"
+  "mergedAt": "2026-03-07T22:04:41.930881"
 }
