@@ -228,6 +228,7 @@ header p{font-size:13px;opacity:.85}
     <button onclick="loadFromServer()" title="מוחק שמירה מקומית וטוען מהשרת">🔄 טען מהשרת</button>
     <a href="manual.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📘 מדריך</a>
     <a href="system.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">⚙️ תפעול</a>
+    <a href="issues.html" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📋 דיווח בעיות</a>
   </div>
 </header>
 
@@ -1286,7 +1287,7 @@ function renderHierarchy(){
       stageClickTimer = setTimeout(function(){
         stageClickTimer = null;
         if(isOpen) appState.openStages.delete(stage.id);
-        else appState.openStages.add(stage.id);
+        else { appState.openStages.add(stage.id); closeAll(stage.steps); }
         // Update active flow stage
         if(appState.openStages.has(stage.id)){
           appState.activeFlowStage = stage.id;
@@ -2842,7 +2843,7 @@ function flowClickStage(stageId){
   // Also open sub-steps of that stage
   const stage = appState.stages.find(s => s.id === stageId);
   if(stage){
-    stage.steps.forEach(s => { s._open = true; });
+    closeAll(stage.steps);
   }
   renderAll();
   // Scroll hierarchy panel to the stage

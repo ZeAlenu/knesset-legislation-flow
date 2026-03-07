@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דיווח בעיות — ריבונות הכנסת</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#f5f7fa;color:#333;direction:rtl}
+.container{max-width:700px;margin:0 auto;padding:20px}
+h1{text-align:center;color:#0A5E6E;margin-bottom:8px;font-size:22px}
+.subtitle{text-align:center;color:#888;font-size:13px;margin-bottom:24px}
+.form-card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:20px}
+.form-group{margin-bottom:16px}
+label{display:block;font-weight:600;font-size:13px;margin-bottom:6px;color:#555}
+input[type="text"],textarea,select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:14px;direction:rtl;transition:border-color .2s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#0A5E6E;box-shadow:0 0 0 3px rgba(10,94,110,.1)}
+textarea{min-height:120px;resize:vertical}
+.cat-select{display:flex;gap:8px;flex-wrap:wrap}
+.cat-option{padding:6px 14px;border-radius:20px;border:2px solid #ddd;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s}
+.cat-option.selected{border-color:#0A5E6E;background:#E6F6FB}
+.cat-option:hover{border-color:#0A5E6E}
+.priority-row{display:flex;gap:8px}
+.priority-btn{flex:1;padding:8px;border:2px solid #ddd;border-radius:8px;cursor:pointer;text-align:center;font-size:12px;font-weight:600;background:#fff;font-family:inherit;transition:all .2s}
+.priority-btn.selected{border-color:#0A5E6E;background:#E6F6FB}
+.priority-btn:hover{border-color:#0A5E6E}
+.submit-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#0A5E6E;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.submit-btn:hover{background:#087080}
+.submit-btn:disabled{background:#ccc;cursor:not-allowed}
+.success-msg{text-align:center;padding:16px;background:#d4edda;border-radius:10px;color:#155724;font-weight:600;display:none;margin-top:12px}
+.issues-list{margin-top:24px}
+.issue-card{background:#fff;border-radius:10px;padding:16px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-right:4px solid #0A5E6E}
+.issue-card.resolved{opacity:.6;border-right-color:#28a745}
+.issue-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.issue-title{font-weight:700;font-size:14px}
+.issue-meta{font-size:11px;color:#888}
+.issue-desc{font-size:13px;color:#555;line-height:1.6}
+.issue-tags{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.tag{font-size:10px;padding:2px 8px;border-radius:10px;background:#f0f0f0;color:#555;font-weight:600}
+.tag.cat-system{background:#E6F6FB;color:#0A5E6E}
+.tag.cat-func{background:#FEF3C7;color:#92400E}
+.tag.cat-design{background:#F3E8FF;color:#6B21A8}
+.tag.cat-content{background:#DCFCE7;color:#166534}
+.tag.p-high{background:#FEE2E2;color:#991B1B}
+.tag.p-medium{background:#FEF3C7;color:#92400E}
+.tag.p-low{background:#E0E7FF;color:#3730A3}
+.resolve-btn{font-size:11px;padding:4px 10px;border:1px solid #28a745;border-radius:6px;background:#fff;color:#28a745;cursor:pointer;font-family:inherit}
+.resolve-btn:hover{background:#28a745;color:#fff}
+.tab-bar{display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid #eee;padding-bottom:8px}
+.tab{padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-size:13px;font-weight:600;color:#888;border:none;background:transparent;font-family:inherit}
+.tab.active{color:#0A5E6E;background:#E6F6FB;border-bottom:2px solid #0A5E6E}
+.count-badge{background:#0A5E6E;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-right:4px}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>📋 דיווח בעיות ובקשות</h1>
+  <p class="subtitle">ריבונות הכנסת — מערכת הליך חקיקה פרטית</p>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('new')">➕ דיווח חדש</button>
+    <button class="tab" onclick="showTab('open')">📋 פתוחות <span class="count-badge" id="openCount">0</span></button>
+    <button class="tab" onclick="showTab('resolved')">✅ טופלו</button>
+  </div>
+
+  <!-- New Issue Form -->
+  <div id="tab-new" class="form-card">
+    <div class="form-group">
+      <label>כותרת הבעיה / בקשה</label>
+      <input type="text" id="issueTitle" placeholder="תיאור קצר...">
+    </div>
+    <div class="form-group">
+      <label>פירוט</label>
+      <textarea id="issueDesc" placeholder="תארי את הבעיה, מה ציפית שיקרה, מה קרה בפועל..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>קטגוריה</label>
+      <div class="cat-select" id="catSelect">
+        <span class="cat-option selected" data-cat="func" onclick="selectCat(this)">🔧 פונקציונליות</span>
+        <span class="cat-option" data-cat="design" onclick="selectCat(this)">🎨 עיצוב</span>
+        <span class="cat-option" data-cat="content" onclick="selectCat(this)">📝 תוכן</span>
+        <span class="cat-option" data-cat="system" onclick="selectCat(this)">🖥️ מערכת</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>עדיפות</label>
+      <div class="priority-row">
+        <button class="priority-btn" data-p="high" onclick="selectPriority(this)">🔴 דחוף</button>
+        <button class="priority-btn selected" data-p="medium" onclick="selectPriority(this)">🟡 רגיל</button>
+        <button class="priority-btn" data-p="low" onclick="selectPriority(this)">🔵 נמוך</button>
+      </div>
+    </div>
+    <button class="submit-btn" onclick="submitIssue()">📤 שלח דיווח</button>
+    <div class="success-msg" id="successMsg">✅ הדיווח נשלח בהצלחה!</div>
+  </div>
+
+  <!-- Open Issues -->
+  <div id="tab-open" class="issues-list" style="display:none"></div>
+
+  <!-- Resolved Issues -->
+  <div id="tab-resolved" class="issues-list" style="display:none"></div>
+</div>
+
+<script>
+const STORAGE_KEY = "knesset-issues-v1";
+
+function getIssues(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+  catch(e){ return []; }
+}
+function saveIssues(issues){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(issues));
+}
+
+function selectCat(el){
+  el.parentElement.querySelectorAll(".cat-option").forEach(e=>e.classList.remove("selected"));
+  el.classList.add("selected");
+}
+function selectPriority(el){
+  el.parentElement.querySelectorAll(".priority-btn").forEach(e=>e.classList.remove("selected"));
+  el.classList.add("selected");
+}
+
+function submitIssue(){
+  const title = document.getElementById("issueTitle").value.trim();
+  const desc = document.getElementById("issueDesc").value.trim();
+  if(!title){ alert("נא למלא כותרת"); return; }
+  const cat = document.querySelector(".cat-option.selected")?.dataset.cat || "func";
+  const priority = document.querySelector(".priority-btn.selected")?.dataset.p || "medium";
+  const issues = getIssues();
+  issues.unshift({
+    id: Date.now(),
+    title, desc, cat, priority,
+    date: new Date().toLocaleDateString("he-IL"),
+    time: new Date().toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"}),
+    resolved: false
+  });
+  saveIssues(issues);
+  document.getElementById("issueTitle").value = "";
+  document.getElementById("issueDesc").value = "";
+  const msg = document.getElementById("successMsg");
+  msg.style.display = "block";
+  setTimeout(()=>{ msg.style.display="none"; }, 3000);
+  renderIssues();
+}
+
+const catLabels = {func:"🔧 פונקציונליות",design:"🎨 עיצוב",content:"📝 תוכן",system:"🖥️ מערכת"};
+const pLabels = {high:"🔴 דחוף",medium:"🟡 רגיל",low:"🔵 נמוך"};
+
+function renderIssueCard(issue){
+  return `<div class="issue-card ${issue.resolved?'resolved':''}">
+    <div class="issue-header">
+      <span class="issue-title">${issue.title}</span>
+      <span class="issue-meta">${issue.date} ${issue.time}</span>
+    </div>
+    ${issue.desc?`<div class="issue-desc">${issue.desc.replace(/\n/g,'<br>')}</div>`:''}
+    <div class="issue-tags">
+      <span class="tag cat-${issue.cat}">${catLabels[issue.cat]||issue.cat}</span>
+      <span class="tag p-${issue.priority}">${pLabels[issue.priority]||issue.priority}</span>
+    </div>
+    <div style="margin-top:8px;text-align:left">
+      ${issue.resolved
+        ?`<span style="color:#28a745;font-size:12px;font-weight:600">✅ טופל</span>`
+        :`<button class="resolve-btn" onclick="resolveIssue(${issue.id})">סמן כטופל</button>`}
+    </div>
+  </div>`;
+}
+
+function renderIssues(){
+  const issues = getIssues();
+  const open = issues.filter(i=>!i.resolved);
+  const resolved = issues.filter(i=>i.resolved);
+  document.getElementById("tab-open").innerHTML = open.length
+    ? open.map(renderIssueCard).join("")
+    : '<p style="text-align:center;color:#888;padding:20px">🎉 אין בעיות פתוחות</p>';
+  document.getElementById("tab-resolved").innerHTML = resolved.length
+    ? resolved.map(renderIssueCard).join("")
+    : '<p style="text-align:center;color:#888;padding:20px">אין דיווחים שטופלו</p>';
+  document.getElementById("openCount").textContent = open.length;
+}
+
+function resolveIssue(id){
+  const issues = getIssues();
+  const issue = issues.find(i=>i.id===id);
+  if(issue) issue.resolved = true;
+  saveIssues(issues);
+  renderIssues();
+}
+
+function showTab(name){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll("[id^=tab-]").forEach(el=>el.style.display="none");
+  event.target.classList.add("active");
+  document.getElementById("tab-"+name).style.display = "block";
+}
+
+renderIssues();
+</script>
+</body>
+</html>
