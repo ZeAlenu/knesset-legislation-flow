@@ -947,22 +947,29 @@ function closeCatModal(){
 
 function renderCatList(){
   const el = document.getElementById("catList");
+  const catCount = appState.categories.length;
   el.innerHTML = appState.categories.map((cat,i) => `
     <div class="cat-row" data-cat="${cat.id}">
+      <div style="display:flex;flex-direction:column;gap:2px;margin-left:4px">
+        <span style="cursor:pointer;font-size:10px;opacity:${i>0?1:0.3};line-height:1" onclick="${i>0?`moveCat('${cat.id}',-1)`:''}" title="הזז למעלה">▲</span>
+        <span style="cursor:pointer;font-size:10px;opacity:${i<catCount-1?1:0.3};line-height:1" onclick="${i<catCount-1?`moveCat('${cat.id}',1)`:''}" title="הזז למטה">▼</span>
+      </div>
       <div class="cat-swatch" style="background:${cat.color}" onclick="pickCatColor('${cat.id}',this)" title="לחץ לשנות צבע"></div>
       <div class="cat-name"><input value="${escH(cat.name)}" onchange="updateCatName('${cat.id}',this.value)" /></div>
       <select class="cat-shape-sel" onchange="updateCatShape('${cat.id}',this.value)">
-        <option value="rounded-rect" ${cat.shape==="rounded-rect"?"selected":""}>▢ מלבן</option>
+        <option value="rounded-rect" ${(cat.shape||"rounded-rect")==="rounded-rect"?"selected":""}>▢ מלבן</option>
         <option value="diamond" ${cat.shape==="diamond"?"selected":""}>◇ מעוין</option>
         <option value="circle" ${cat.shape==="circle"?"selected":""}>● עיגול</option>
         <option value="octagon" ${cat.shape==="octagon"?"selected":""}>⬡ מתומן</option>
         <option value="pill" ${cat.shape==="pill"?"selected":""}>⬭ כמוסה</option>
+        <option value="ellipse" ${cat.shape==="ellipse"?"selected":""}>⬮ אליפסה</option>
       </select>
       ${cat.logo ? `<img class="cat-logo-preview" src="${cat.logo}" />` : ""}
       <button class="cat-logo-btn" onclick="uploadCatLogo('${cat.id}')">🖼️</button>
       <button class="cat-delete" onclick="deleteCat('${cat.id}')" title="מחק">🗑️</button>
     </div>
   `).join("");
+  el.innerHTML += `<div style="text-align:center;margin-top:12px"><button onclick="closeCatModal()" style="padding:8px 24px;border:none;border-radius:8px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600">✅ סיום עריכת קטגוריות</button></div>`;
 }
 
 function pickCatColor(catId, swatchEl){
@@ -1015,6 +1022,18 @@ function updateCatColorLive(catId, color, rowEl){
 function updateCatName(catId, name){
   const cat = getCat(catId);
   if(cat) cat.name = name;
+}
+
+function moveCat(catId, dir){
+  const idx = appState.categories.findIndex(c=>c.id===catId);
+  if(idx<0) return;
+  const newIdx = idx + dir;
+  if(newIdx<0 || newIdx>=appState.categories.length) return;
+  pushUndo();
+  const tmp = appState.categories[idx];
+  appState.categories[idx] = appState.categories[newIdx];
+  appState.categories[newIdx] = tmp;
+  renderCatList();
 }
 
 function updateCatShape(catId, shape){
@@ -2660,7 +2679,9 @@ const BUILTIN_ICONS = {
   "pen": `<img src="icons/pen.png" style="width:48px;height:48px;vertical-align:middle;">`,
   "podium": `<img src="icons/podium.png" width="48" height="48" style="object-fit:contain">`,
   "committee": `<img src="icons/committee.png?v=3" width="48" height="48" style="object-fit:contain">`,
-  "plenum": `<img src="icons/plenum.png" width="48" height="48" style="object-fit:contain">`,
+  "committee-old": `<img src="icons/committee-old.png" width="48" height="48" style="object-fit:contain">`,
+  "plenum": `<img src="icons/plenum-new.png" width="48" height="48" style="object-fit:contain">`,
+  "plenum-old": `<img src="icons/plenum.png" width="48" height="48" style="object-fit:contain">`,
   "shield-menorah": `<img src="icons/shield-menorah.png" width="42" height="42" style="object-fit:contain">`
 };
 
@@ -2684,6 +2705,7 @@ const BUILTIN_ICON_LABELS = {
   "podium": "🎤 דוברים/נואם",
   "committee": "🏛️ דיון ועדה",
   "plenum": "🏟️ מליאה/הצבעה",
+  "plenum-old": "untitled",
   "shield-menorah": "🛡️🕎 מגן מנורה"
 };
 
@@ -2935,7 +2957,17 @@ function renderFlowStepElement(step, isInBranch){
   const imgTag = step.image ? `<img src="${step.image}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px">` : "";
   const label = imgTag + escH(step.label);
 
-  if(step.type === "diamond"){
+  // Apply category shape if step doesn't have its own
+  let effectiveType = step.type || "box";
+  if(effectiveType === "box" && step.category){
+    const stepCat = getCat(step.category);
+    if(stepCat && stepCat.shape && stepCat.shape !== "rounded-rect"){
+      const shapeMap = {"diamond":"diamond","circle":"circle","pill":"pill","octagon":"box","ellipse":"pill"};
+      effectiveType = shapeMap[stepCat.shape] || "box";
+    }
+  }
+
+  if(effectiveType === "diamond"){
     const diamondLabel = label.replace(/\n/g,"<br>");
     html += `<div class="flow-diamond${actCls}" style="background:${color};color:${textColor}${borderStyle}" ${stageClick}><span>${diamondLabel}</span></div>`;
     // Reject/approve labels for diamonds
@@ -2950,10 +2982,10 @@ function renderFlowStepElement(step, isInBranch){
       html += `<div style="color:#bbb;font-size:11px">▼ ${escH(step.approveLabel||"")}</div>`;
       html += `</div>`;
     }
-  } else if(step.type === "circle"){
+  } else if(effectiveType === "circle"){
     const circleLabel = label.replace(/\n/g,"<br>");
     html += `<div class="flow-circle${actCls}" style="background:${color};color:${textColor};width:70px;height:70px" ${stageClick}><span style="font-size:10px;line-height:1.2;text-align:center">${circleLabel}</span></div>`;
-  } else if(step.type === "pill"){
+  } else if(effectiveType === "pill"){
     html += `<div style="${smallStyle}font-size:${isInBranch?'10':'11'}px;padding:${isInBranch?'5px 8px':'6px 14px'};background:${color};color:${textColor};border-radius:14px;font-weight:600;display:inline-block;cursor:pointer" ${stageClick}>${label}</div>`;
   } else if(step.type === "note"){
     // Note types should be handled by renderNoteAnnotation now, but keep this for backwards compatibility
