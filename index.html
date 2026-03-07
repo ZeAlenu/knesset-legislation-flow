@@ -1677,6 +1677,33 @@ function renderStep(step, stage, index, skipChildren){
           col.style.cssText = "flex:1;min-width:0;border:1px dashed #ccc;border-radius:6px;padding:4px";
           // Render branch header WITHOUT its children (skipChildren=true); we render children explicitly below with connectors
           col.appendChild(renderStep(child, stage, ci, true));
+          // Connector between branch header and first child (editing mode)
+          if(child.children && child.children.length > 0 && appState.editing){
+            const hcd = document.createElement("div");
+            hcd.style.cssText = "display:flex;gap:2px;justify-content:center;margin:1px 0;opacity:0.5";
+            const hcTarget = child; // connector stored on the branch header step
+            [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"merge",l:"⑃"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(s=>{
+              const b = document.createElement("button"); b.className = "add-step-btn";
+              const cur = hcTarget.connector||(hcTarget.showArrowAfter?"arrow":"");
+              b.style.cssText = "padding:2px 5px;font-size:10px;min-width:20px;"+(cur===s.v?"background:#E6F6FB;border:1px solid #4ECDC4;":"");
+              b.textContent = s.l;
+              b.onclick = function(e){ e.stopPropagation(); pushUndo(); hcTarget.showArrowAfter=(s.v==="arrow"); hcTarget.connector=(s.v&&s.v!=="arrow")?s.v:undefined; if(!s.v){hcTarget.showArrowAfter=false;} renderAll(); };
+              hcd.appendChild(b);
+            });
+            col.appendChild(hcd);
+          }
+          // Show connector symbol between branch header and first child
+          if(child.showArrowAfter){
+            const arr = document.createElement("div");
+            arr.className = "stage-arrow"; arr.style.margin = "1px 0";
+            arr.innerHTML = '<div class="arrow-line" style="height:10px"></div><div class="arrow-head" style="border-left-width:5px;border-right-width:5px;border-top-width:6px"></div>';
+            col.appendChild(arr);
+          } else if(child.connector && child.connector !== "arrow"){
+            const sym = document.createElement("div");
+            sym.style.cssText = "text-align:center;font-size:16px;font-weight:700;color:#555;margin:2px 0";
+            sym.textContent = child.connector;
+            col.appendChild(sym);
+          }
           // Render sub-steps of each branch with connectors
           if(child.children){
             child.children.forEach((gc, gci) => {
