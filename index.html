@@ -1670,7 +1670,10 @@ function renderStep(step, stage, index, skipChildren){
             orLabel.textContent = step.parallelLabel || "או";
             if(appState.editing){
               orLabel.style.cursor = "pointer";
-              orLabel.title = "לחץ לשנות";
+              orLabel.style.background = "rgba(78,205,196,0.15)";
+              orLabel.style.borderRadius = "4px";
+              orLabel.style.padding = "2px 6px";
+              orLabel.title = "לחץ לשנות (למשל: 'וגם', 'או', '+', כל טקסט)";
               orLabel.onclick = function(){ const v = prompt("טקסט מחבר:", step.parallelLabel||"או"); if(v!==null){ step.parallelLabel = v; renderAll(); } };
             }
             parallelRow.appendChild(orLabel);
