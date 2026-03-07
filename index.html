@@ -1530,6 +1530,7 @@ function renderStep(step, stage, index, skipChildren){
           <span class="edit-btn-sm" onclick="event.stopPropagation();showInlineIconPicker(event,'${step.id}')" title="הוסף סמל בטקסט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px"><img src="icons/icon-picker.png" width="14" height="14" style="vertical-align:middle"></span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();pickDetailColor(event,'${step.id}')" title="צבע פירוט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🎨</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();toggleDetailType('${step.id}')" title="שנה סוג" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🔄</span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();moveDetailToStep('${step.id}')" title="העבר פירוט לשלב אחר" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">📋➡️</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();clearStepDetails('${step.id}')" title="מחק פירוט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;color:#c00">🗑️</span>
         </div>`;
       }
@@ -2301,6 +2302,44 @@ function editStepDetails(stepId){
   const val = prompt("ערוך פירוט:", step.details||"");
   if(val !== null){ step.details = val; renderAll(); }
 }
+function moveDetailToStep(fromStepId){
+  const fromStep = findStepById(fromStepId);
+  if(!fromStep || (!fromStep.details && !fromStep.detailsHtml)) { showToast("אין פירוט להעברה"); return; }
+  
+  // Collect all steps for selection
+  const allSteps = [];
+  function collectSteps(steps, prefix){
+    for(const s of steps){
+      if(s.id !== fromStepId) allSteps.push({id:s.id, title: prefix + s.title});
+      if(s.children) collectSteps(s.children, prefix + "  ");
+      if(s.type==="parallel" && s.branches) s.branches.forEach(b => collectSteps(b.steps||[], prefix + "  "));
+    }
+  }
+  appState.stages.forEach(st => collectSteps(st.steps, st.title.substring(0,8) + " > "));
+  
+  const choices = allSteps.map((s,i) => `${i+1}. ${s.title}`).join("\n");
+  const pick = prompt("בחרי מספר שלב להעברת הפירוט:\n" + choices);
+  if(!pick) return;
+  const idx = parseInt(pick) - 1;
+  if(idx < 0 || idx >= allSteps.length) { showToast("בחירה לא תקינה"); return; }
+  
+  const toStep = findStepById(allSteps[idx].id);
+  if(!toStep) return;
+  
+  if(toStep.details || toStep.detailsHtml){
+    if(!confirm("לשלב היעד כבר יש פירוט. לדרוס?")) return;
+  }
+  
+  pushUndo();
+  toStep.details = fromStep.details;
+  toStep.detailsHtml = fromStep.detailsHtml;
+  toStep.detailType = fromStep.detailType || "expand";
+  fromStep.details = "";
+  fromStep.detailsHtml = null;
+  renderAll();
+  showToast("📝 פירוט הועבר ל: " + toStep.title);
+}
+
 function toggleDetailType(stepId){
   const step = findStepById(stepId);
   if(!step) return;
