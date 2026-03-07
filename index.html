@@ -2424,8 +2424,7 @@ function insertLink(stepId){
 function insertScrollLink(stepId){
   const url = prompt("הכנסי כתובת URL למקור:", "https://www.nevo.co.il/law/72248#");
   if(!url) return;
-  const scrollSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="18" height="18" style="vertical-align:middle"><rect x="25" y="15" width="50" height="70" rx="2" fill="#FFF8DC" stroke="#B8860B" stroke-width="2"/><ellipse cx="25" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><ellipse cx="75" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><line x1="35" y1="30" x2="65" y2="30" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="40" x2="65" y2="40" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="50" x2="65" y2="50" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="60" x2="60" y2="60" stroke="#8B7355" stroke-width="1.5"/></svg>`;
-  const linkHtml = `<a href="${url}" target="_blank" rel="noopener" style="text-decoration:none;cursor:pointer" title="צפה במקור">${scrollSvg}</a>&nbsp;`;
+  const linkHtml = `<a href="${url}" target="_blank" rel="noopener" style="text-decoration:none;cursor:pointer" title="צפה במקור"><img src="icons/scroll.png" width="18" height="22" style="object-fit:contain;vertical-align:middle"></a>&nbsp;`;
   const sel = window.getSelection();
   const targetRange = _lastDetailRange || (sel.rangeCount > 0 ? sel.getRangeAt(0) : null);
   if(targetRange){
@@ -2514,24 +2513,25 @@ function pickDetailColor(event, stepId){
 const BUILTIN_ICONS = {
   "stop-hand": `<img src="icons/stop-sign.png" width="28" height="28" style="object-fit:contain">`,
   "warning": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 95,90 5,90" fill="#FFD700" stroke="#B8860B" stroke-width="3"/><text x="50" y="78" text-anchor="middle" font-size="55" font-weight="bold" fill="#333">!</text></svg>`,
-  "check": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#2D7D46"/><polyline points="25,50 43,68 75,35" fill="none" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  "check": `<img src="icons/shield-check.png" width="34" height="34" style="object-fit:contain">`,
   "x-mark": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#CC0000"/><line x1="30" y1="30" x2="70" y2="70" stroke="white" stroke-width="10" stroke-linecap="round"/><line x1="70" y1="30" x2="30" y2="70" stroke="white" stroke-width="10" stroke-linecap="round"/></svg>`,
   "info": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#2E86AB"/><text x="50" y="40" text-anchor="middle" font-size="30" font-weight="bold" fill="white">i</text><rect x="44" y="48" width="12" height="30" rx="3" fill="white"/></svg>`,
-  "clock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40"><circle cx="50" cy="50" r="45" fill="white" stroke="#1B3A6B" stroke-width="4"/><circle cx="50" cy="50" r="38" fill="none" stroke="#1B3A6B" stroke-width="2"/><line x1="50" y1="50" x2="50" y2="22" stroke="#1B3A6B" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="50" x2="70" y2="55" stroke="#1B3A6B" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="50" r="3" fill="#1B3A6B"/></svg>`,
+  "clock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40"><circle cx="50" cy="50" r="45" fill="#1B3A6B" stroke="white" stroke-width="4"/><circle cx="50" cy="50" r="38" fill="none" stroke="white" stroke-width="2" opacity="0.3"/><line x1="50" y1="50" x2="50" y2="22" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="50" x2="70" y2="55" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="50" r="3" fill="white"/></svg>`,
   "lock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="45" width="60" height="45" rx="6" fill="#B8860B"/><path d="M32,45 L32,32 C32,15 68,15 68,32 L68,45" fill="none" stroke="#B8860B" stroke-width="8"/><circle cx="50" cy="65" r="6" fill="white"/></svg>`,
   "star": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 61,38 95,38 68,60 79,93 50,73 21,93 32,60 5,38 39,38" fill="#FFD700" stroke="#B8860B" stroke-width="2"/></svg>`,
-  "hourglass": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="5" width="60" height="8" rx="3" fill="#B8860B"/><rect x="20" y="87" width="60" height="8" rx="3" fill="#B8860B"/><path d="M28,13 L28,35 C28,42 50,55 50,50 C50,55 72,42 72,35 L72,13 Z" fill="#FFD700" opacity="0.3" stroke="#B8860B" stroke-width="2"/><path d="M28,87 L28,65 C28,58 50,45 50,50 C50,45 72,58 72,65 L72,87 Z" fill="#FFD700" opacity="0.3" stroke="#B8860B" stroke-width="2"/><path d="M40,87 L40,72 C40,65 50,58 50,55 C50,58 60,65 60,72 L60,87 Z" fill="#DAA520"/></svg>`,
+  "hourglass": `<img src="icons/hourglass.png" width="34" height="34" style="object-fit:contain">`,
   "israel": `<img src="icons/state-emblem.png" width="28" height="28" style="object-fit:contain">`,
   "crown": `<img src="icons/crown-cancelled.png" width="56" height="56" style="object-fit:contain">`,
   "menorah": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><path d="M50,85 L50,40" stroke="#B8860B" stroke-width="4" fill="none"/><path d="M20,85 L80,85" stroke="#B8860B" stroke-width="4" fill="none"/><path d="M30,85 L30,50 C30,35 50,30 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M70,85 L70,50 C70,35 50,30 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M20,85 L20,55 C20,38 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M80,85 L80,55 C80,38 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M38,85 L38,47 C38,33 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M62,85 L62,47 C62,33 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><circle cx="20" cy="52" r="3" fill="#FF8C00"/><circle cx="30" cy="47" r="3" fill="#FF8C00"/><circle cx="38" cy="44" r="3" fill="#FF8C00"/><circle cx="50" cy="37" r="3" fill="#FF8C00"/><circle cx="62" cy="44" r="3" fill="#FF8C00"/><circle cx="70" cy="47" r="3" fill="#FF8C00"/><circle cx="80" cy="52" r="3" fill="#FF8C00"/></svg>`,
-  "scroll": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="25" y="15" width="50" height="70" rx="2" fill="#FFF8DC" stroke="#B8860B" stroke-width="2"/><ellipse cx="25" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><ellipse cx="75" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><line x1="35" y1="30" x2="65" y2="30" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="40" x2="65" y2="40" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="50" x2="65" y2="50" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="60" x2="60" y2="60" stroke="#8B7355" stroke-width="1.5"/></svg>`,
+  "scroll": `<img src="icons/scroll.png" width="18" height="22" style="object-fit:contain;vertical-align:middle">`,
   "gavel": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="75" width="60" height="10" rx="3" fill="#8B4513"/><rect x="30" y="68" width="40" height="10" rx="2" fill="#A0522D"/><rect x="42" y="20" width="16" height="50" rx="3" fill="#D2691E" transform="rotate(-30 50 45)"/><rect x="25" y="10" width="35" height="18" rx="5" fill="#8B4513" transform="rotate(-30 42 19)"/></svg>`,
   "scales": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><line x1="50" y1="15" x2="50" y2="80" stroke="#B8860B" stroke-width="3"/><line x1="15" y1="35" x2="85" y2="35" stroke="#B8860B" stroke-width="3"/><circle cx="50" cy="15" r="5" fill="#FFD700" stroke="#B8860B" stroke-width="2"/><path d="M10,55 Q15,35 20,55 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5"/><line x1="15" y1="35" x2="10" y2="55" stroke="#B8860B" stroke-width="1.5"/><line x1="15" y1="35" x2="20" y2="55" stroke="#B8860B" stroke-width="1.5"/><path d="M80,50 Q85,30 90,50 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5"/><line x1="85" y1="35" x2="80" y2="50" stroke="#B8860B" stroke-width="1.5"/><line x1="85" y1="35" x2="90" y2="50" stroke="#B8860B" stroke-width="1.5"/><rect x="38" y="78" width="24" height="8" rx="3" fill="#B8860B"/></svg>`,
   "usurp": `<img src="icons/crown-cancelled.png" width="56" height="56" style="object-fit:contain">`,
   "pen": `<img src="icons/pen.png" style="width:48px;height:48px;vertical-align:middle;">`,
   "podium": `<img src="icons/podium.png" width="48" height="48" style="object-fit:contain">`,
   "committee": `<img src="icons/committee.png" width="48" height="48" style="object-fit:contain">`,
-  "plenum": `<img src="icons/plenum.png" width="48" height="48" style="object-fit:contain">`
+  "plenum": `<img src="icons/plenum.png" width="48" height="48" style="object-fit:contain">`,
+  "shield-menorah": `<img src="icons/shield-menorah.png" width="42" height="42" style="object-fit:contain">`
 };
 
 const BUILTIN_ICON_LABELS = {
@@ -2554,7 +2554,8 @@ const BUILTIN_ICON_LABELS = {
   "pen": "✍️ עט כתיבה",
   "podium": "🎤 דוברים/נואם",
   "committee": "🏛️ דיון ועדה",
-  "plenum": "🏟️ מליאה/הצבעה"
+  "plenum": "🏟️ מליאה/הצבעה",
+  "shield-menorah": "🛡️🕎 מגן מנורה"
 };
 
 function pickStepIcon(event, stepId){
