@@ -221,6 +221,7 @@ header p{font-size:13px;opacity:.85}
     <button onclick="openCatModal()">⚙️ קטגוריות</button>
     <button onclick="saveToStorage()">💾 שמור</button>
     <button onclick="exportJSON()">📤 ייצוא</button>
+    <button onclick="saveBackup()" style="background:#d4edda;border-color:#28a745">💾 שמור גיבוי</button>
     <button onclick="publishState()" style="background:#2D7D46;color:#fff">🌐 פרסם לכולם</button>
     <button onclick="showChangelog()">📋 היסטוריה</button>
     <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
@@ -756,32 +757,42 @@ function saveToStorage(){
     };
     localStorage.setItem("knesset-legislation-v2", JSON.stringify(data));
     logChange("שמירה מקומית", localStorage.getItem("knesset-author")||"?");
-    // Auto-download backup (max once per 10 minutes)
-    const now = Date.now();
-    if(!window._lastBackup || now - window._lastBackup > 600000){
-      downloadBackup(data);
-      window._lastBackup = now;
-      showToast("💾 נשמר + גיבוי הורד");
-    } else {
-      showToast("💾 נשמר בהצלחה");
-    }
+    showToast("💾 נשמר בהצלחה");
   } catch(e){ showToast("❌ שגיאה בשמירה"); }
 }
 
-function downloadBackup(data){
+async function saveBackup(){
   try {
+    const data = JSON.parse(localStorage.getItem("knesset-legislation-v2")||"{}");
     const now = new Date();
     const ts = now.toISOString().replace(/[:.]/g,"-").slice(0,19);
+    const filename = `ריבונות-גיבוי-${ts}.json`;
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+
+    // Try File System Access API ("Save As" dialog)
+    if(window.showSaveFilePicker){
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{description:"JSON", accept:{"application/json":[".json"]}}]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        showToast("💾 גיבוי נשמר בהצלחה");
+        return;
+      } catch(e){
+        if(e.name === "AbortError") return; // User cancelled
+      }
+    }
+    // Fallback: regular download
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = `knesset-backup-${ts}.json`;
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
+    a.href = url; a.download = filename; a.style.display = "none";
+    document.body.appendChild(a); a.click();
     setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1000);
-  } catch(e){ /* silent - backup is best-effort */ }
+    showToast("💾 גיבוי הורד");
+  } catch(e){ showToast("❌ שגיאה בגיבוי"); }
 }
 
 const PUBLISH_URL = "https://bidding-binding-storm-bottle.trycloudflare.com/publish";
