@@ -744,16 +744,41 @@ async function loadFromStorage(){
 
 function saveToStorage(){
   try {
-    localStorage.setItem("knesset-legislation-v2", JSON.stringify({
+    const data = {
       categories: appState.categories,
       stages: appState.stages,
       flowSteps: appState.flowSteps,
       flowBackLinks: appState.flowBackLinks,
       nextId
-    }));
+    };
+    localStorage.setItem("knesset-legislation-v2", JSON.stringify(data));
     logChange("שמירה מקומית", localStorage.getItem("knesset-author")||"?");
-    showToast("💾 נשמר בהצלחה");
+    // Auto-download backup (max once per 10 minutes)
+    const now = Date.now();
+    if(!window._lastBackup || now - window._lastBackup > 600000){
+      downloadBackup(data);
+      window._lastBackup = now;
+      showToast("💾 נשמר + גיבוי הורד");
+    } else {
+      showToast("💾 נשמר בהצלחה");
+    }
   } catch(e){ showToast("❌ שגיאה בשמירה"); }
+}
+
+function downloadBackup(data){
+  try {
+    const now = new Date();
+    const ts = now.toISOString().replace(/[:.]/g,"-").slice(0,19);
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `knesset-backup-${ts}.json`;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1000);
+  } catch(e){ /* silent - backup is best-effort */ }
 }
 
 const PUBLISH_URL = "https://bidding-binding-storm-bottle.trycloudflare.com/publish";
