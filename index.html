@@ -225,6 +225,7 @@ header p{font-size:13px;opacity:.85}
     <button onclick="showChangelog()">📋 היסטוריה</button>
     <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
     <input type="file" id="importInput" accept=".json" class="hidden-input" onchange="importJSON(event)">
+    <button onclick="loadFromServer()" title="מוחק שמירה מקומית וטוען מהשרת">🔄 טען מהשרת</button>
     <a href="manual.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📘 מדריך</a>
     <a href="system.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">⚙️ תפעול</a>
   </div>
@@ -883,6 +884,12 @@ async function publishState(){
     const blob = new Blob([stateData], {type:"application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "state.json"; a.click();
   }
+}
+
+function loadFromServer(){
+  if(!confirm("לטעון מהשרת? השמירה המקומית תימחק.")) return;
+  localStorage.removeItem("knesset-legislation-v2");
+  location.reload();
 }
 
 function exportJSON(){
