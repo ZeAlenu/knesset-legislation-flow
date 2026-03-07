@@ -741,8 +741,7 @@ async function loadFromStorage(){
   migrateCategories();
   
   // Reset open state
-  function closeAll(steps){ if(!steps) return; steps.forEach(s=>{ s._open = false; closeAll(s.children); }); }
-  appState.stages.forEach(st=>{ closeAll(st.steps); });
+  appState.stages.forEach(st=>{ closeAllSteps(st.steps); });
   appState.openStages = new Set();
 }
 
@@ -934,6 +933,8 @@ function migrateCategories(){
     }
   });
 }
+
+function closeAllSteps(steps){ if(!steps) return; steps.forEach(s=>{ s._open = false; closeAllSteps(s.children); }); }
 
 function getCat(id){ return appState.categories.find(c=>c.id===id); }
 
@@ -1287,7 +1288,7 @@ function renderHierarchy(){
       stageClickTimer = setTimeout(function(){
         stageClickTimer = null;
         if(isOpen) appState.openStages.delete(stage.id);
-        else { appState.openStages.add(stage.id); closeAll(stage.steps); }
+        else { appState.openStages.add(stage.id); closeAllSteps(stage.steps); }
         // Update active flow stage
         if(appState.openStages.has(stage.id)){
           appState.activeFlowStage = stage.id;
@@ -2843,7 +2844,7 @@ function flowClickStage(stageId){
   // Also open sub-steps of that stage
   const stage = appState.stages.find(s => s.id === stageId);
   if(stage){
-    closeAll(stage.steps);
+    closeAllSteps(stage.steps);
   }
   renderAll();
   // Scroll hierarchy panel to the stage
