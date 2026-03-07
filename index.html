@@ -226,6 +226,7 @@ header p{font-size:13px;opacity:.85}
     <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
     <input type="file" id="importInput" accept=".json" class="hidden-input" onchange="importJSON(event)">
     <a href="manual.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📘 מדריך</a>
+    <a href="system.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">⚙️ תפעול</a>
   </div>
 </header>
 
@@ -244,6 +245,7 @@ header p{font-size:13px;opacity:.85}
   <span style="font-size:11px;color:#999">לחיצה כפולה על טקסט = עריכה | ➕ בתרשים = הוספת שלב</span>
   <div class="sep"></div>
   <a href="manual.pdf" target="_blank" style="background:#E6F6FB;border:1px solid #4ECDC4;padding:6px 12px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:500;text-decoration:none;color:#0A5E6E;display:inline-flex;align-items:center;gap:4px">📘 מדריך משתמש</a>
+  <a href="system.pdf" target="_blank" style="background:#FEF3C7;border:1px solid #F59E0B;padding:6px 12px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:500;text-decoration:none;color:#92400E;display:inline-flex;align-items:center;gap:4px">⚙️ תפעול</a>
 </div>
 
 <div style="padding:16px 40px 0;max-width:1900px;margin:0 auto">
@@ -1517,6 +1519,7 @@ function renderStep(step, stage, index, skipChildren){
           <span class="edit-btn-sm" onclick="event.stopPropagation();document.execCommand('fontSize',false,'5')" title="טקסט גדול" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">A+</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();document.execCommand('fontSize',false,'2')" title="טקסט קטן" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-size:10px">A-</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();insertLink('${step.id}')" title="הוסף קישור" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🔗</span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();insertScrollLink('${step.id}')" title="הוסף לינק למקור (מגילה)" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">📜</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();showInlineIconPicker(event,'${step.id}')" title="הוסף סמל בטקסט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px"><img src="icons/icon-picker.png" width="14" height="14" style="vertical-align:middle"></span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();pickDetailColor(event,'${step.id}')" title="צבע פירוט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🎨</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();toggleDetailType('${step.id}')" title="שנה סוג" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🔄</span>
@@ -2409,6 +2412,38 @@ function insertLink(stepId){
     const detEl = document.querySelector(".detail-content");
     if(detEl) step.detailsHtml = detEl.innerHTML;
   }
+}
+
+function insertScrollLink(stepId){
+  const url = prompt("הכנסי כתובת URL למקור:", "https://www.nevo.co.il/law/72248#");
+  if(!url) return;
+  const scrollSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="18" height="18" style="vertical-align:middle"><rect x="25" y="15" width="50" height="70" rx="2" fill="#FFF8DC" stroke="#B8860B" stroke-width="2"/><ellipse cx="25" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><ellipse cx="75" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><line x1="35" y1="30" x2="65" y2="30" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="40" x2="65" y2="40" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="50" x2="65" y2="50" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="60" x2="60" y2="60" stroke="#8B7355" stroke-width="1.5"/></svg>`;
+  const linkHtml = `<a href="${url}" target="_blank" rel="noopener" style="text-decoration:none;cursor:pointer" title="צפה במקור">${scrollSvg}</a>&nbsp;`;
+  const sel = window.getSelection();
+  const targetRange = _lastDetailRange || (sel.rangeCount > 0 ? sel.getRangeAt(0) : null);
+  if(targetRange){
+    sel.removeAllRanges();
+    sel.addRange(targetRange);
+    document.execCommand("insertHTML", false, linkHtml);
+  } else {
+    const detEl = document.querySelector(".detail-content[contenteditable=true]") || document.querySelector(".detail-content");
+    if(detEl){
+      detEl.contentEditable = "true";
+      detEl.focus();
+      const range = document.createRange();
+      range.selectNodeContents(detEl);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand("insertHTML", false, linkHtml);
+    }
+  }
+  const step = findStepById(stepId);
+  if(step){
+    const detEl = document.querySelector(".detail-content");
+    if(detEl) step.detailsHtml = detEl.innerHTML;
+  }
+  showToast("📜 לינק למקור נוסף");
 }
 
 function clearStepDetails(stepId){
