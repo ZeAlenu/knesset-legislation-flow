@@ -2424,8 +2424,7 @@ function insertLink(stepId){
 function insertScrollLink(stepId){
   const url = prompt("הכנסי כתובת URL למקור:", "https://www.nevo.co.il/law/72248#");
   if(!url) return;
-  const scrollSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="18" height="18" style="vertical-align:middle"><rect x="25" y="15" width="50" height="70" rx="2" fill="#FFF8DC" stroke="#B8860B" stroke-width="2"/><ellipse cx="25" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><ellipse cx="75" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><line x1="35" y1="30" x2="65" y2="30" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="40" x2="65" y2="40" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="50" x2="65" y2="50" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="60" x2="60" y2="60" stroke="#8B7355" stroke-width="1.5"/></svg>`;
-  const linkHtml = `<a href="${url}" target="_blank" rel="noopener" style="text-decoration:none;cursor:pointer" title="צפה במקור">${scrollSvg}</a>&nbsp;`;
+  const linkHtml = `<a href="${url}" target="_blank" rel="noopener" style="text-decoration:none;cursor:pointer;font-size:16px" title="צפה במקור">📜</a>&nbsp;`;
   const sel = window.getSelection();
   const targetRange = _lastDetailRange || (sel.rangeCount > 0 ? sel.getRangeAt(0) : null);
   if(targetRange){
