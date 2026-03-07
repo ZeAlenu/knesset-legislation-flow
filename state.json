@@ -1146,7 +1146,6 @@
               "stageId": "s1",
               "note": "",
               "noteType": "",
-              "color": "#DAA520",
               "textColor": "#FFFFFF"
             },
             {
@@ -1369,7 +1368,7 @@
     }
   ],
   "nextId": 1043,
-  "publishDate": "2026-03-07T18:01:04.896Z",
+  "publishDate": "2026-03-07T18:09:58.123Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-07T20:01:05.008866"
+  "mergedAt": "2026-03-07T20:09:58.223313"
 }
