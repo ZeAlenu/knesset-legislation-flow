@@ -3147,7 +3147,7 @@ function renderFlowSplit(step, mainIndex){
       
       if(hasNoteAnnotation){
         // Flex row: step inner, note outer. bi=0 (right branch in RTL) note goes right; bi>0 note goes left
-        const noteFirst = bi > 0; // left branch = note on left (first in RTL flex)
+        const noteFirst = bi === 0; // right branch (RTL) = note on right (outer side, first in flex)
         html += `<div style="display:flex;align-items:center;gap:6px;direction:rtl;margin:2px 0">`;
         if(noteFirst){
           html += `<div style="flex-shrink:0;max-width:90px">`;
