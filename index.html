@@ -86,6 +86,9 @@ header p{font-size:13px;opacity:.85}
 .detail-panel.open{max-height:none;overflow:visible}
 .detail-content{padding:12px 16px;margin:4px 8px 8px;border-radius:8px;font-size:13px;line-height:1.7}
 .detail-expand .detail-content{background:#E6F6FB;border:2px solid var(--teal-pale);color:#333}
+.detail-content a{color:#2E86AB;text-decoration:underline;cursor:pointer}
+.detail-content a:hover{color:#0A5E6E}
+.detail-chriga .detail-content a{color:#8ED5FF}
 .detail-chriga .detail-content{background:#3A0A0A;border:3px solid #CC0000;color:#fff}
 .detail-chriga .stop-icon{font-size:18px;margin-left:6px}
 .detail-chriga .reality{color:#FF6B6B;font-weight:700}
@@ -164,7 +167,7 @@ header p{font-size:13px;opacity:.85}
 .cat-assign-item.reset{color:#CC0000;font-weight:600;border-top:1px solid #eee;margin-top:4px;padding-top:10px}
 
 /* COLOR PICKER POPUP */
-.color-picker-popup{position:fixed;z-index:800;background:#fff;border-radius:12px;padding:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);display:none}
+.color-picker-popup{position:fixed;z-index:800;background:#fff;border-radius:12px;padding:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);display:none;max-height:70vh;overflow-y:auto}
 .color-picker-popup.show{display:block}
 .color-picker-popup input[type=color]{width:50px;height:36px;border:none;cursor:pointer;border-radius:4px}
 .color-picker-popup .preset-colors{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
@@ -222,6 +225,7 @@ header p{font-size:13px;opacity:.85}
     <button onclick="showChangelog()">📋 היסטוריה</button>
     <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
     <input type="file" id="importInput" accept=".json" class="hidden-input" onchange="importJSON(event)">
+    <a href="manual.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📘 מדריך</a>
   </div>
 </header>
 
@@ -238,6 +242,8 @@ header p{font-size:13px;opacity:.85}
   <button onclick="openBackArrowModal()">↩️ חצי חזרה</button>
   <div class="sep"></div>
   <span style="font-size:11px;color:#999">לחיצה כפולה על טקסט = עריכה | ➕ בתרשים = הוספת שלב</span>
+  <div class="sep"></div>
+  <a href="manual.pdf" target="_blank" style="background:#E6F6FB;border:1px solid #4ECDC4;padding:6px 12px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:500;text-decoration:none;color:#0A5E6E;display:inline-flex;align-items:center;gap:4px">📘 מדריך משתמש</a>
 </div>
 
 <div style="padding:16px 40px 0;max-width:1900px;margin:0 auto">
@@ -321,6 +327,7 @@ const DEFAULT_CATEGORIES = [
   {id:"yoresh",name:"יו\"ר הכנסת",color:"#1B3A6B",shape:"rounded-rect",logo:null},
   {id:"vaadat",name:"ועדת הכנסת",color:"#2D7D46",shape:"rounded-rect",logo:null},
   {id:"gov",name:"ממשלה",color:"#C03928",shape:"rounded-rect",logo:null},
+  {id:"plenum",name:"מליאת כנסת",color:"#4A148C",shape:"rounded-rect",logo:null},
   {id:"chriga",name:"חריגה",color:"#CC0000",shape:"octagon",logo:null},
   {id:"process",name:"תהליך",color:"#0A5E6E",shape:"rounded-rect",logo:null},
   {id:"waiting",name:"המתנה",color:"#B8860B",shape:"pill",logo:null}
@@ -726,6 +733,9 @@ async function loadFromStorage(){
     }
   } catch(e){ console.error("Load error:",e); }
   
+  // Ensure new default categories exist in loaded data
+  migrateCategories();
+  
   // Reset open state
   function closeAll(steps){ if(!steps) return; steps.forEach(s=>{ s._open = false; closeAll(s.children); }); }
   appState.stages.forEach(st=>{ closeAll(st.steps); });
@@ -746,7 +756,7 @@ function saveToStorage(){
   } catch(e){ showToast("❌ שגיאה בשמירה"); }
 }
 
-const PUBLISH_URL = "https://stainless-roses-jury-electoral.trycloudflare.com/publish";
+const PUBLISH_URL = "https://demanding-around-downloading-step.trycloudflare.com/publish";
 const PUBLISH_KEY = "97d2870b8acfb063d9bc11e3ef9ce2db";
 
 // Local changelog
@@ -810,12 +820,9 @@ const PUBLISH_PASSWORD = "zan2026";
 async function publishState(){
   if(!confirm("לפרסם את המצב הנוכחי לכל מי שיש לו את הלינק?")) return;
   const author = getAuthorName();
-  // Password check (stored after first success)
-  if(!localStorage.getItem("knesset-publish-auth")){
-    const pw = prompt("סיסמת פרסום:");
-    if(pw !== PUBLISH_PASSWORD){ showToast("❌ סיסמה שגויה"); return; }
-    localStorage.setItem("knesset-publish-auth", "1");
-  }
+  // Password check - always require (security)
+  const pw = prompt("סיסמת פרסום:");
+  if(pw !== PUBLISH_PASSWORD){ showToast("❌ סיסמה שגויה"); return; }
   const stateData = JSON.stringify({
     categories: appState.categories,
     stages: appState.stages,
@@ -883,6 +890,15 @@ function importJSON(ev){
 // ============================================================
 // CATEGORIES
 // ============================================================
+
+// Ensure all default categories exist in loaded data (migration)
+function migrateCategories(){
+  DEFAULT_CATEGORIES.forEach(dc => {
+    if(!appState.categories.find(c => c.id === dc.id)){
+      appState.categories.push(JSON.parse(JSON.stringify(dc)));
+    }
+  });
+}
 
 function getCat(id){ return appState.categories.find(c=>c.id===id); }
 
@@ -1170,7 +1186,9 @@ function renderLegend(){
         ${escH(c.name)}
       </span>
     `).join("") +
-    `<span class="legend-item">🛑 = חריגה מתקנון</span>`;
+    `<span class="legend-item">${BUILTIN_ICONS["israel"]||"🇮🇱"} = סמכות חוקית</span>` +
+    `<span class="legend-item">${BUILTIN_ICONS["crown"]||"👑"} = הפקעת סמכות לא חוקית</span>` +
+    `<span class="legend-item">${BUILTIN_ICONS["stop-hand"]||"🛑"} = מחסום ללא עיגון בחוק</span>`;
 }
 
 // ============================================================
@@ -1195,9 +1213,12 @@ function renderHierarchy(){
     btn.id = "stage-btn-" + stage.id;
     btn.innerHTML = `
       <span class="number">${escH(stage.letter)}</span>
-      <span class="label">שלב ${letterLabel}: ${escH(stage.title)}</span>
+      ${stage.builtinIcon && BUILTIN_ICONS[stage.builtinIcon] ? `<span style="display:inline-flex;align-items:center;margin:0 4px">${BUILTIN_ICONS[stage.builtinIcon]}</span>` : ""}
+      ${stage.icon ? `<span style="margin:0 2px">${stage.icon}</span>` : ""}
+      <span class="label">${escH(stage.title)}</span>
       ${stage.subtitle ? `<span style="font-size:12px;color:#666;font-weight:400"> — ${escH(stage.subtitle)}</span>` : ""}
       <span class="edit-actions">
+        <span class="edit-btn-sm" onclick="event.stopPropagation();pickStageIcon(event,'${stage.id}')" title="סמל"><img src="icons/icon-picker.png" width="14" height="14" style="vertical-align:middle"></span>
         <span class="edit-btn-sm" onclick="event.stopPropagation();editStageName('${stage.id}')" title="ערוך שם">✏️</span>
         <span class="edit-btn-sm" onclick="event.stopPropagation();deleteStage('${stage.id}')" title="מחק שלב">🗑️</span>
       </span>
@@ -1351,7 +1372,10 @@ function renderStep(step, stage, index, skipChildren){
   const bgColor = overrideColor || cat.color;
   const borderColor = overrideBorder || getDepthColor(step.depth);
   const isChriga = step.chpiqa;
-  const hasChildren = !skipChildren && ((step.children && step.children.length > 0) || step.details);
+  const hasDetails = !!step.details;
+  const hasChildrenOrDetails = !skipChildren && ((step.children && step.children.length > 0) || hasDetails);
+  // For skipChildren mode (parallel branch headers), still allow details to show
+  const hasChildren = skipChildren ? hasDetails : hasChildrenOrDetails;
 
   const wrapper = document.createElement("div");
   wrapper.className = `sub-step depth-${step.depth}${step._open ? " open" : ""}`;
@@ -1375,9 +1399,9 @@ function renderStep(step, stage, index, skipChildren){
 
   let headerHTML = "";
   if(cat.logo) headerHTML += `<img class="cat-logo" src="${cat.logo}" style="width:18px;height:18px;border-radius:2px;flex-shrink:0">`;
-  if(step.builtinIcon && BUILTIN_ICONS[step.builtinIcon]) headerHTML += `<span style="flex-shrink:0;display:inline-flex;align-items:center">${BUILTIN_ICONS[step.builtinIcon]}</span>`;
+  if(step.builtinIcon && BUILTIN_ICONS[step.builtinIcon]) headerHTML += `<span style="flex-shrink:0;display:inline-flex;align-items:center;${appState.editing?'cursor:pointer':''}" ${appState.editing?`onclick="event.stopPropagation();if(confirm('להסיר סמל?')){clearStepBuiltinIcon('${step.id}')}" title="לחץ להסיר סמל"`:``}>${BUILTIN_ICONS[step.builtinIcon]}</span>`;
   if(step.image) headerHTML += `<img src="${step.image}" style="width:24px;height:24px;object-fit:contain;flex-shrink:0;border-radius:3px" onclick="if(appState.editing){event.stopPropagation();if(confirm('להסיר תמונה?'))removeStepImage('${step.id}')}" title="${appState.editing?'לחץ להסיר':''}">`;
-  if(step.icon) headerHTML += `<span class="icon">${step.icon === "🛑" ? BUILTIN_ICONS["stop-hand"] : step.icon}</span>`;
+  if(step.icon && !step.parallel) headerHTML += `<span class="icon" ${appState.editing?`style="cursor:pointer" onclick="event.stopPropagation();if(confirm('להסיר סמל?')){const f=findStepAndParent('${step.id}');if(f){f.step.icon='';renderAll()}}" title="לחץ להסיר סמל"`:``}>${step.icon === "🛑" ? BUILTIN_ICONS["stop-hand"] : step.icon}</span>`;
   headerHTML += `<span class="text">${escH(step.title)}</span>`;
   if(overrideColor || overrideBorder) headerHTML += `<span class="override-badge" title="עקיפת קטגוריה">🎨</span>`;
   headerHTML += `
@@ -1394,7 +1418,7 @@ function renderStep(step, stage, index, skipChildren){
       <span class="edit-btn-sm" style="font-size:9px;pointer-events:none;opacity:0.6">${step.depth}</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',1)" title="הורד רמה (רמה ${step.depth})">➡️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
-      <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepIcon(event,'${step.id}')" title="סמל מובנה">⛔</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepIcon(event,'${step.id}')" title="סמל מובנה"><img src="icons/icon-picker.png" width="14" height="14" style="vertical-align:middle"></span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();uploadStepImage('${step.id}')" title="תמונה/לוגו">🖼️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();splitStepParallel('${step.id}')" title="פצל למקביל">🔀</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();deleteStep('${step.id}')" title="מחק">🗑️</span>
@@ -1454,13 +1478,21 @@ function renderStep(step, stage, index, skipChildren){
       if(step.detailTextColor) dc_el_style.push("color:" + step.detailTextColor);
       if(step.detailBorderColor) dc_el_style.push("border-color:" + step.detailBorderColor);
       
-      const textContent = step.details.split("\n").map(line => line).join("<br>");
+      // Support both rich HTML (detailsHtml) and plain text (details)
+      const textContent = step.detailsHtml || step.details.split("\n").map(line => line).join("<br>");
 
       let detHTML = "";
       // Edit toolbar for detail panel
       if(appState.editing){
-        detHTML += `<div style="text-align:left;margin-bottom:4px;display:flex;gap:4px;flex-wrap:wrap">
+        detHTML += `<div style="text-align:left;margin-bottom:4px;display:flex;gap:4px;flex-wrap:wrap;align-items:center">
           <span class="edit-btn-sm" onclick="event.stopPropagation();editStepDetails('${step.id}')" title="ערוך טקסט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">✏️</span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();document.execCommand('bold')" title="הדגשה" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-weight:bold">B</span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();document.execCommand('italic')" title="נטוי" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-style:italic">I</span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();document.execCommand('underline')" title="קו תחתון" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;text-decoration:underline">U</span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();document.execCommand('fontSize',false,'5')" title="טקסט גדול" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">A+</span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();document.execCommand('fontSize',false,'2')" title="טקסט קטן" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-size:10px">A-</span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();insertLink('${step.id}')" title="הוסף קישור" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🔗</span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();showInlineIconPicker(event,'${step.id}')" title="הוסף סמל בטקסט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px"><img src="icons/icon-picker.png" width="14" height="14" style="vertical-align:middle"></span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();pickDetailColor(event,'${step.id}')" title="צבע פירוט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🎨</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();toggleDetailType('${step.id}')" title="שנה סוג" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🔄</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();clearStepDetails('${step.id}')" title="מחק פירוט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;color:#c00">🗑️</span>
@@ -1468,7 +1500,7 @@ function renderStep(step, stage, index, skipChildren){
       }
       
       if(dt === "chriga"){
-        detHTML += `<div class="detail-content" ${dc_el_style.length ? 'style="'+dc_el_style.join(";")+'"' : ""}><span class="stop-icon">${BUILTIN_ICONS["stop-hand"]||"🛑"}</span> ${textContent.replace(/בפועל:/g,'<span class="reality">בפועל:</span>')}</div>`;
+        detHTML += `<div class="detail-content" ${dc_el_style.length ? 'style="'+dc_el_style.join(";")+'"' : ""}><span class="stop-icon" ${appState.editing?`style="cursor:pointer" onclick="event.stopPropagation();if(confirm('להסיר סמל עצור?')){const f=findStepById('${step.id}');if(f){f.detailType='expand';renderAll()}}" title="לחצי להסיר"`:``}>${BUILTIN_ICONS["stop-hand"]||"🛑"}</span> ${textContent.replace(/בפועל:/g,'<span class="reality">בפועל:</span>')}</div>`;
       } else {
         detHTML += `<div class="detail-content" ${dc_el_style.length ? 'style="'+dc_el_style.join(";")+'"' : ""}>${textContent}</div>`;
       }
@@ -1483,18 +1515,28 @@ function renderStep(step, stage, index, skipChildren){
         dc.focus();
         dc.addEventListener("blur", function(){
           dc.contentEditable = "false";
-          // Preserve line breaks: convert <br> and <div> to \n
           let html = dc.innerHTML;
-          html = html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/div><div>/gi, "\n").replace(/<\/?div>/gi, "").replace(/<\/?span[^>]*>/gi, "").replace(/&nbsp;/g, " ");
-          // Strip remaining tags
-          const tmp = document.createElement("div"); tmp.innerHTML = html;
-          step.details = tmp.textContent || tmp.innerText || "";
+          // Check if content has formatting (bold, italic, underline, font-size)
+          const hasFormatting = /<(b|strong|i|em|u|font|span|a)[^>]*>/i.test(html);
+          if(hasFormatting){
+            // Preserve rich HTML
+            step.detailsHtml = html;
+            // Also update plain text fallback
+            const tmp = document.createElement("div"); tmp.innerHTML = html;
+            step.details = tmp.textContent || tmp.innerText || "";
+          } else {
+            // Plain text: convert <br> and <div> to \n
+            html = html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/div><div>/gi, "\n").replace(/<\/?div>/gi, "").replace(/&nbsp;/g, " ");
+            const tmp = document.createElement("div"); tmp.innerHTML = html;
+            step.details = tmp.textContent || tmp.innerText || "";
+            step.detailsHtml = null;
+          }
         },{once:true});
       });
       detailPanel.appendChild(detContent);
     }
 
-    if(step.children){
+    if(step.children && !skipChildren){
       if(step.parallel){
         // Render children side-by-side
         const parallelRow = document.createElement("div");
@@ -1799,7 +1841,7 @@ function addStepTo(arr, stage, parentDepth){
   if(picked === 4){
     // Parallel split
     arr.push({
-      id, title:"פיצול מקביל", icon:"🔀", catId:"process", chpiqa:false, depth,
+      id, title:"פיצול מקביל", icon:"", catId:"process", chpiqa:false, depth,
       details:"", detailType:"expand", parallel:true,
       children:[
         {id:"step_"+genId(), title:"מסלול א׳", icon:"", catId:"process", depth:depth+1, details:"", detailType:"expand", children:[], _open:true},
@@ -1945,10 +1987,16 @@ function splitStepParallel(id){
   
   // Create a parallel container that replaces this step
   // The step becomes the first branch, a new empty step is the second
+  // Deep-clone the step to avoid shared references, and strip children to prevent duplication
+  const clonedStep = JSON.parse(JSON.stringify(step));
+  clonedStep.depth = step.depth + 1;
+  clonedStep._open = false;
+  // Remove children from clone — they stay only at their original level inside the clone
+  
   const parallelStep = {
     id: "gen_" + genId(),
-    title: "🔀 " + step.title + " (מקביל)",
-    icon: "🔀",
+    title: step.title + " (מקביל)",
+    icon: "",
     catId: step.catId,
     depth: step.depth,
     details: "",
@@ -1956,7 +2004,7 @@ function splitStepParallel(id){
     _open: true,
     parallel: true,
     children: [
-      { ...step, id: step.id, depth: step.depth + 1, _open: false },
+      clonedStep,
       { id: "gen_" + genId(), title: "מסלול מקביל", icon: "📌", catId: step.catId, depth: step.depth + 1, details: "", detailType: "expand", children: [], _open: false }
     ]
   };
@@ -2162,8 +2210,17 @@ function addOrEditDetails(stepId){
   modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;display:flex;align-items:center;justify-content:center";
   const box = document.createElement("div");
   box.style.cssText = "background:#fff;border-radius:12px;padding:20px;width:90%;max-width:500px;direction:rtl";
+  let iconGridHTML = '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:6px">';
+  iconGridHTML += `<div style="cursor:pointer;text-align:center;padding:4px;border:1px solid ${!step.detailIcon?'var(--teal-dark)':'#eee'};border-radius:4px;background:#fafafa;font-size:11px" onclick="document.getElementById('detailIconInput').value=''">ללא</div>`;
+  for(const [key, svg] of Object.entries(BUILTIN_ICONS)){
+    iconGridHTML += `<div style="cursor:pointer;text-align:center;padding:4px;border:1px solid ${step.detailIcon===key?'var(--teal-dark)':'#eee'};border-radius:4px;background:#fafafa" onclick="document.getElementById('detailIconInput').value='${key}'" title="${BUILTIN_ICON_LABELS[key]||key}">${svg}</div>`;
+  }
+  iconGridHTML += '</div>';
   box.innerHTML = `<h3 style="margin:0 0 8px">📝 פירוט — ${escH(step.title)}</h3>
     <textarea id="detailTextarea" style="width:100%;height:200px;border:1px solid #ddd;border-radius:8px;padding:10px;font-family:inherit;font-size:13px;direction:rtl;resize:vertical">${escH(step.details||"")}</textarea>
+    <input type="hidden" id="detailIconInput" value="${step.detailIcon||''}">
+    <div style="margin-top:8px;font-size:12px;font-weight:600"><img src="icons/icon-picker.png" width="14" height="14" style="vertical-align:middle"> סמל לפירוט:</div>
+    ${iconGridHTML}
     <div style="margin-top:8px;display:flex;gap:8px">
       <select id="detailTypeSelect" style="padding:6px;border-radius:6px;border:1px solid #ddd;font-family:inherit">
         <option value="expand" ${(step.detailType||"expand")==="expand"?"selected":""}>📋 פירוט רגיל</option>
@@ -2180,8 +2237,23 @@ function addOrEditDetails(stepId){
 function saveDetails(stepId){
   const step = findStepById(stepId);
   if(!step) return;
-  step.details = document.getElementById("detailTextarea").value;
+  let text = document.getElementById("detailTextarea").value;
+  step.details = text;
+  // Convert markdown-style links [text](url) to HTML
+  const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g;
+  if(linkRegex.test(text)){
+    step.detailsHtml = text.replace(linkRegex, '<a href="$2" target="_blank" rel="noopener" style="color:#2E86AB;text-decoration:underline">$1</a>').split("\n").join("<br>");
+  }
+  // Also convert bare URLs to links if no markdown links found
+  if(!step.detailsHtml){
+    const urlRegex = /(https?:\/\/[^\s<]+)/g;
+    if(urlRegex.test(text)){
+      step.detailsHtml = text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener" style="color:#2E86AB;text-decoration:underline">$1</a>').split("\n").join("<br>");
+    }
+  }
   step.detailType = document.getElementById("detailTypeSelect").value;
+  const iconVal = document.getElementById("detailIconInput").value;
+  if(iconVal) step.detailIcon = iconVal; else delete step.detailIcon;
   document.querySelector("[style*=inset]").remove();
   renderAll();
   showToast("📝 פירוט נשמר");
@@ -2203,6 +2275,117 @@ function toggleDetailType(stepId){
   step.detailType = types[(types.indexOf(cur)+1) % types.length];
   renderAll();
 }
+// Track last selection inside detail-content for inline icon insertion
+let _lastDetailRange = null;
+// Close popups on scroll to prevent them floating in wrong position
+document.addEventListener("scroll", function(){ document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove()); }, true);
+
+document.addEventListener("selectionchange", function(){
+  const sel = window.getSelection();
+  if(sel.rangeCount > 0){
+    const r = sel.getRangeAt(0);
+    const container = r.startContainer.nodeType === 3 ? r.startContainer.parentElement : r.startContainer;
+    if(container && container.closest && container.closest(".detail-content")){
+      _lastDetailRange = r.cloneRange();
+    }
+  }
+});
+
+function showInlineIconPicker(event, stepId){
+  event.stopPropagation();
+  
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  const popup = document.createElement("div");
+  popup.className = "color-picker-popup show";
+  popup.style.cssText = "position:fixed;z-index:300;width:420px;max-width:90vw;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);padding:16px;max-height:70vh;overflow-y:auto";
+  let html = '<div style="font-size:13px;font-weight:700;color:#333;margin-bottom:10px">לחצי על סמל להוספה בטקסט:</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">';
+  for(const [key, svg] of Object.entries(BUILTIN_ICONS)){
+    html += `<div style="cursor:pointer;text-align:center;padding:6px;border:1px solid #eee;border-radius:6px;background:#fafafa;transition:background .15s" onmouseover="this.style.background='#e0f0ff'" onmouseout="this.style.background='#fafafa'" data-icon-key="${key}" title="${BUILTIN_ICON_LABELS[key]||key}">${svg}</div>`;
+  }
+  html += '</div>';
+  popup.innerHTML = html;
+  
+  popup.querySelectorAll("[data-icon-key]").forEach(el => {
+    el.onmousedown = function(e){
+      e.preventDefault(); // Prevent stealing focus
+      e.stopPropagation();
+      const key = this.getAttribute("data-icon-key");
+      const iconHTML = BUILTIN_ICONS[key];
+      const iconSpan = '<span class="inline-icon" contenteditable="false" style="display:inline;vertical-align:middle;cursor:pointer" onclick="if(appState.editing&&confirm(\'להסיר סמל?\')){this.remove()}">' + iconHTML + '</span>&nbsp;';
+      
+      const sel = window.getSelection();
+      // Try to use tracked detail range, or current selection, or append to detail content
+      const targetRange = _lastDetailRange || (sel.rangeCount > 0 ? sel.getRangeAt(0) : null);
+      
+      if(targetRange){
+        sel.removeAllRanges();
+        sel.addRange(targetRange);
+        document.execCommand("insertHTML", false, iconSpan);
+      } else {
+        // Fallback: find the detail-content for this step and append at end
+        const stepEl = document.getElementById("step-" + stepId);
+        const detEl = stepEl ? stepEl.querySelector(".detail-content") : document.querySelector(".detail-content");
+        if(detEl){
+          detEl.contentEditable = "true";
+          detEl.focus();
+          // Move cursor to end
+          const range = document.createRange();
+          range.selectNodeContents(detEl);
+          range.collapse(false);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          document.execCommand("insertHTML", false, iconSpan);
+        }
+      }
+      popup.remove();
+    };
+  });
+  
+  const rect = event.target.getBoundingClientRect();
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 300) + "px";
+  popup.style.right = (window.innerWidth - rect.right) + "px";
+  document.body.appendChild(popup);
+  setTimeout(()=>{
+    document.addEventListener("click",function handler(e){
+      if(!popup.contains(e.target)){popup.remove();document.removeEventListener("click",handler);}
+    });
+  },50);
+}
+
+function insertLink(stepId){
+  const url = prompt("הכנסי כתובת URL:", "https://");
+  if(!url) return;
+  const text = prompt("טקסט לתצוגה (או השאירי ריק לכתובת):", "") || url;
+  const linkHtml = `<a href="${url}" target="_blank" rel="noopener" style="color:#2E86AB;text-decoration:underline;cursor:pointer">${escH(text)}</a>`;
+  const sel = window.getSelection();
+  const targetRange = _lastDetailRange || (sel.rangeCount > 0 ? sel.getRangeAt(0) : null);
+  if(targetRange){
+    sel.removeAllRanges();
+    sel.addRange(targetRange);
+    document.execCommand("insertHTML", false, linkHtml);
+  } else {
+    // Fallback: find the detail-content for this step and append
+    const detEl = document.querySelector(".detail-content[contenteditable=true]") || document.querySelector(".detail-content");
+    if(detEl){
+      detEl.contentEditable = "true";
+      detEl.focus();
+      const range = document.createRange();
+      range.selectNodeContents(detEl);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand("insertHTML", false, linkHtml);
+    }
+  }
+  // Save the HTML to the step
+  const step = findStepById(stepId);
+  if(step){
+    const detEl = document.querySelector(".detail-content");
+    if(detEl) step.detailsHtml = detEl.innerHTML;
+  }
+}
+
 function clearStepDetails(stepId){
   const step = findStepById(stepId);
   if(!step) return;
@@ -2262,15 +2445,26 @@ function pickDetailColor(event, stepId){
 }
 
 const BUILTIN_ICONS = {
-  "stop-hand": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,2 79,10 96,35 96,65 79,90 50,98 21,90 4,65 4,35 21,10" fill="#CC0000" stroke="#8B0000" stroke-width="2"/><polygon points="50,10 74,17 88,38 88,62 74,83 50,90 26,83 12,62 12,38 26,17" fill="none" stroke="white" stroke-width="2"/><path d="M42,25 L42,50 L38,50 L38,33 C38,30 34,30 34,33 L34,55 C34,70 40,78 50,78 C60,78 66,70 66,55 L66,33 C66,30 62,30 62,33 L62,50 L58,50 L58,25 C58,22 54,22 54,25 L54,48 L50,48 L50,22 C50,19 46,19 46,22 L46,48 L42,48 L42,25 C42,22 38,22 38,25" fill="white"/></svg>`,
+  "stop-hand": `<img src="icons/stop-sign.png" width="28" height="28" style="object-fit:contain">`,
   "warning": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 95,90 5,90" fill="#FFD700" stroke="#B8860B" stroke-width="3"/><text x="50" y="78" text-anchor="middle" font-size="55" font-weight="bold" fill="#333">!</text></svg>`,
   "check": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#2D7D46"/><polyline points="25,50 43,68 75,35" fill="none" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   "x-mark": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#CC0000"/><line x1="30" y1="30" x2="70" y2="70" stroke="white" stroke-width="10" stroke-linecap="round"/><line x1="70" y1="30" x2="30" y2="70" stroke="white" stroke-width="10" stroke-linecap="round"/></svg>`,
   "info": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#2E86AB"/><text x="50" y="40" text-anchor="middle" font-size="30" font-weight="bold" fill="white">i</text><rect x="44" y="48" width="12" height="30" rx="3" fill="white"/></svg>`,
-  "clock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="45" fill="#1B3A6B" stroke="#0A5E6E" stroke-width="3"/><circle cx="50" cy="50" r="38" fill="none" stroke="white" stroke-width="2"/><line x1="50" y1="50" x2="50" y2="25" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="50" x2="68" y2="55" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="50" r="3" fill="white"/></svg>`,
+  "clock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40"><circle cx="50" cy="50" r="45" fill="white" stroke="#1B3A6B" stroke-width="4"/><circle cx="50" cy="50" r="38" fill="none" stroke="#1B3A6B" stroke-width="2"/><line x1="50" y1="50" x2="50" y2="22" stroke="#1B3A6B" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="50" x2="70" y2="55" stroke="#1B3A6B" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="50" r="3" fill="#1B3A6B"/></svg>`,
   "lock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="45" width="60" height="45" rx="6" fill="#B8860B"/><path d="M32,45 L32,32 C32,15 68,15 68,32 L68,45" fill="none" stroke="#B8860B" stroke-width="8"/><circle cx="50" cy="65" r="6" fill="white"/></svg>`,
   "star": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 61,38 95,38 68,60 79,93 50,73 21,93 32,60 5,38 39,38" fill="#FFD700" stroke="#B8860B" stroke-width="2"/></svg>`,
-  "hourglass": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="5" width="60" height="8" rx="3" fill="#B8860B"/><rect x="20" y="87" width="60" height="8" rx="3" fill="#B8860B"/><path d="M28,13 L28,35 C28,42 50,55 50,50 C50,55 72,42 72,35 L72,13 Z" fill="#FFD700" opacity="0.3" stroke="#B8860B" stroke-width="2"/><path d="M28,87 L28,65 C28,58 50,45 50,50 C50,45 72,58 72,65 L72,87 Z" fill="#FFD700" opacity="0.3" stroke="#B8860B" stroke-width="2"/><path d="M40,87 L40,72 C40,65 50,58 50,55 C50,58 60,65 60,72 L60,87 Z" fill="#DAA520"/></svg>`
+  "hourglass": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="5" width="60" height="8" rx="3" fill="#B8860B"/><rect x="20" y="87" width="60" height="8" rx="3" fill="#B8860B"/><path d="M28,13 L28,35 C28,42 50,55 50,50 C50,55 72,42 72,35 L72,13 Z" fill="#FFD700" opacity="0.3" stroke="#B8860B" stroke-width="2"/><path d="M28,87 L28,65 C28,58 50,45 50,50 C50,45 72,58 72,65 L72,87 Z" fill="#FFD700" opacity="0.3" stroke="#B8860B" stroke-width="2"/><path d="M40,87 L40,72 C40,65 50,58 50,55 C50,58 60,65 60,72 L60,87 Z" fill="#DAA520"/></svg>`,
+  "israel": `<img src="icons/state-emblem.png" width="28" height="28" style="object-fit:contain">`,
+  "crown": `<img src="icons/crown-cancelled.png" width="56" height="56" style="object-fit:contain">`,
+  "menorah": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><path d="M50,85 L50,40" stroke="#B8860B" stroke-width="4" fill="none"/><path d="M20,85 L80,85" stroke="#B8860B" stroke-width="4" fill="none"/><path d="M30,85 L30,50 C30,35 50,30 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M70,85 L70,50 C70,35 50,30 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M20,85 L20,55 C20,38 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M80,85 L80,55 C80,38 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M38,85 L38,47 C38,33 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M62,85 L62,47 C62,33 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><circle cx="20" cy="52" r="3" fill="#FF8C00"/><circle cx="30" cy="47" r="3" fill="#FF8C00"/><circle cx="38" cy="44" r="3" fill="#FF8C00"/><circle cx="50" cy="37" r="3" fill="#FF8C00"/><circle cx="62" cy="44" r="3" fill="#FF8C00"/><circle cx="70" cy="47" r="3" fill="#FF8C00"/><circle cx="80" cy="52" r="3" fill="#FF8C00"/></svg>`,
+  "scroll": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="25" y="15" width="50" height="70" rx="2" fill="#FFF8DC" stroke="#B8860B" stroke-width="2"/><ellipse cx="25" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><ellipse cx="75" cy="50" rx="8" ry="35" fill="#DEB887" stroke="#B8860B" stroke-width="2"/><line x1="35" y1="30" x2="65" y2="30" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="40" x2="65" y2="40" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="50" x2="65" y2="50" stroke="#8B7355" stroke-width="1.5"/><line x1="35" y1="60" x2="60" y2="60" stroke="#8B7355" stroke-width="1.5"/></svg>`,
+  "gavel": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="75" width="60" height="10" rx="3" fill="#8B4513"/><rect x="30" y="68" width="40" height="10" rx="2" fill="#A0522D"/><rect x="42" y="20" width="16" height="50" rx="3" fill="#D2691E" transform="rotate(-30 50 45)"/><rect x="25" y="10" width="35" height="18" rx="5" fill="#8B4513" transform="rotate(-30 42 19)"/></svg>`,
+  "scales": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><line x1="50" y1="15" x2="50" y2="80" stroke="#B8860B" stroke-width="3"/><line x1="15" y1="35" x2="85" y2="35" stroke="#B8860B" stroke-width="3"/><circle cx="50" cy="15" r="5" fill="#FFD700" stroke="#B8860B" stroke-width="2"/><path d="M10,55 Q15,35 20,55 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5"/><line x1="15" y1="35" x2="10" y2="55" stroke="#B8860B" stroke-width="1.5"/><line x1="15" y1="35" x2="20" y2="55" stroke="#B8860B" stroke-width="1.5"/><path d="M80,50 Q85,30 90,50 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5"/><line x1="85" y1="35" x2="80" y2="50" stroke="#B8860B" stroke-width="1.5"/><line x1="85" y1="35" x2="90" y2="50" stroke="#B8860B" stroke-width="1.5"/><rect x="38" y="78" width="24" height="8" rx="3" fill="#B8860B"/></svg>`,
+  "usurp": `<img src="icons/crown-cancelled.png" width="56" height="56" style="object-fit:contain">`,
+  "pen": `<img src="icons/pen.png" style="width:48px;height:48px;vertical-align:middle;">`,
+  "podium": `<img src="icons/podium.png" width="48" height="48" style="object-fit:contain">`,
+  "committee": `<img src="icons/committee.png" width="48" height="48" style="object-fit:contain">`,
+  "plenum": `<img src="icons/plenum.png" width="48" height="48" style="object-fit:contain">`
 };
 
 const BUILTIN_ICON_LABELS = {
@@ -2282,7 +2476,18 @@ const BUILTIN_ICON_LABELS = {
   "clock": "🕐 שעון",
   "lock": "🔒 נעילה",
   "star": "⭐ כוכב",
-  "hourglass": "⏳ שעון חול"
+  "hourglass": "⏳ שעון חול",
+  "israel": "🇮🇱 סמל המדינה (מנורה)",
+  "crown": "👑 כתר",
+  "menorah": "🕎 מנורה",
+  "scroll": "📜 מגילה",
+  "gavel": "🔨 פטיש שופט",
+  "scales": "⚖️ מאזני צדק",
+  "usurp": "🚫👑 הפקעת סמכות",
+  "pen": "✍️ עט כתיבה",
+  "podium": "🎤 דוברים/נואם",
+  "committee": "🏛️ דיון ועדה",
+  "plenum": "🏟️ מליאה/הצבעה"
 };
 
 function pickStepIcon(event, stepId){
@@ -2290,14 +2495,12 @@ function pickStepIcon(event, stepId){
   document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
   const popup = document.createElement("div");
   popup.className = "color-picker-popup show";
-  popup.style.position = "fixed";
-  popup.style.zIndex = "300";
-  popup.style.width = "220px";
+  popup.style.cssText = "position:fixed;z-index:300;width:420px;max-width:90vw;max-height:70vh;overflow-y:auto;padding:16px";
   
-  let html = '<div style="font-size:12px;font-weight:700;color:#333;margin-bottom:8px">בחר סמל:</div>';
-  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">';
+  let html = '<div style="font-size:13px;font-weight:700;color:#333;margin-bottom:10px">בחר סמל:</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">';
   for(const [key, svg] of Object.entries(BUILTIN_ICONS)){
-    html += `<div style="cursor:pointer;text-align:center;padding:6px;border:1px solid #eee;border-radius:6px;background:#fafafa" onclick="event.stopPropagation();setStepBuiltinIcon('${stepId}','${key}')" title="${BUILTIN_ICON_LABELS[key]}">${svg}</div>`;
+    html += `<div style="cursor:pointer;text-align:center;padding:8px;border:1px solid #eee;border-radius:8px;background:#fafafa;transition:background .15s" onmouseover="this.style.background='#e0f0ff'" onmouseout="this.style.background='#fafafa'" onclick="event.stopPropagation();setStepBuiltinIcon('${stepId}','${key}')" title="${BUILTIN_ICON_LABELS[key]}">${svg}</div>`;
   }
   html += '</div>';
   html += `<button onclick="event.stopPropagation();clearStepBuiltinIcon('${stepId}')" style="margin-top:8px;width:100%;padding:5px;border:1px solid #ddd;border-radius:6px;background:#f8f8f8;cursor:pointer;font-family:inherit;font-size:11px">הסר סמל</button>`;
@@ -2326,9 +2529,46 @@ function setStepBuiltinIcon(stepId, iconKey){
 
 function clearStepBuiltinIcon(stepId){
   const found = findStepAndParent(stepId);
-  if(found) delete found.step.builtinIcon;
+  if(found){ delete found.step.builtinIcon; found.step.icon = ""; delete found.step.topIcon; }
   document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
   renderAll();
+}
+
+function pickStageIcon(event, stageId){
+  event.stopPropagation();
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  const popup = document.createElement("div");
+  popup.className = "color-picker-popup show";
+  popup.style.cssText = "position:fixed;z-index:300;width:420px;max-width:90vw;max-height:70vh;overflow-y:auto;padding:16px";
+  let html = '<div style="font-size:13px;font-weight:700;color:#333;margin-bottom:10px">בחר סמל לשלב:</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">';
+  for(const [key, svg] of Object.entries(BUILTIN_ICONS)){
+    html += `<div style="cursor:pointer;text-align:center;padding:8px;border:1px solid #eee;border-radius:8px;background:#fafafa;transition:background .15s" onmouseover="this.style.background='#e0f0ff'" onmouseout="this.style.background='#fafafa'" onclick="event.stopPropagation();setStageBuiltinIcon('${stageId}','${key}')" title="${BUILTIN_ICON_LABELS[key]}">${svg}</div>`;
+  }
+  html += '</div>';
+  html += `<button onclick="event.stopPropagation();clearStageBuiltinIcon('${stageId}')" style="margin-top:8px;width:100%;padding:5px;border:1px solid #ddd;border-radius:6px;background:#f8f8f8;cursor:pointer;font-family:inherit;font-size:11px">הסר סמל</button>`;
+  popup.innerHTML = html;
+  const rect = event.target.getBoundingClientRect();
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 250) + "px";
+  popup.style.right = (window.innerWidth - rect.right) + "px";
+  document.body.appendChild(popup);
+  setTimeout(()=>{
+    document.addEventListener("click",function handler(e){
+      if(!popup.contains(e.target)){popup.remove();document.removeEventListener("click",handler);}
+    });
+  },50);
+}
+
+function setStageBuiltinIcon(stageId, iconKey){
+  const stage = appState.stages.find(s=>s.id===stageId);
+  if(stage){ pushUndo(); stage.builtinIcon = iconKey; renderAll(); }
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+}
+
+function clearStageBuiltinIcon(stageId){
+  const stage = appState.stages.find(s=>s.id===stageId);
+  if(stage){ pushUndo(); delete stage.builtinIcon; delete stage.icon; renderAll(); }
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
 }
 
 function uploadStepImage(stepId){
@@ -2684,11 +2924,25 @@ function renderFlowSplit(step, mainIndex){
         }
       }
       
-      // "או" separator between branch items (skip if next is note)
+      // Connector between branch items (skip if next is note)
       const nextNonNote = branch.steps.slice(bsi + 1).find(s => s.type !== "note");
       const isLastVisible = !nextNonNote;
       if(!isLastVisible){
-        html += `<div class="flow-or" style="width:18px;height:18px;font-size:8px">או</div>`;
+        const bConn = bStep.branchConnector || "או";
+        if(bConn === "arrow"){
+          html += `<div class="flow-arrow" style="margin:2px 0;font-size:10px">▼</div>`;
+        } else {
+          html += `<div class="flow-or" style="width:18px;height:18px;font-size:8px">${escH(bConn)}</div>`;
+        }
+        // Connector selector in edit mode
+        if(appState.editing){
+          html += `<div style="display:flex;gap:1px;justify-content:center;opacity:0.5;margin:1px 0">`;
+          [{v:"arrow",l:"↓"},{v:"או",l:"או"},{v:"→",l:"→"},{v:"+",l:"+"},{v:"⇄",l:"⇄"}].forEach(sym=>{
+            const isCur = bConn === sym.v;
+            html += `<button class="add-step-btn" style="padding:1px 3px;font-size:9px;min-width:16px;${isCur?'background:#E6F6FB;border:1px solid #4ECDC4;':''}" onclick="event.stopPropagation();setBranchStepConnector('${step.id}',${bi},${bsi},'${sym.v}')">${sym.l}</button>`;
+          });
+          html += `</div>`;
+        }
       }
     });
 
@@ -2696,9 +2950,20 @@ function renderFlowSplit(step, mainIndex){
     html += `<button class="flow-insert-btn" onclick="flowInsertBranchStep('${step.id}',${bi})" style="margin-top:4px">➕</button>`;
     html += `</div>`;
 
-    // "או" separator between branches
+    // Separator between branches
     if(bi < branches.length - 1){
-      html += `<div style="display:flex;align-items:center;padding:0 6px"><div class="flow-or">או</div></div>`;
+      const brSep = step.branchSeparator || "או";
+      html += `<div style="display:flex;align-items:center;padding:0 6px;flex-direction:column;gap:2px">`;
+      html += `<div class="flow-or">${escH(brSep)}</div>`;
+      if(appState.editing){
+        html += `<div style="display:flex;gap:1px;opacity:0.5">`;
+        [{v:"או",l:"או"},{v:"→",l:"→"},{v:"+",l:"+"},{v:"⇄",l:"⇄"},{v:"/",l:"/"}].forEach(sym=>{
+          const isCur = brSep === sym.v;
+          html += `<button class="add-step-btn" style="padding:1px 3px;font-size:8px;min-width:14px;${isCur?'background:#E6F6FB;border:1px solid #4ECDC4;':''}" onclick="event.stopPropagation();setSplitBranchSeparator('${step.id}','${sym.v}')">${sym.l}</button>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
     }
   });
 
@@ -3234,6 +3499,23 @@ function flowAddBranch(splitId){
   });
   renderAll();
   showToast("➕ ענף חדש נוסף");
+}
+
+function setSplitBranchSeparator(splitId, value){
+  pushUndo();
+  const split = findFlowStep(splitId);
+  if(!split) return;
+  split.branchSeparator = value;
+  renderAll();
+}
+
+function setBranchStepConnector(splitId, branchIndex, stepIndex, connectorValue){
+  pushUndo();
+  const split = findFlowStep(splitId);
+  if(!split || !split.branches || !split.branches[branchIndex]) return;
+  const bStep = split.branches[branchIndex].steps[stepIndex];
+  if(bStep) bStep.branchConnector = connectorValue;
+  renderAll();
 }
 
 function flowRemoveLastBranch(splitId){
