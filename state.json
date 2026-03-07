@@ -2,22 +2,8 @@
   "categories": [
     {
       "id": "chk",
-      "name": "ח\"כ",
+      "name": "חבר כנסת",
       "color": "#2E86AB",
-      "shape": "rounded-rect",
-      "logo": null
-    },
-    {
-      "id": "nesiut",
-      "name": "נשיאות",
-      "color": "#B8860B",
-      "shape": "rounded-rect",
-      "logo": null
-    },
-    {
-      "id": "mazkir",
-      "name": "מזכיר",
-      "color": "#5B7B9A",
       "shape": "rounded-rect",
       "logo": null
     },
@@ -29,9 +15,44 @@
       "logo": null
     },
     {
+      "id": "nesiut",
+      "name": "נשיאות הכנסת",
+      "color": "#B8860B",
+      "shape": "rounded-rect",
+      "logo": null
+    },
+    {
+      "id": "plenum",
+      "name": "מליאת כנסת",
+      "color": "#4A148C",
+      "shape": "rounded-rect",
+      "logo": null
+    },
+    {
+      "id": "mazkir",
+      "name": "מזכיר הכנסת",
+      "color": "#5B7B9A",
+      "shape": "rounded-rect",
+      "logo": null
+    },
+    {
       "id": "vaadat",
       "name": "ועדת הכנסת",
-      "color": "#2D7D46",
+      "color": "#0e5825",
+      "shape": "rounded-rect",
+      "logo": null
+    },
+    {
+      "id": "cat_gen_1041",
+      "name": "ועדת החוץ והביטחון ",
+      "color": "#55be96",
+      "shape": "rounded-rect",
+      "logo": null
+    },
+    {
+      "id": "cat_gen_1042",
+      "name": "ועדה ספציפית בכנסת",
+      "color": "#228728",
       "shape": "rounded-rect",
       "logo": null
     },
@@ -39,7 +60,7 @@
       "id": "gov",
       "name": "ממשלה",
       "color": "#92d7e8",
-      "shape": "rounded-rect",
+      "shape": "ellipse",
       "logo": null,
       "borderColor": "#1B3A6B",
       "textColor": "#1B2A4A"
@@ -63,13 +84,6 @@
       "name": "המתנה",
       "color": "#B8860B",
       "shape": "pill",
-      "logo": null
-    },
-    {
-      "id": "plenum",
-      "name": "מליאת כנסת",
-      "color": "#4A148C",
-      "shape": "rounded-rect",
       "logo": null
     }
   ],
@@ -98,7 +112,7 @@
               "depth": 1,
               "details": "• הסמכות להגיש הצעות חוק נמסרה לח\"כ היוזם (סעיף 75(א) לתקנון הכנסת )• אם יש יותר מיוזם אחד, הסמכות היא של הראשון ברשימת היוזמים (סעיף 75(ג)(1) )• אם היוזם הראשון חוזר בו מהצעת החוק, עוברת הסמכות לשני ברשימה, אלא אם הודיע כי יוזם אחר הוא היוזם הראשון (סעיף 75(ג)(2) )• בהצעת חוק ממוזגת, הסמכות היא של כל אחד מהיוזמים הראשונים של הצעות החוק הממוזגות. במידה של מחלוקת בין הראשונים, מכריע מי שרשום ראשון בהצעה הממוזגת (סעיף 75(ג)(3) )",
               "children": [],
-              "_open": true,
+              "_open": false,
               "builtinIcon": "israel",
               "detailsHtml": "• הסמכות להגיש הצעות חוק נמסרה לח\"כ היוזם (סעיף 75(א) לתקנון הכנסת <a href=\"https://www.nevo.co.il/law/72248#Seif57\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"צפה בתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>)<br>• אם יש יותר מיוזם אחד, הסמכות היא של הראשון ברשימת היוזמים (סעיף 75(ג)(1) <a href=\"https://www.nevo.co.il/law/72248#Seif57\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"צפה בתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>)<br>• אם היוזם הראשון חוזר בו מהצעת החוק, עוברת הסמכות לשני ברשימה, אלא אם הודיע כי יוזם אחר הוא היוזם הראשון (סעיף 75(ג)(2) <a href=\"https://www.nevo.co.il/law/72248#Seif57\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"צפה בתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>)<br>• בהצעת חוק ממוזגת, הסמכות היא של כל אחד מהיוזמים הראשונים של הצעות החוק הממוזגות. במידה של מחלוקת בין הראשונים, מכריע מי שרשום ראשון בהצעה הממוזגת (סעיף 75(ג)(3) <a href=\"https://www.nevo.co.il/law/72248#Seif57\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"צפה בתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>)",
               "detailType": "expand"
@@ -153,7 +167,7 @@
             }
           ],
           "showArrowAfter": true,
-          "_open": true,
+          "_open": false,
           "detailsHtml": null,
           "builtinIcon": "pen",
           "detailType": "expand"
@@ -216,7 +230,7 @@
             }
           ],
           "showArrowAfter": true,
-          "_open": true,
+          "_open": false,
           "detailBgColor": "#fafafa",
           "detailTextColor": "#000000",
           "builtinIcon": "usurp",
@@ -1354,8 +1368,8 @@
       "color": "#CC0000"
     }
   ],
-  "nextId": 1041,
-  "publishDate": "2026-03-07T17:20:50.354Z",
+  "nextId": 1043,
+  "publishDate": "2026-03-07T18:01:04.896Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-07T19:20:50.278685"
+  "mergedAt": "2026-03-07T20:01:05.008866"
 }
