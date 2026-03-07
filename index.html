@@ -766,7 +766,9 @@ async function saveBackup(){
     const data = JSON.parse(localStorage.getItem("knesset-legislation-v2")||"{}");
     const now = new Date();
     const ts = now.toISOString().replace(/[:.]/g,"-").slice(0,19);
-    const filename = `ריבונות-גיבוי-${ts}.json`;
+    const d = now.toLocaleDateString("he-IL").replace(/\./g,"-");
+    const t = now.toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"}).replace(":","-");
+    const filename = `גיבוי אתר חקיקה ${d} ${t}.json`;
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
 
     // Try File System Access API ("Save As" dialog)
