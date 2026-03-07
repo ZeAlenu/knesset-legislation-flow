@@ -149,9 +149,24 @@ const PUBLISH_BASE = document.location.origin;
    open → fixed → reopened (by reporter, with feedback) → fixed → ...
 */
 
+// Seed data — open tasks from TASK-TRACKER
+const SEED_ISSUES = [
+  {id:1772907001, title:"S08 — דומיין קבוע", desc:"URL שלא משתנה כל פעם שהשרת עולה — GitHub Pages או zan.org.il", cat:"system", priority:"medium", reporter:"אררט", status:"open", date:"7.3.2026", time:"12:15", history:[{action:"opened",by:"אררט",at:"2026-03-07T12:15:00Z"}]},
+  {id:1772907002, title:"C03 — שליטה במסגרת שלבים", desc:"אפשרות לערוך border (צבע, עובי, סגנון) לשלבים בודדים", cat:"design", priority:"low", reporter:"נגה ארבל", status:"open", date:"6.3.2026", time:"18:30", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-06T18:30:00Z"}]},
+  {id:1772907003, title:"M02 — פיצול שלב למקביל — דורש אימות", desc:"כפילויות תוקנו חלקית (deep clone + dedup). צריך אימות שהבעיה לא חוזרת.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"19:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T19:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-07T12:00:00Z"}]},
+  {id:1772907004, title:"T04 — הפניות לתקנון הכנסת (חלקי)", desc:"סעיפים 75-94 — דוגמה קיימת ב'ח\"כ יוזם' בלבד. שאר השלבים פתוחים.", cat:"content", priority:"high", reporter:"אררט", status:"open", date:"7.3.2026", time:"12:15", history:[{action:"opened",by:"אררט",at:"2026-03-07T12:15:00Z"}]},
+  {id:1772907005, title:"T05 — הפניות inline לכל תת-סעיפי התקנון", desc:"כל קביעה + מגילה לתת-סעיף הספציפי בכל 10 השלבים", cat:"content", priority:"high", reporter:"אררט", status:"open", date:"7.3.2026", time:"12:58", history:[{action:"opened",by:"אררט",at:"2026-03-07T12:58:00Z"}]},
+  {id:1772907006, title:"DT02 — תיקון גישה ל-Slack threads", desc:"אין גישה ל-threads בערוץ (שגיאת channel_not_found). דורש בדיקת OAuth scopes.", cat:"system", priority:"medium", reporter:"אררט", status:"open", date:"7.3.2026", time:"18:00", history:[{action:"opened",by:"אררט",at:"2026-03-07T18:00:00Z"}]}
+];
+
 document.addEventListener("DOMContentLoaded", function(){
   const saved = localStorage.getItem(REPORTER_KEY);
   if(saved) document.getElementById("reporterName").value = saved;
+  // Seed if empty
+  const existing = getIssues();
+  if(existing.length === 0){
+    saveIssues(SEED_ISSUES);
+  }
   renderAll();
 });
 document.getElementById("reporterName").addEventListener("change", function(){
