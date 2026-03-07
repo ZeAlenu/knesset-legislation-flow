@@ -1221,7 +1221,7 @@ function renderLegend(){
       </span>
     `).join("") +
     `<span class="legend-item">${BUILTIN_ICONS["israel"]||"🇮🇱"} = סמכות חוקית</span>` +
-    `<span class="legend-item">${BUILTIN_ICONS["crown"]||"👑"} = הפקעת סמכות לא חוקית</span>` +
+    `<span class="legend-item">${BUILTIN_ICONS["usurp"]||"👑"} = הפקעת סמכות לא חוקית</span>` +
     `<span class="legend-item">${BUILTIN_ICONS["stop-hand"]||"🛑"} = מחסום ללא עיגון בחוק</span>`;
 }
 
@@ -1518,7 +1518,7 @@ function renderStep(step, stage, index, skipChildren){
       let detHTML = "";
       // Edit toolbar for detail panel
       if(appState.editing){
-        detHTML += `<div style="text-align:left;margin-bottom:4px;display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+        detHTML += `<div style="text-align:left;margin-bottom:4px;display:flex;gap:4px;flex-wrap:wrap;align-items:center" onmousedown="event.preventDefault()">
           <span class="edit-btn-sm" onclick="event.stopPropagation();editStepDetails('${step.id}')" title="ערוך טקסט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">✏️</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();document.execCommand('bold')" title="הדגשה" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-weight:bold">B</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();document.execCommand('italic')" title="נטוי" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;font-style:italic">I</span>
@@ -2390,35 +2390,36 @@ function showInlineIconPicker(event, stepId){
   
   popup.querySelectorAll("[data-icon-key]").forEach(el => {
     el.onmousedown = function(e){
-      e.preventDefault(); // Prevent stealing focus
+      e.preventDefault();
       e.stopPropagation();
       const key = this.getAttribute("data-icon-key");
       const iconHTML = BUILTIN_ICONS[key];
       const iconSpan = '<span class="inline-icon" contenteditable="false" style="display:inline;vertical-align:middle;cursor:pointer" onclick="if(appState.editing&&confirm(\'להסיר סמל?\')){this.remove()}">' + iconHTML + '</span>&nbsp;';
       
-      const sel = window.getSelection();
-      // Try to use tracked detail range, or current selection, or append to detail content
-      const targetRange = _lastDetailRange || (sel.rangeCount > 0 ? sel.getRangeAt(0) : null);
-      
-      if(targetRange){
-        sel.removeAllRanges();
-        sel.addRange(targetRange);
-        document.execCommand("insertHTML", false, iconSpan);
-      } else {
-        // Fallback: find the detail-content for this step and append at end
-        const stepEl = document.getElementById("step-" + stepId);
-        const detEl = stepEl ? stepEl.querySelector(".detail-content") : document.querySelector(".detail-content");
-        if(detEl){
-          detEl.contentEditable = "true";
+      // Always find the detail-content and ensure it's editable
+      const stepEl = document.getElementById("step-" + stepId);
+      const detEl = stepEl ? stepEl.querySelector(".detail-content") : document.querySelector(".detail-content");
+      if(detEl){
+        detEl.contentEditable = "true";
+        
+        const sel = window.getSelection();
+        // Try saved range first
+        if(_lastDetailRange){
+          sel.removeAllRanges();
+          sel.addRange(_lastDetailRange);
+        } else {
+          // Place cursor at end
           detEl.focus();
-          // Move cursor to end
           const range = document.createRange();
           range.selectNodeContents(detEl);
           range.collapse(false);
           sel.removeAllRanges();
           sel.addRange(range);
-          document.execCommand("insertHTML", false, iconSpan);
         }
+        document.execCommand("insertHTML", false, iconSpan);
+        // Save immediately
+        const step = findStepById(stepId);
+        if(step){ step.detailsHtml = detEl.innerHTML; const tmp=document.createElement("div");tmp.innerHTML=detEl.innerHTML;step.details=tmp.textContent||""; }
       }
       popup.remove();
     };
@@ -2568,12 +2569,12 @@ const BUILTIN_ICONS = {
   "star": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 61,38 95,38 68,60 79,93 50,73 21,93 32,60 5,38 39,38" fill="#FFD700" stroke="#B8860B" stroke-width="2"/></svg>`,
   "hourglass": `<img src="icons/hourglass.png" width="34" height="34" style="object-fit:contain">`,
   "israel": `<img src="icons/state-emblem.png" width="28" height="28" style="object-fit:contain">`,
-  "crown": `<img src="icons/crown-cancelled.png?v=3" width="34" height="34" style="object-fit:contain">`,
+
   "menorah": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><path d="M50,85 L50,40" stroke="#B8860B" stroke-width="4" fill="none"/><path d="M20,85 L80,85" stroke="#B8860B" stroke-width="4" fill="none"/><path d="M30,85 L30,50 C30,35 50,30 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M70,85 L70,50 C70,35 50,30 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M20,85 L20,55 C20,38 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M80,85 L80,55 C80,38 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M38,85 L38,47 C38,33 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M62,85 L62,47 C62,33 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><circle cx="20" cy="52" r="3" fill="#FF8C00"/><circle cx="30" cy="47" r="3" fill="#FF8C00"/><circle cx="38" cy="44" r="3" fill="#FF8C00"/><circle cx="50" cy="37" r="3" fill="#FF8C00"/><circle cx="62" cy="44" r="3" fill="#FF8C00"/><circle cx="70" cy="47" r="3" fill="#FF8C00"/><circle cx="80" cy="52" r="3" fill="#FF8C00"/></svg>`,
   "scroll": `<img src="icons/scroll.png" width="18" height="22" style="object-fit:contain;vertical-align:middle">`,
   "gavel": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="75" width="60" height="10" rx="3" fill="#8B4513"/><rect x="30" y="68" width="40" height="10" rx="2" fill="#A0522D"/><rect x="42" y="20" width="16" height="50" rx="3" fill="#D2691E" transform="rotate(-30 50 45)"/><rect x="25" y="10" width="35" height="18" rx="5" fill="#8B4513" transform="rotate(-30 42 19)"/></svg>`,
   "scales": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><line x1="50" y1="15" x2="50" y2="80" stroke="#B8860B" stroke-width="3"/><line x1="15" y1="35" x2="85" y2="35" stroke="#B8860B" stroke-width="3"/><circle cx="50" cy="15" r="5" fill="#FFD700" stroke="#B8860B" stroke-width="2"/><path d="M10,55 Q15,35 20,55 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5"/><line x1="15" y1="35" x2="10" y2="55" stroke="#B8860B" stroke-width="1.5"/><line x1="15" y1="35" x2="20" y2="55" stroke="#B8860B" stroke-width="1.5"/><path d="M80,50 Q85,30 90,50 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5"/><line x1="85" y1="35" x2="80" y2="50" stroke="#B8860B" stroke-width="1.5"/><line x1="85" y1="35" x2="90" y2="50" stroke="#B8860B" stroke-width="1.5"/><rect x="38" y="78" width="24" height="8" rx="3" fill="#B8860B"/></svg>`,
-  "usurp": `<img src="icons/crown-cancelled.png?v=3" width="34" height="34" style="object-fit:contain">`,
+  "usurp": `<img src="icons/usurp.png" width="34" height="34" style="object-fit:contain">`,
   "pen": `<img src="icons/pen.png" style="width:48px;height:48px;vertical-align:middle;">`,
   "podium": `<img src="icons/podium.png" width="48" height="48" style="object-fit:contain">`,
   "committee": `<img src="icons/committee.png" width="48" height="48" style="object-fit:contain">`,
