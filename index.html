@@ -1000,9 +1000,9 @@ function pickCatColor(catId, swatchEl){
 
   // Center as modal overlay
   const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:899;display:flex;align-items:center;justify-content:center";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:1100;display:flex;align-items:center;justify-content:center";
   popup.style.position = "relative";
-  popup.style.zIndex = "900";
+  popup.style.zIndex = "1101";
   popup.style.maxHeight = "85vh";
   popup.style.overflowY = "auto";
   overlay.appendChild(popup);
@@ -1232,13 +1232,15 @@ function makeEditable(text, onUpdate){
 function renderLegend(){
   const el = document.getElementById("legendBar");
   el.innerHTML = `<span class="legend-title">מקרא:</span>` +
-    appState.categories.map(c => `
-      <span class="legend-item">
-        <span class="legend-swatch" style="background:${c.color}${c.id==='gov'?';border:2px solid '+c.color:''}"></span>
+    appState.categories.map(c => {
+      const shapeStyles = {"diamond":"width:12px;height:12px;transform:rotate(45deg);border-radius:2px","circle":"width:14px;height:14px;border-radius:50%","pill":"width:18px;height:10px;border-radius:6px","ellipse":"width:18px;height:12px;border-radius:50%","octagon":"width:14px;height:14px;border-radius:3px;clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%)"};
+      const ss = shapeStyles[c.shape] || "";
+      return `<span class="legend-item">
+        <span class="legend-swatch" style="background:${c.color}${ss?';'+ss:''}${c.id==='gov'?';border:2px solid '+c.color:''}"></span>
         ${c.logo?`<img src="${c.logo}" style="width:14px;height:14px;border-radius:2px">`:''}
         ${escH(c.name)}
-      </span>
-    `).join("") +
+      </span>`;
+    }).join("") +
     `<span class="legend-item">${BUILTIN_ICONS["israel"]||"🇮🇱"} = סמכות חוקית</span>` +
     `<span class="legend-item">${BUILTIN_ICONS["usurp"]||"👑"} = הפקעת סמכות לא חוקית</span>` +
     `<span class="legend-item">${BUILTIN_ICONS["stop-hand"]||"🛑"} = מחסום ללא עיגון בחוק</span>`;
@@ -3331,7 +3333,9 @@ function renderFlowChart(){
   html += `<div class="flow-legend" style="margin-top:6px">
     <div style="font-size:10px;color:#888;font-weight:700;width:100%;text-align:center;margin-bottom:2px">קטגוריות:</div>`;
   for(const cat of appState.categories){
-    html += `<div class="flow-legend-item"><span class="flow-legend-shape" style="width:14px;height:14px;border-radius:3px;background:${cat.color}"></span> ${escH(cat.name)}</div>`;
+    const fls = {"diamond":"width:12px;height:12px;transform:rotate(45deg);border-radius:2px","circle":"width:14px;height:14px;border-radius:50%","pill":"width:18px;height:10px;border-radius:6px","ellipse":"width:18px;height:12px;border-radius:50%","octagon":"width:14px;height:14px;border-radius:3px;clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%)"};
+    const flss = fls[cat.shape] || "width:14px;height:14px;border-radius:3px";
+    html += `<div class="flow-legend-item"><span class="flow-legend-shape" style="${flss};background:${cat.color}"></span> ${escH(cat.name)}</div>`;
   }
   html += `</div>`;
 
