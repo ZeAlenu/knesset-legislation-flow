@@ -1365,6 +1365,7 @@ function renderHierarchy(){
             <span class="edit-btn-sm" onclick="event.stopPropagation();insertLink('${stage.id}')" title="הוסף קישור" style="${_s}">🔗</span>
             <span class="edit-btn-sm" onclick="event.stopPropagation();insertScrollLink('${stage.id}')" title="הוסף לינק למקור" style="${_s}">📜</span>
             <span class="edit-btn-sm" onclick="event.stopPropagation();showInlineIconPicker(event,'${stage.id}')" title="הוסף סמל" style="${_s}"><img src="icons/icon-picker.png" width="14" height="14" style="vertical-align:middle"></span>
+            <span class="edit-btn-sm" onclick="event.stopPropagation();insertImageInDetail('${stage.id}')" title="הוסף תמונה" style="${_s}">🖼️</span>
             <span class="edit-btn-sm" onclick="event.stopPropagation();pickDetailColor(event,'${stage.id}')" title="צבע" style="${_s}">🎨</span>
             <span class="edit-btn-sm" onclick="event.stopPropagation();clearStageDetails('${stage.id}')" title="מחק פירוט" style="${_s};color:#c00">🗑️</span>
           </div>`;
@@ -1611,6 +1612,7 @@ function renderStep(step, stage, index, skipChildren){
           <span class="edit-btn-sm" onclick="event.stopPropagation();insertLink('${step.id}')" title="הוסף קישור" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🔗</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();insertScrollLink('${step.id}')" title="הוסף לינק למקור (מגילה)" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">📜</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();showInlineIconPicker(event,'${step.id}')" title="הוסף סמל בטקסט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px"><img src="icons/icon-picker.png" width="14" height="14" style="vertical-align:middle"></span>
+          <span class="edit-btn-sm" onclick="event.stopPropagation();insertImageInDetail('${step.id}')" title="הוסף תמונה" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🖼️</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();pickDetailColor(event,'${step.id}')" title="צבע פירוט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🎨</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();toggleDetailType('${step.id}')" title="שנה סוג" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">🔄</span>
           <span class="edit-btn-sm" onclick="event.stopPropagation();moveDetailToStep('${step.id}')" title="העבר פירוט לשלב אחר" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">📋➡️</span>
@@ -2585,6 +2587,37 @@ function showInlineIconPicker(event, stepId){
       if(!popup.contains(e.target)){popup.remove();document.removeEventListener("click",handler);}
     });
   },50);
+}
+
+function insertImageInDetail(stepId){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.onchange = function(){
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const imgHtml = `<img src="${e.target.result}" style="max-width:100%;height:auto;border-radius:4px;margin:4px 0;display:block" alt="${escH(file.name)}">`;
+      const sel = window.getSelection();
+      const targetRange = _lastDetailRange || (sel.rangeCount > 0 ? sel.getRangeAt(0) : null);
+      if(targetRange){
+        sel.removeAllRanges();
+        sel.addRange(targetRange);
+        document.execCommand("insertHTML", false, imgHtml);
+      } else {
+        const detEl = document.querySelector(".detail-content[contenteditable=true]") || document.querySelector(".detail-content");
+        if(detEl){
+          detEl.contentEditable = "true";
+          detEl.focus();
+          document.execCommand("insertHTML", false, imgHtml);
+        }
+      }
+      saveLocal();
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
 }
 
 function insertLink(stepId){
