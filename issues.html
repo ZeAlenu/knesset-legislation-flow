@@ -137,6 +137,9 @@ textarea{min-height:120px;resize:vertical}
   <!-- Send Report -->
   <button class="send-report-btn" id="sendReportBtn" onclick="sendReport()">📤 שגר דוח לטיפול</button>
   <div class="success-msg" id="reportSentMsg">✅ הדוח נשלח לטיפול!</div>
+  <div style="text-align:center;margin-top:12px">
+    <button onclick="resetToBase()" style="background:none;border:1px solid #ccc;border-radius:6px;padding:6px 14px;font-size:11px;color:#888;cursor:pointer;font-family:inherit">🔄 טען רשימת בסיס מעודכנת</button>
+  </div>
 </div>
 
 <script>
@@ -150,13 +153,41 @@ const PUBLISH_BASE = document.location.origin;
 */
 
 // Seed data — open tasks from TASK-TRACKER
+// Full task list from TASK-TRACKER — seed + reset
 const SEED_ISSUES = [
-  {id:1772907001, title:"S08 — דומיין קבוע", desc:"URL שלא משתנה כל פעם שהשרת עולה — GitHub Pages או zan.org.il", cat:"system", priority:"medium", reporter:"אררט", status:"open", date:"7.3.2026", time:"12:15", history:[{action:"opened",by:"אררט",at:"2026-03-07T12:15:00Z"}]},
-  {id:1772907002, title:"C03 — שליטה במסגרת שלבים", desc:"אפשרות לערוך border (צבע, עובי, סגנון) לשלבים בודדים", cat:"design", priority:"low", reporter:"נגה ארבל", status:"open", date:"6.3.2026", time:"18:30", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-06T18:30:00Z"}]},
-  {id:1772907003, title:"M02 — פיצול שלב למקביל — דורש אימות", desc:"כפילויות תוקנו חלקית (deep clone + dedup). צריך אימות שהבעיה לא חוזרת.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"19:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T19:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-07T12:00:00Z"}]},
-  {id:1772907004, title:"T04 — הפניות לתקנון הכנסת (חלקי)", desc:"סעיפים 75-94 — דוגמה קיימת ב'ח\"כ יוזם' בלבד. שאר השלבים פתוחים.", cat:"content", priority:"high", reporter:"אררט", status:"open", date:"7.3.2026", time:"12:15", history:[{action:"opened",by:"אררט",at:"2026-03-07T12:15:00Z"}]},
-  {id:1772907005, title:"T05 — הפניות inline לכל תת-סעיפי התקנון", desc:"כל קביעה + מגילה לתת-סעיף הספציפי בכל 10 השלבים", cat:"content", priority:"high", reporter:"אררט", status:"open", date:"7.3.2026", time:"12:58", history:[{action:"opened",by:"אררט",at:"2026-03-07T12:58:00Z"}]},
-  {id:1772907006, title:"DT02 — תיקון גישה ל-Slack threads", desc:"אין גישה ל-threads בערוץ (שגיאת channel_not_found). דורש בדיקת OAuth scopes.", cat:"system", priority:"medium", reporter:"אררט", status:"open", date:"7.3.2026", time:"18:00", history:[{action:"opened",by:"אררט",at:"2026-03-07T18:00:00Z"}]}
+  // ===== 🔧 טופל — ממתין לאימות נגה =====
+  {id:100, title:"S01 — ייצוא וייבוא JSON", desc:"שמירה וטעינה מקובץ חיצוני", cat:"system", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"16:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T16:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T18:00:00Z"}]},
+  {id:101, title:"S02 — פרסום לכולם", desc:"כפתור 🌐 לפרסום state לשרת. כולל תיקון: פרסום לא דרש סיסמה בפעם השנייה.", cat:"system", priority:"high", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"22:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T20:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T22:00:00Z"}]},
+  {id:102, title:"S03 — מיזוג ברמת שלב (Publish Merge)", desc:"כש-2 אנשים עובדים — פרסום ממזג ברמת stage, לא דורס.", cat:"system", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"22:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T20:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T22:00:00Z"}]},
+  {id:103, title:"S04 — Changelog + שחזור גרסאות", desc:"מעקב שינויים מקומי עם מזהה מחבר, שחזור לגרסה קודמת.", cat:"system", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"22:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T20:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T22:00:00Z"}]},
+  {id:104, title:"S05 — גיבוי אוטומטי (Dual Save)", desc:"כל שמירה מקומית מורידה קובץ JSON — מקס פעם ב-10 דק'.", cat:"system", priority:"medium", reporter:"נגה ארבל", status:"fixed", date:"7.3.2026", time:"12:20", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-07T12:20:00Z"},{action:"fixed",by:"אררט",at:"2026-03-07T12:30:00Z"}]},
+  {id:105, title:"S06 — כפתור 'טען מהשרת'", desc:"🔄 מוחק localStorage וטוען מחדש מהשרת.", cat:"system", priority:"high", reporter:"אררט", status:"fixed", date:"7.3.2026", time:"13:35", history:[{action:"opened",by:"אררט",at:"2026-03-07T13:35:00Z"},{action:"fixed",by:"אררט",at:"2026-03-07T13:45:00Z"}]},
+  {id:106, title:"S07 — Undo — ביטול פעולות", desc:"Ctrl+Z, עד 50 צעדים. כולל תיקון: כפתור ביטול לא עובד.", cat:"system", priority:"high", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"19:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T18:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T19:30:00Z"}]},
+  {id:200, title:"E01 — עריכת טקסט ישירה באתר", desc:"contenteditable + שמירה מקומית.", cat:"func", priority:"high", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"18:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T18:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T18:30:00Z"}]},
+  {id:201, title:"E02 — עיצוב טקסט בפירוט", desc:"כפתורי B, I, U, A+, A- בסרגל עריכה.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"6.3.2026", time:"10:00", history:[{action:"opened",by:"אררט",at:"2026-03-06T10:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-06T10:30:00Z"}]},
+  {id:202, title:"E03 — שמירת רווחים בין שורות", desc:"תיקון: עריכה הסירה רווחים → שימור line breaks.", cat:"func", priority:"medium", reporter:"נגה ארבל", status:"fixed", date:"5.3.2026", time:"23:00", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-05T23:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T23:30:00Z"}]},
+  {id:203, title:"E04 — הטמעת קישורים בפירוט", desc:"כפתור 🔗 + המרת markdown links + bare URLs.", cat:"func", priority:"medium", reporter:"נגה ארבל", status:"fixed", date:"7.3.2026", time:"12:15", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-07T12:15:00Z"},{action:"fixed",by:"אררט",at:"2026-03-07T12:30:00Z"}]},
+  {id:204, title:"E05 — כפתור מגילה-לינק למקור", desc:"📜 מוסיף מגילה לחיצה עם לינק — המשתמש בוחר URL.", cat:"func", priority:"medium", reporter:"נגה ארבל", status:"fixed", date:"7.3.2026", time:"13:26", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-07T13:26:00Z"},{action:"fixed",by:"אררט",at:"2026-03-07T13:40:00Z"}]},
+  {id:210, title:"M01 — הוספת שלבים ורמות", desc:"תפריט: שלב רגיל / תת-שלב / פיצול מקביל. כולל תיקוני באגים מרובים.", cat:"func", priority:"high", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"18:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T18:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T23:30:00Z"}]},
+  {id:212, title:"M03 — קידום שלב (Promote)", desc:"🔼 העברת תת-שלב לרמת ההורה. כולל תיקון חיפוש רקורסיבי.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"22:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T20:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T22:30:00Z"}]},
+  {id:213, title:"M04 — מחברים בין שלבים", desc:"בורר מלא: ↓ ⑂ ⑃ או + → ⇄ =. כולל תיקון בפיצולים ובין ראשיים.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"22:30", history:[{action:"opened",by:"אררט",at:"2026-03-05T20:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T23:00:00Z"}]},
+  {id:220, title:"C01 — עריכת צבעי קטגוריות", desc:"3 בוררי צבע: רקע, טקסט, מסגרת. כולל תיקון position+z-index.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"19:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T19:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T20:00:00Z"}]},
+  {id:221, title:"C02 — צבעי רמה 3", desc:"תיקון: אין סרגל צבע ברמה 3.", cat:"func", priority:"low", reporter:"נגה ארבל", status:"fixed", date:"5.3.2026", time:"23:30", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-05T23:30:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T23:45:00Z"}]},
+  {id:230, title:"I01 — העלאת תמונות/לוגואים", desc:"base64 data URL ב-localStorage.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"19:30", history:[{action:"opened",by:"אררט",at:"2026-03-05T19:30:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T20:00:00Z"}]},
+  {id:231, title:"I02 — ספריית סמלים מובנית", desc:"BUILTIN_ICONS — בחירה מתוך רשימה.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"20:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T20:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T20:30:00Z"}]},
+  {id:232, title:"I03 — סמלים לשלבים ראשיים", desc:"pickStageIcon — סמלים לשלבי יסוד (א', ב'...).", cat:"func", priority:"medium", reporter:"נגה ארבל", status:"fixed", date:"6.3.2026", time:"18:30", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-06T18:30:00Z"},{action:"fixed",by:"אררט",at:"2026-03-06T18:45:00Z"}]},
+  {id:240, title:"U02 — הערות בצד הנכון", desc:"תיקון: noteFirst לפי index ענף.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"22:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T21:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T22:00:00Z"}]},
+  {id:241, title:"U03 — משולשי פתיחה/סגירה", desc:"פתוח = ▼, סגור = ◀.", cat:"func", priority:"low", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"18:30", history:[{action:"opened",by:"אררט",at:"2026-03-05T18:30:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T18:45:00Z"}]},
+  {id:242, title:"U04 — סגירת popups בגלילה", desc:"סגירה אוטומטית של color picker / icon picker.", cat:"func", priority:"low", reporter:"אררט", status:"fixed", date:"6.3.2026", time:"18:45", history:[{action:"opened",by:"אררט",at:"2026-03-06T18:45:00Z"},{action:"fixed",by:"אררט",at:"2026-03-06T19:00:00Z"}]},
+  {id:300, title:"T01 — 10 שלבי הליך חקיקה פרטית", desc:"מילוי תוכן מלא לכל 10 השלבים.", cat:"content", priority:"high", reporter:"נגה ארבל", status:"fixed", date:"5.3.2026", time:"16:00", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-05T16:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-05T17:00:00Z"}]},
+  {id:301, title:"T03 — פירוט סמכויות ח\"כ יוזם", desc:"סעיף 75(א)-(ג) עם מגילות-לינק.", cat:"content", priority:"high", reporter:"אררט", status:"fixed", date:"7.3.2026", time:"12:58", history:[{action:"opened",by:"אררט",at:"2026-03-07T12:58:00Z"},{action:"fixed",by:"אררט",at:"2026-03-07T13:20:00Z"}]},
+  // ===== ⏳ פתוח — ממתין לביצוע =====
+  {id:400, title:"S08 — דומיין קבוע", desc:"URL שלא משתנה כל פעם שהשרת עולה — GitHub Pages או zan.org.il.", cat:"system", priority:"medium", reporter:"נגה ארבל", status:"open", date:"7.3.2026", time:"12:15", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-07T12:15:00Z"}]},
+  {id:401, title:"C03 — שליטה במסגרת שלבים", desc:"אפשרות לערוך border (צבע, עובי, סגנון) לשלבים בודדים.", cat:"design", priority:"low", reporter:"נגה ארבל", status:"open", date:"6.3.2026", time:"18:30", history:[{action:"opened",by:"נגה ארבל",at:"2026-03-06T18:30:00Z"}]},
+  {id:402, title:"M02 — פיצול שלב למקביל — דורש אימות", desc:"כפילויות תוקנו חלקית (deep clone + dedup). צריך אימות שהבעיה לא חוזרת.", cat:"func", priority:"medium", reporter:"אררט", status:"fixed", date:"5.3.2026", time:"19:00", history:[{action:"opened",by:"אררט",at:"2026-03-05T19:00:00Z"},{action:"fixed",by:"אררט",at:"2026-03-07T12:00:00Z"}]},
+  {id:403, title:"T04 — הפניות לתקנון הכנסת (חלקי)", desc:"סעיפים 75-94 — דוגמה קיימת ב'ח\"כ יוזם' בלבד. שאר השלבים פתוחים.", cat:"content", priority:"high", reporter:"אררט", status:"open", date:"7.3.2026", time:"12:15", history:[{action:"opened",by:"אררט",at:"2026-03-07T12:15:00Z"}]},
+  {id:404, title:"T05 — הפניות inline לכל תת-סעיפי התקנון", desc:"כל קביעה + מגילה לתת-סעיף הספציפי בכל 10 השלבים.", cat:"content", priority:"high", reporter:"אררט", status:"open", date:"7.3.2026", time:"12:58", history:[{action:"opened",by:"אררט",at:"2026-03-07T12:58:00Z"}]},
+  {id:405, title:"DT02 — תיקון גישה ל-Slack threads", desc:"אין גישה ל-threads בערוץ (שגיאת channel_not_found). דורש בדיקת OAuth scopes.", cat:"system", priority:"medium", reporter:"אררט", status:"open", date:"7.3.2026", time:"18:00", history:[{action:"opened",by:"אררט",at:"2026-03-07T18:00:00Z"}]}
 ];
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -338,6 +369,15 @@ async function sendReport(){
     } else { alert("שגיאה: " + (result.error||"")); }
   } catch(e){ alert("שגיאה: " + e.message); }
   btn.disabled = false; btn.textContent = "📤 שגר דוח לטיפול";
+}
+
+function resetToBase(){
+  if(!confirm("לטעון רשימת בסיס מעודכנת? (דיווחים חדשים שלך יישמרו)")) return;
+  const existing = getIssues();
+  const userAdded = existing.filter(i => !SEED_ISSUES.find(s => s.id === i.id));
+  const merged = [...SEED_ISSUES, ...userAdded];
+  saveIssues(merged);
+  renderAll();
 }
 
 function showTab(name, tabEl){
