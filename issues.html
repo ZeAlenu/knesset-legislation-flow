@@ -137,6 +137,10 @@ textarea{min-height:120px;resize:vertical}
   <!-- Send Report -->
   <button class="send-report-btn" id="sendReportBtn" onclick="sendReport()">📤 שגר דוח לטיפול</button>
   <div class="success-msg" id="reportSentMsg">✅ הדוח נשלח לטיפול!</div>
+  <div style="text-align:center;margin-top:12px">
+    <button onclick="syncFromBase()" style="background:#E6F6FB;border:1px solid #0A5E6E;border-radius:8px;padding:8px 16px;font-size:13px;color:#0A5E6E;cursor:pointer;font-family:inherit;font-weight:600">🔄 קבל עדכונים מאררט</button>
+    <p style="font-size:11px;color:#888;margin-top:4px">מושך שינויי סטטוס שאררט ביצע (משימות שטופלו), בלי לדרוס את השינויים שלך</p>
+  </div>
 
 </div>
 
@@ -369,13 +373,53 @@ async function sendReport(){
   btn.disabled = false; btn.textContent = "📤 שגר דוח לטיפול";
 }
 
-function resetToBase(){
-  if(!confirm("לטעון רשימת בסיס מעודכנת? (דיווחים חדשים שלך יישמרו)")) return;
+function syncFromBase(){
   const existing = getIssues();
-  const userAdded = existing.filter(i => !SEED_ISSUES.find(s => s.id === i.id));
-  const merged = [...SEED_ISSUES, ...userAdded];
+  const existingMap = {};
+  existing.forEach(i => { existingMap[i.id] = i; });
+
+  // Smart merge:
+  // - New seed issues (not in local) → add them
+  // - Seed issues where MY status changed (e.g. open→fixed) → update status, BUT preserve user's verification/reopen
+  // - User-added issues (not in seed) → keep as-is
+  const merged = [];
+  const seedIds = new Set();
+
+  SEED_ISSUES.forEach(seed => {
+    seedIds.add(seed.id);
+    const local = existingMap[seed.id];
+    if(!local){
+      // New from base — add
+      merged.push(seed);
+    } else {
+      // Exists locally — smart merge
+      // If user verified or reopened → keep user's version (they have the last word)
+      const userActions = (local.history||[]).filter(h => h.action==="verified" || h.action==="reopened");
+      if(userActions.length > 0){
+        merged.push(local); // User's version wins
+      } else {
+        // No user action — take base update (e.g. I marked it fixed)
+        // But preserve any local notes
+        merged.push({...seed, history: [...(seed.history||[]), ...(local.history||[]).filter(h => !seed.history?.find(sh => sh.at===h.at))]});
+      }
+    }
+  });
+
+  // Add user-created issues (not in seed)
+  existing.forEach(i => {
+    if(!seedIds.has(i.id)) merged.push(i);
+  });
+
   saveIssues(merged);
   renderAll();
+  showSyncToast();
+}
+
+function showSyncToast(){
+  const msg = document.getElementById("reportSentMsg");
+  msg.textContent = "🔄 עודכן בהצלחה!";
+  msg.style.display = "block";
+  setTimeout(()=>{ msg.style.display="none"; msg.textContent="✅ הדוח נשלח לטיפול!"; }, 3000);
 }
 
 function showTab(name, tabEl){
