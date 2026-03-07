@@ -1311,6 +1311,43 @@ function renderHierarchy(){
     content.className = "stage-content" + (isOpen ? " open" : "");
 
     if(isOpen){
+      // Stage-level detail
+      if(stage.detailsHtml || stage.details){
+        const stageDetail = document.createElement("div");
+        stageDetail.className = "detail-expand";
+        stageDetail.style.cssText = "margin:4px 8px 8px;border-radius:8px;overflow:hidden";
+        let stageDetToolbar = '';
+        if(appState.editing){
+          stageDetToolbar = `<div style="text-align:left;margin-bottom:4px;display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:4px 8px" onmousedown="event.preventDefault()">
+            <span class="edit-btn-sm" onclick="event.stopPropagation();addOrEditDetails('${stage.id}')" title="ערוך פירוט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px">✏️</span>
+            <span class="edit-btn-sm" onclick="event.stopPropagation();clearStageDetails('${stage.id}')" title="מחק פירוט" style="background:rgba(255,255,255,.2);border-radius:4px;padding:2px 6px;color:#c00">🗑️</span>
+          </div>`;
+        }
+        const stageDetContent = stage.detailsHtml || escH(stage.details||'').replace(/\n/g,'<br>');
+        stageDetail.innerHTML = stageDetToolbar + `<div class="detail-content">${stageDetContent}</div>`;
+        if(appState.editing){
+          stageDetail.querySelector(".detail-content").addEventListener("dblclick", function(e){
+            if(e.target.closest(".edit-btn-sm")) return;
+            e.stopPropagation();
+            this.contentEditable = "true";
+            this.focus();
+            this.addEventListener("blur", function(){
+              this.contentEditable = "false";
+              let html = this.innerHTML;
+              const hasF = /<(b|strong|i|em|u|font|span|a)[^>]*>/i.test(html);
+              if(hasF){ stage.detailsHtml = html; } else { stage.details = html.replace(/<br\s*\/?>/gi,"\n").replace(/<\/?div>/gi,""); stage.detailsHtml = null; }
+            },{once:true});
+          });
+        }
+        content.appendChild(stageDetail);
+      } else if(appState.editing){
+        // Show "add detail" button for stage
+        const addBtn = document.createElement("div");
+        addBtn.style.cssText = "text-align:center;margin:4px 8px";
+        addBtn.innerHTML = `<span class="edit-btn-sm" onclick="event.stopPropagation();addOrEditDetails('${stage.id}')" title="הוסף פירוט לשלב ראשי" style="cursor:pointer;padding:4px 12px;border-radius:6px;background:rgba(0,0,0,0.05);font-size:12px">📝 הוסף פירוט</span>`;
+        content.appendChild(addBtn);
+      }
+
       stage.steps.forEach((step, stepi) => {
         content.appendChild(renderStep(step, stage, stepi));
         // Show arrow between steps if step has showArrowAfter flag
@@ -1766,7 +1803,9 @@ function darken(hex){
 
 function findStepById(id, steps){
   if(!steps){
+    // Check stages themselves
     for(const stage of appState.stages){
+      if(stage.id === id) return stage;
       const found = findStepById(id, stage.steps);
       if(found) return found;
     }
@@ -2544,8 +2583,12 @@ function clearStepDetails(stepId){
   if(!step) return;
   if(!confirm("למחוק את הפירוט?")) return;
   pushUndo();
-  delete step.details; delete step.detailType;
+  delete step.details; delete step.detailsHtml; delete step.detailType;
   renderAll();
+}
+
+function clearStageDetails(stageId){
+  clearStepDetails(stageId);
 }
 
 function pickDetailColor(event, stepId){
@@ -2616,7 +2659,7 @@ const BUILTIN_ICONS = {
   "usurp": `<img src="icons/usurp.png" width="34" height="34" style="object-fit:contain">`,
   "pen": `<img src="icons/pen.png" style="width:48px;height:48px;vertical-align:middle;">`,
   "podium": `<img src="icons/podium.png" width="48" height="48" style="object-fit:contain">`,
-  "committee": `<img src="icons/committee.png" width="48" height="48" style="object-fit:contain">`,
+  "committee": `<img src="icons/committee.png?v=3" width="48" height="48" style="object-fit:contain">`,
   "plenum": `<img src="icons/plenum.png" width="48" height="48" style="object-fit:contain">`,
   "shield-menorah": `<img src="icons/shield-menorah.png" width="42" height="42" style="object-fit:contain">`
 };
