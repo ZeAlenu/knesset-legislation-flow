@@ -232,6 +232,7 @@ header p{font-size:13px;opacity:.85}
     <a href="manual.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📘 מדריך</a>
     <a href="system.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">⚙️ תפעול</a>
     <a href="issues.html" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📋 דיווח בעיות</a>
+    <span id="versionBadge" style="font-size:10px;opacity:0.6;color:#fff;margin-right:auto"></span>
   </div>
 </header>
 
@@ -1496,28 +1497,28 @@ function renderHierarchy(){
 
       stage.steps.forEach((step, stepi) => {
         content.appendChild(renderStep(step, stage, stepi));
-        // Show arrow between steps if step has showArrowAfter flag
-        if(step.showArrowAfter){
-          const stepArrow = document.createElement("div");
-          stepArrow.className = "stage-arrow";
-          stepArrow.style.margin = "1px 0";
-          stepArrow.innerHTML = '<div class="arrow-line" style="height:14px"></div><div class="arrow-head" style="border-left-width:7px;border-right-width:7px;border-top-width:8px"></div>';
-          content.appendChild(stepArrow);
-        }
-        // Render non-arrow connector if set
-        if(!step.showArrowAfter && step.connector && step.connector !== "arrow"){
-          if(step.connector === "fork"){
-            const f = document.createElement("div"); f.style.cssText = "text-align:center;margin:4px 0;line-height:1";
-            f.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="30" y1="0" x2="30" y2="12" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="10" y2="28" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="50" y2="28" stroke="#555" stroke-width="2"/></svg>`;
-            content.appendChild(f);
-          } else if(step.connector === "merge"){
-            const m = document.createElement("div"); m.style.cssText = "text-align:center;margin:4px 0;line-height:1";
-            m.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="10" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="50" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="30" y1="18" x2="30" y2="30" stroke="#555" stroke-width="2"/><polygon points="27,28 30,34 33,28" fill="#555"/></svg>`;
-            content.appendChild(m);
-          } else {
-            const sym = document.createElement("div"); sym.style.cssText = "text-align:center;font-size:18px;font-weight:700;color:#555;margin:2px 0";
-            sym.textContent = step.connector;
-            content.appendChild(sym);
+        // Show connector between steps (default: arrow for non-last; showArrowAfter===false: hidden; connector: custom)
+        if(stepi < stage.steps.length - 1){
+          if(step.connector && step.connector !== "arrow"){
+            if(step.connector === "fork"){
+              const f = document.createElement("div"); f.style.cssText = "text-align:center;margin:4px 0;line-height:1";
+              f.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="30" y1="0" x2="30" y2="12" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="10" y2="28" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="50" y2="28" stroke="#555" stroke-width="2"/></svg>`;
+              content.appendChild(f);
+            } else if(step.connector === "merge"){
+              const m = document.createElement("div"); m.style.cssText = "text-align:center;margin:4px 0;line-height:1";
+              m.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="10" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="50" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="30" y1="18" x2="30" y2="30" stroke="#555" stroke-width="2"/><polygon points="27,28 30,34 33,28" fill="#555"/></svg>`;
+              content.appendChild(m);
+            } else {
+              const sym = document.createElement("div"); sym.style.cssText = "text-align:center;font-size:18px;font-weight:700;color:#555;margin:2px 0";
+              sym.textContent = step.connector;
+              content.appendChild(sym);
+            }
+          } else if(step.showArrowAfter !== false){
+            const stepArrow = document.createElement("div");
+            stepArrow.className = "stage-arrow";
+            stepArrow.style.margin = "1px 0";
+            stepArrow.innerHTML = '<div class="arrow-line" style="height:14px"></div><div class="arrow-head" style="border-left-width:7px;border-right-width:7px;border-top-width:8px"></div>';
+            content.appendChild(stepArrow);
           }
         }
         // In edit mode: connector selector between steps
@@ -1526,7 +1527,7 @@ function renderHierarchy(){
           connDiv.style.cssText = "display:flex;gap:2px;justify-content:center;margin:2px 0;opacity:0.5";
           [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"merge",l:"⑃"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(sym=>{
             const b = document.createElement("button"); b.className = "add-step-btn";
-            const cur = step.connector || (step.showArrowAfter ? "arrow" : "");
+            const cur = step.connector || (step.showArrowAfter === false ? "" : "arrow");
             b.style.cssText = "padding:2px 5px;font-size:10px;min-width:20px;" + (cur===sym.v?"background:#E6F6FB;border:1px solid #4ECDC4;":"");
             b.textContent = sym.l; b.title = sym.v || "הסר";
             b.onclick = function(e){ e.stopPropagation(); pushUndo(); step.showArrowAfter = (sym.v==="arrow"); step.connector = (sym.v && sym.v!=="arrow") ? sym.v : undefined; if(!sym.v){ step.showArrowAfter=false; } renderAll(); };
@@ -1544,25 +1545,27 @@ function renderHierarchy(){
 
     panel.appendChild(content);
 
-    // Connector between stages
-    if(stage.showArrowAfter){
-      const arrow = document.createElement("div");
-      arrow.className = "stage-arrow";
-      arrow.innerHTML = '<div class="arrow-line"></div><div class="arrow-head"></div>';
-      panel.appendChild(arrow);
-    } else if(stage.connector && stage.connector !== "arrow"){
-      if(stage.connector === "fork"){
-        const f = document.createElement("div"); f.style.cssText = "text-align:center;margin:4px 0;line-height:1";
-        f.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="30" y1="0" x2="30" y2="12" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="10" y2="28" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="50" y2="28" stroke="#555" stroke-width="2"/></svg>`;
-        panel.appendChild(f);
-      } else if(stage.connector === "merge"){
-        const m = document.createElement("div"); m.style.cssText = "text-align:center;margin:4px 0;line-height:1";
-        m.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="10" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="50" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="30" y1="18" x2="30" y2="30" stroke="#555" stroke-width="2"/><polygon points="27,28 30,34 33,28" fill="#555"/></svg>`;
-        panel.appendChild(m);
-      } else {
-        const sym = document.createElement("div"); sym.style.cssText = "text-align:center;font-size:18px;font-weight:700;color:#555;margin:2px 0";
-        sym.textContent = stage.connector;
-        panel.appendChild(sym);
+    // Connector between stages (default: arrow for non-last; showArrowAfter===false: hidden; connector: custom)
+    if(si < appState.stages.length - 1){
+      if(stage.connector && stage.connector !== "arrow"){
+        if(stage.connector === "fork"){
+          const f = document.createElement("div"); f.style.cssText = "text-align:center;margin:4px 0;line-height:1";
+          f.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="30" y1="0" x2="30" y2="12" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="10" y2="28" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="50" y2="28" stroke="#555" stroke-width="2"/></svg>`;
+          panel.appendChild(f);
+        } else if(stage.connector === "merge"){
+          const m = document.createElement("div"); m.style.cssText = "text-align:center;margin:4px 0;line-height:1";
+          m.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="10" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="50" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="30" y1="18" x2="30" y2="30" stroke="#555" stroke-width="2"/><polygon points="27,28 30,34 33,28" fill="#555"/></svg>`;
+          panel.appendChild(m);
+        } else {
+          const sym = document.createElement("div"); sym.style.cssText = "text-align:center;font-size:18px;font-weight:700;color:#555;margin:2px 0";
+          sym.textContent = stage.connector;
+          panel.appendChild(sym);
+        }
+      } else if(stage.showArrowAfter !== false){
+        const arrow = document.createElement("div");
+        arrow.className = "stage-arrow";
+        arrow.innerHTML = '<div class="arrow-line"></div><div class="arrow-head"></div>';
+        panel.appendChild(arrow);
       }
     }
     // In edit mode: full connector selector between stages
@@ -1571,7 +1574,7 @@ function renderHierarchy(){
       connDiv.style.cssText = "display:flex;gap:2px;justify-content:center;margin:2px 0;opacity:0.5";
       [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"merge",l:"⑃"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(sym=>{
         const b = document.createElement("button"); b.className = "add-step-btn";
-        const cur = stage.connector || (stage.showArrowAfter ? "arrow" : "");
+        const cur = stage.connector || (stage.showArrowAfter === false ? "" : "arrow");
         b.style.cssText = "padding:2px 5px;font-size:10px;min-width:20px;" + (cur===sym.v?"background:#E6F6FB;border:1px solid #4ECDC4;":"");
         b.textContent = sym.l;
         b.onclick = function(){ pushUndo(); stage.showArrowAfter = (sym.v==="arrow"); stage.connector = (sym.v && sym.v!=="arrow") ? sym.v : undefined; if(!sym.v){ stage.showArrowAfter=false; } renderAll(); };
@@ -1790,7 +1793,7 @@ function renderStep(step, stage, index, skipChildren){
             const hcTarget = child; // connector stored on the branch header step
             [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"merge",l:"⑃"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(s=>{
               const b = document.createElement("button"); b.className = "add-step-btn";
-              const cur = hcTarget.connector||(hcTarget.showArrowAfter?"arrow":"");
+              const cur = hcTarget.connector||(hcTarget.showArrowAfter===false?"":"arrow");
               b.style.cssText = "padding:2px 5px;font-size:10px;min-width:20px;"+(cur===s.v?"background:#E6F6FB;border:1px solid #4ECDC4;":"");
               b.textContent = s.l;
               b.onclick = function(e){ e.stopPropagation(); pushUndo(); hcTarget.showArrowAfter=(s.v==="arrow"); hcTarget.connector=(s.v&&s.v!=="arrow")?s.v:undefined; if(!s.v){hcTarget.showArrowAfter=false;} renderAll(); };
@@ -1798,17 +1801,19 @@ function renderStep(step, stage, index, skipChildren){
             });
             col.appendChild(hcd);
           }
-          // Show connector symbol between branch header and first child
-          if(child.showArrowAfter){
-            const arr = document.createElement("div");
-            arr.className = "stage-arrow"; arr.style.margin = "1px 0";
-            arr.innerHTML = '<div class="arrow-line" style="height:10px"></div><div class="arrow-head" style="border-left-width:5px;border-right-width:5px;border-top-width:6px"></div>';
-            col.appendChild(arr);
-          } else if(child.connector && child.connector !== "arrow"){
-            const sym = document.createElement("div");
-            sym.style.cssText = "text-align:center;font-size:16px;font-weight:700;color:#555;margin:2px 0";
-            sym.textContent = child.connector;
-            col.appendChild(sym);
+          // Show connector symbol between branch header and first child (default: arrow)
+          if(child.children && child.children.length > 0){
+            if(child.connector && child.connector !== "arrow"){
+              const sym = document.createElement("div");
+              sym.style.cssText = "text-align:center;font-size:16px;font-weight:700;color:#555;margin:2px 0";
+              sym.textContent = child.connector;
+              col.appendChild(sym);
+            } else if(child.showArrowAfter !== false){
+              const arr = document.createElement("div");
+              arr.className = "stage-arrow"; arr.style.margin = "1px 0";
+              arr.innerHTML = '<div class="arrow-line" style="height:10px"></div><div class="arrow-head" style="border-left-width:5px;border-right-width:5px;border-top-width:6px"></div>';
+              col.appendChild(arr);
+            }
           }
           // Render sub-steps of each branch with connectors
           if(child.children){
@@ -1817,26 +1822,28 @@ function renderStep(step, stage, index, skipChildren){
               // Connector AFTER this step (before the next one)
               if(gci < child.children.length - 1){
                 // Show connector
-                if(gc.showArrowAfter){
+                if(gc.connector && gc.connector !== "arrow"){
+                  if(gc.connector === "merge"){
+                    const m = document.createElement("div");
+                    m.style.cssText = "text-align:center;margin:2px 0;line-height:1";
+                    m.innerHTML = `<svg width="40" height="20" viewBox="0 0 40 20"><line x1="8" y1="2" x2="20" y2="12" stroke="#555" stroke-width="1.5"/><line x1="32" y1="2" x2="20" y2="12" stroke="#555" stroke-width="1.5"/><line x1="20" y1="12" x2="20" y2="20" stroke="#555" stroke-width="1.5"/><polygon points="18,18 20,22 22,18" fill="#555"/></svg>`;
+                    col.appendChild(m);
+                  } else if(gc.connector === "fork"){
+                    const f = document.createElement("div");
+                    f.style.cssText = "text-align:center;margin:2px 0;line-height:1";
+                    f.innerHTML = `<svg width="40" height="20" viewBox="0 0 40 20"><line x1="20" y1="0" x2="20" y2="8" stroke="#555" stroke-width="1.5"/><line x1="20" y1="8" x2="8" y2="18" stroke="#555" stroke-width="1.5"/><line x1="20" y1="8" x2="32" y2="18" stroke="#555" stroke-width="1.5"/></svg>`;
+                    col.appendChild(f);
+                  } else {
+                    const sym = document.createElement("div");
+                    sym.style.cssText = "text-align:center;font-size:16px;font-weight:700;color:#555;margin:2px 0";
+                    sym.textContent = gc.connector;
+                    col.appendChild(sym);
+                  }
+                } else if(gc.showArrowAfter !== false){
                   const arr = document.createElement("div");
                   arr.className = "stage-arrow"; arr.style.margin = "1px 0";
                   arr.innerHTML = '<div class="arrow-line" style="height:10px"></div><div class="arrow-head" style="border-left-width:5px;border-right-width:5px;border-top-width:6px"></div>';
                   col.appendChild(arr);
-                } else if(gc.connector === "merge"){
-                  const m = document.createElement("div");
-                  m.style.cssText = "text-align:center;margin:2px 0;line-height:1";
-                  m.innerHTML = `<svg width="40" height="20" viewBox="0 0 40 20"><line x1="8" y1="2" x2="20" y2="12" stroke="#555" stroke-width="1.5"/><line x1="32" y1="2" x2="20" y2="12" stroke="#555" stroke-width="1.5"/><line x1="20" y1="12" x2="20" y2="20" stroke="#555" stroke-width="1.5"/><polygon points="18,18 20,22 22,18" fill="#555"/></svg>`;
-                  col.appendChild(m);
-                } else if(gc.connector === "fork"){
-                  const f = document.createElement("div");
-                  f.style.cssText = "text-align:center;margin:2px 0;line-height:1";
-                  f.innerHTML = `<svg width="40" height="20" viewBox="0 0 40 20"><line x1="20" y1="0" x2="20" y2="8" stroke="#555" stroke-width="1.5"/><line x1="20" y1="8" x2="8" y2="18" stroke="#555" stroke-width="1.5"/><line x1="20" y1="8" x2="32" y2="18" stroke="#555" stroke-width="1.5"/></svg>`;
-                  col.appendChild(f);
-                } else if(gc.connector && gc.connector !== "arrow"){
-                  const sym = document.createElement("div");
-                  sym.style.cssText = "text-align:center;font-size:16px;font-weight:700;color:#555;margin:2px 0";
-                  sym.textContent = gc.connector;
-                  col.appendChild(sym);
                 }
                 // Edit connector buttons
                 if(appState.editing){
@@ -1844,7 +1851,7 @@ function renderStep(step, stage, index, skipChildren){
                   cd.style.cssText = "display:flex;gap:2px;justify-content:center;margin:1px 0;opacity:0.5";
                   [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"merge",l:"⑃"},{v:"או",l:"או"},{v:"+",l:"+"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(s=>{
                     const b = document.createElement("button"); b.className = "add-step-btn";
-                    const cur = gc.connector||(gc.showArrowAfter?"arrow":"");
+                    const cur = gc.connector||(gc.showArrowAfter===false?"":"arrow");
                     b.style.cssText = "padding:2px 5px;font-size:10px;min-width:20px;"+(cur===s.v?"background:#E6F6FB;border:1px solid #4ECDC4;":"");
                     b.textContent = s.l;
                     b.onclick = function(e){ e.stopPropagation(); pushUndo(); gc.showArrowAfter=(s.v==="arrow"); gc.connector=(s.v&&s.v!=="arrow")?s.v:undefined; if(!s.v){gc.showArrowAfter=false;} renderAll(); };
@@ -1879,28 +1886,32 @@ function renderStep(step, stage, index, skipChildren){
       } else {
         step.children.forEach((child, ci) => {
           detailPanel.appendChild(renderStep(child, stage, ci));
-          // Show connector between steps
-          if(child.showArrowAfter){
+          // Show connector between steps (default: arrow for non-last; showArrowAfter===false: hidden; connector: custom)
+          if(ci < step.children.length - 1){
+          if(child.connector && child.connector !== "arrow"){
+            if(child.connector === "fork"){
+              const forkEl = document.createElement("div");
+              forkEl.style.cssText = "text-align:center;margin:4px 0;line-height:1";
+              forkEl.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="30" y1="0" x2="30" y2="12" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="10" y2="28" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="50" y2="28" stroke="#555" stroke-width="2"/><polygon points="8,24 12,32 16,24" fill="#555" transform="rotate(-30,10,28)"/><polygon points="48,24 52,32 56,24" fill="#555" transform="rotate(30,50,28)"/></svg>`;
+              detailPanel.appendChild(forkEl);
+            } else if(child.connector === "merge"){
+              const mergeEl = document.createElement("div");
+              mergeEl.style.cssText = "text-align:center;margin:4px 0;line-height:1";
+              mergeEl.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="10" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="50" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="30" y1="18" x2="30" y2="30" stroke="#555" stroke-width="2"/><polygon points="27,28 30,34 33,28" fill="#555"/></svg>`;
+              detailPanel.appendChild(mergeEl);
+            } else {
+              const symEl = document.createElement("div");
+              symEl.style.cssText = "text-align:center;font-size:18px;font-weight:700;color:#555;margin:2px 0;line-height:1";
+              symEl.textContent = child.connector;
+              detailPanel.appendChild(symEl);
+            }
+          } else if(child.showArrowAfter !== false){
             const childArrow = document.createElement("div");
             childArrow.className = "stage-arrow";
             childArrow.style.margin = "1px 0";
             childArrow.innerHTML = '<div class="arrow-line" style="height:12px"></div><div class="arrow-head" style="border-left-width:6px;border-right-width:6px;border-top-width:7px"></div>';
             detailPanel.appendChild(childArrow);
-          } else if(child.connector === "fork"){
-            const forkEl = document.createElement("div");
-            forkEl.style.cssText = "text-align:center;margin:4px 0;line-height:1";
-            forkEl.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="30" y1="0" x2="30" y2="12" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="10" y2="28" stroke="#555" stroke-width="2"/><line x1="30" y1="12" x2="50" y2="28" stroke="#555" stroke-width="2"/><polygon points="8,24 12,32 16,24" fill="#555" transform="rotate(-30,10,28)"/><polygon points="48,24 52,32 56,24" fill="#555" transform="rotate(30,50,28)"/></svg>`;
-            detailPanel.appendChild(forkEl);
-          } else if(child.connector === "merge"){
-            const mergeEl = document.createElement("div");
-            mergeEl.style.cssText = "text-align:center;margin:4px 0;line-height:1";
-            mergeEl.innerHTML = `<svg width="60" height="30" viewBox="0 0 60 30"><line x1="10" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="50" y1="2" x2="30" y2="18" stroke="#555" stroke-width="2"/><line x1="30" y1="18" x2="30" y2="30" stroke="#555" stroke-width="2"/><polygon points="27,28 30,34 33,28" fill="#555"/></svg>`;
-            detailPanel.appendChild(mergeEl);
-          } else if(child.connector && child.connector !== "arrow"){
-            const symEl = document.createElement("div");
-            symEl.style.cssText = "text-align:center;font-size:18px;font-weight:700;color:#555;margin:2px 0;line-height:1";
-            symEl.textContent = child.connector;
-            detailPanel.appendChild(symEl);
+          }
           }
           // In edit mode: connector symbols between steps
           if(appState.editing && ci < step.children.length - 1){
@@ -1909,10 +1920,10 @@ function renderStep(step, stage, index, skipChildren){
             [{v:"arrow",l:"↓"},{v:"fork",l:"⑂"},{v:"merge",l:"⑃"},{v:"+",l:"+"},{v:"או",l:"או"},{v:"→",l:"→"},{v:"⇄",l:"⇄"},{v:"=",l:"="},{v:"",l:"✕"}].forEach(sym=>{
               const b = document.createElement("button");
               b.className = "add-step-btn";
-              const cur = child.connector || (child.showArrowAfter ? "arrow" : "");
+              const cur = child.connector || (child.showArrowAfter === false ? "" : "arrow");
               b.style.cssText = "padding:1px 5px;font-size:10px;min-width:20px;" + (cur===sym.v?"background:#E6F6FB;border-color:var(--teal-dark);":"");
               b.textContent = sym.l; b.title = sym.v||"הסר";
-              b.onclick = function(e){ e.stopPropagation(); child.showArrowAfter = (sym.v==="arrow"); child.connector = sym.v||undefined; renderAll(); };
+              b.onclick = function(e){ e.stopPropagation(); pushUndo(); child.showArrowAfter = (sym.v==="arrow"); child.connector = (sym.v && sym.v!=="arrow") ? sym.v : undefined; if(!sym.v){ child.showArrowAfter=false; } renderAll(); };
               connDiv.appendChild(b);
             });
             detailPanel.appendChild(connDiv);
@@ -4155,7 +4166,16 @@ function renderAll(){
   renderFlowChart();
   // Delay back arrows rendering to ensure DOM is updated
   setTimeout(renderBackArrows, 100);
+  // Update version badge
+  const vb = document.getElementById("versionBadge");
+  if(vb){
+    const d = new Date();
+    const ver = `v${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    const steps = appState.stages.reduce((n,s)=>n+countSteps(s.steps),0);
+    vb.textContent = `${ver} | ${steps} שלבים`;
+  }
 }
+function countSteps(steps){ return (steps||[]).reduce((n,s)=>n+1+countSteps(s.children),0); }
 
 // ============================================================
 // INIT
