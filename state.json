@@ -386,7 +386,7 @@
               "icon": "",
               "catId": "process",
               "depth": 0,
-              "details": "45 הימים הללו כוללים את יום ההנחה ואת יום הדיון המוקדם (ההצבעה הטרומית). \n\nסעיף 76 (ג) לתקנון",
+              "details": "",
               "detailType": "expand",
               "children": [
                 {
@@ -480,16 +480,16 @@
           "children": [
             {
               "id": "s2_1",
-              "title": "הדיון נקבע ליום ד' ",
+              "title": "יו\"ר הכנסת קובע את מועד הדיון",
               "icon": "",
-              "catId": "cat_gen_1046",
+              "catId": "yoresh",
               "chpiqa": false,
               "depth": 0,
-              "details": "בימי ד' דנה מליאת הכנסת בהצ\"ח פרטיות בשלב הדיון המוקדם (\"טרומי\")סעיף 25(ד) (ז). לכל סיעה יש מכסה של חוקים שהיא רשאית להעלות לדיון במהלך דיון זה, הנקבעת על ידי ועדת הכנסת בכפוף לסעיף 99 לתקנון. הסיעה קובעת את \"התור\" בין חבריה ובין החוקים שהם מבקשים לקדם. סעיף 76(א) לתקנון ",
+              "details": "הדיון ייקבע באחד משני אופנים:\n• ביום ד' לפי המכסה של הסיעה (הסיעה היא הקובעת את התור בין חבריה)\n• בדיון לציון נושא מיוחד שקובע היו\"ר — נדרשת הסכמת הממשלה, והיו\"ר יכול לקבוע שהדיון אינו על חשבון המכסה\n📜 מקור: [סעיף 76 לתקנון הכנסת — מועד הדיון המוקדם והצמדה](https://www.nevo.co.il/law/72248#Seif58)",
               "detailType": "expand",
               "children": [],
-              "_open": true,
-              "detailsHtml": "<div>בימי ד' דנה מליאת הכנסת בהצ\"ח פרטיות בשלב הדיון המוקדם (\"טרומי\")</div><div>סעיף 25(ד) (ז).&nbsp;</div><div><br></div><div>לכל סיעה יש מכסה של חוקים שהיא רשאית להעלות לדיון במהלך דיון זה, הנקבעת על ידי ועדת הכנסת בכפוף לסעיף 99 לתקנון.&nbsp;<br><br></div><div>הסיעה קובעת את \"התור\" בין חבריה ובין החוקים שהם מבקשים לקדם.&nbsp;<br>סעיף 76(א) לתקנון&nbsp;</div>"
+              "_open": false,
+              "detailsHtml": "הדיון ייקבע באחד משני אופנים:<br>• ביום ד' לפי המכסה של הסיעה (הסיעה היא הקובעת את התור בין חבריה)<br>• בדיון לציון נושא מיוחד שקובע היו\"ר — נדרשת הסכמת הממשלה, והיו\"ר יכול לקבוע שהדיון אינו על חשבון המכסה<br>📜 מקור: <a href=\"https://www.nevo.co.il/law/72248#Seif58\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 76 לתקנון הכנסת — מועד הדיון המוקדם והצמדה</a>"
             },
             {
               "id": "gen_gen_1045",
@@ -618,18 +618,18 @@
         },
         {
           "id": "step_gen_1043",
-          "title": "מייד בתום ההצבעה",
+          "title": "שמות חברי הכנסת היוזמים והמצטרפים",
           "icon": "",
-          "catId": "vaadat",
+          "catId": "process",
           "chpiqa": false,
           "depth": 0,
-          "details": "בשלב זה, ועד הדיון הראשון בועדה שמונתה, רשאי כל חבר כנסת, ללא הנמקה, להציע שתעבור ההצעה לדיון בועדה אחרת - או בועדה משותפת של ועדות.  ועדת הכנסת  מוסמכת לקבוע היכן תידון ההצעה. הועדה שנקבעה בועדת הכנסת כועדת הדיון, תקבל את ההצעה, מייד עם הודעת יו\"ר ועדת הכנסת למליאה על ההחלטה. אם הוחלט על ועדה משותפת - ועדת הכנסת קובעת את הרכבה. בהתאם לסעיף 110 לתקנון ",
+          "details": " חברי הכנסת היוזמים מוסמכים לקבוע מה יהיה סדר הופעתם בחוק.  משהונחה ההצעה - לא ניתן עוד לשנות את סדר היוזמים. (75 (ב) (3)) ",
           "detailType": "expand",
           "children": [],
-          "_open": true,
-          "builtinIcon": "clock",
-          "detailIcon": "israel",
-          "detailsHtml": "בשלב זה, ועד הדיון הראשון בועדה שמונתה, <br>רשאי כל חבר כנסת, ללא הנמקה, להציע שתעבור ההצעה לדיון בועדה אחרת - או בועדה משותפת של ועדות. <br><br><span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/state-emblem.png\" width=\"28\" height=\"28\" style=\"object-fit:contain\"></span>&nbsp;ועדת הכנסת  מוסמכת לקבוע היכן תידון ההצעה. <br><br>הועדה שנקבעה בועדת הכנסת כועדת הדיון, תקבל את ההצעה, מייד עם הודעת יו\"ר ועדת הכנסת למליאה על ההחלטה. <br><br>אם הוחלט על ועדה משותפת - ועדת הכנסת קובעת את הרכבה. בהתאם לסעיף 110 לתקנון "
+          "_open": false,
+          "builtinIcon": null,
+          "detailIcon": "shield-menorah",
+          "detailsHtml": "<span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/shield-menorah.png\" width=\"42\" height=\"42\" style=\"object-fit:contain\"></span>&nbsp;חברי הכנסת היוזמים מוסמכים לקבוע מה יהיה סדר הופעתם בחוק. <br><span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"40\" height=\"40\"><circle cx=\"50\" cy=\"50\" r=\"45\" fill=\"#1B3A6B\" stroke=\"white\" stroke-width=\"4\"></circle><circle cx=\"50\" cy=\"50\" r=\"38\" fill=\"none\" stroke=\"white\" stroke-width=\"2\" opacity=\"0.3\"></circle><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"22\" stroke=\"white\" stroke-width=\"4\" stroke-linecap=\"round\"></line><line x1=\"50\" y1=\"50\" x2=\"70\" y2=\"55\" stroke=\"white\" stroke-width=\"3\" stroke-linecap=\"round\"></line><circle cx=\"50\" cy=\"50\" r=\"3\" fill=\"white\"></circle></svg></span>&nbsp;משהונחה ההצעה - לא ניתן עוד לשנות את סדר היוזמים. <br><br>(75 (ב) (3)) <br>"
         }
       ],
       "showArrowAfter": true,
