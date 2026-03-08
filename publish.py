@@ -7,6 +7,76 @@ import os
 from datetime import datetime
 
 PUBLISH_KEY = "97d2870b8acfb063d9bc11e3ef9ce2db"
+
+def step_content_size(step):
+    """Calculate total content size of a step (details + detailsHtml)"""
+    return len(step.get("details", "") or "") + len(step.get("detailsHtml", "") or "")
+
+def build_step_map(steps):
+    """Recursively build a map of step_id -> step for all steps in a tree"""
+    result = {}
+    if not steps:
+        return result
+    for s in steps:
+        result[s["id"]] = s
+        result.update(build_step_map(s.get("children", [])))
+    return result
+
+def merge_step_content(existing_step, incoming_step):
+    """Merge a single step: keep the version with more content for details fields.
+    For other fields, incoming wins (user's latest structural changes)."""
+    merged = dict(incoming_step)  # Start with incoming (structural changes)
+    
+    # For content fields, keep the richer version to prevent data loss
+    ex_content = step_content_size(existing_step)
+    in_content = step_content_size(incoming_step)
+    
+    if ex_content > in_content and in_content == 0:
+        # Incoming has no content but existing does — preserve existing content
+        merged["details"] = existing_step.get("details", "")
+        merged["detailsHtml"] = existing_step.get("detailsHtml")
+    
+    return merged
+
+def deep_merge_steps(existing_steps, incoming_steps):
+    """Recursively merge step lists, preserving content from both sides"""
+    if not existing_steps:
+        return incoming_steps or []
+    if not incoming_steps:
+        return existing_steps
+    
+    ex_map = {s["id"]: s for s in existing_steps}
+    result = []
+    seen = set()
+    
+    for s in incoming_steps:
+        seen.add(s["id"])
+        if s["id"] in ex_map:
+            merged = merge_step_content(ex_map[s["id"]], s)
+            # Recursively merge children
+            merged["children"] = deep_merge_steps(
+                ex_map[s["id"]].get("children", []),
+                s.get("children", [])
+            )
+            result.append(merged)
+        else:
+            result.append(s)
+    
+    # Preserve steps only in existing (shouldn't happen but safe)
+    for s in existing_steps:
+        if s["id"] not in seen:
+            result.append(s)
+    
+    return result
+
+def deep_merge_stage(existing_stage, incoming_stage):
+    """Merge a stage by recursively merging its steps"""
+    merged = dict(incoming_stage)
+    merged["steps"] = deep_merge_steps(
+        existing_stage.get("steps", []),
+        incoming_stage.get("steps", [])
+    )
+    return merged
 SITE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATE_FILE = os.path.join(SITE_DIR, "state.json")
 
@@ -45,22 +115,25 @@ class PublishHandler(http.server.BaseHTTPRequestHandler):
                     try: existing = json.load(f)
                     except: pass
             
-            # Stage-level merge: only update stages that changed
+            # Step-level merge: merge individual steps within each stage
             if existing.get("stages") and data.get("stages"):
                 existing_map = {s["id"]: s for s in existing["stages"]}
                 incoming_map = {s["id"]: s for s in data["stages"]}
-                # Merge: incoming wins for stages that differ
-                for sid, stage in incoming_map.items():
-                    existing_map[sid] = stage
-                # Preserve stages not in incoming (shouldn't happen but safe)
+                
                 merged_stages = []
                 seen = set()
                 for s in data["stages"]:
-                    merged_stages.append(existing_map[s["id"]])
-                    seen.add(s["id"])
+                    sid = s["id"]
+                    seen.add(sid)
+                    if sid in existing_map:
+                        # Deep merge: for each step, keep the version with MORE content
+                        merged_stage = deep_merge_stage(existing_map[sid], s)
+                        merged_stages.append(merged_stage)
+                    else:
+                        merged_stages.append(s)
                 for s in existing["stages"]:
                     if s["id"] not in seen:
-                        merged_stages.append(existing_map[s["id"]])
+                        merged_stages.append(s)
                 data["stages"] = merged_stages
             
             # Always merge categories and flow (take incoming for now)
