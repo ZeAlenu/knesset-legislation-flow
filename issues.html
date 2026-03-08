@@ -1152,10 +1152,13 @@ const SEED_ISSUES = [
 document.addEventListener("DOMContentLoaded", function(){
   const saved = localStorage.getItem(REPORTER_KEY);
   if(saved) document.getElementById("reporterName").value = saved;
-  // Seed if empty
+  // Always sync from SEED_ISSUES on load — merges new fixes/updates without losing user data
   const existing = getIssues();
   if(existing.length === 0){
     saveIssues(SEED_ISSUES);
+  } else {
+    // Auto-sync: merge seed updates (new fixes, new issues) with local data
+    syncFromBase(true); // silent mode
   }
   renderAll();
 });
@@ -1330,7 +1333,7 @@ async function sendReport(){
   btn.disabled = false; btn.textContent = "📤 שגר דוח לטיפול";
 }
 
-function syncFromBase(){
+function syncFromBase(silent){
   const existing = getIssues();
   const existingMap = {};
   existing.forEach(i => { existingMap[i.id] = i; });
@@ -1376,7 +1379,7 @@ function syncFromBase(){
 
   saveIssues(merged);
   renderAll();
-  showSyncToast();
+  if(!silent) showSyncToast();
 }
 
 function showSyncToast(){
