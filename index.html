@@ -907,6 +907,67 @@ function loadFromServer(){
   location.reload();
 }
 
+// === AUTO-SAVE to server every 5 minutes (editor only) ===
+let _lastAutoSaveHash = "";
+let _hasUnsavedChanges = false;
+let _autoSaveInterval = null;
+
+function getStateHash(){
+  return JSON.stringify({c:appState.categories.length, s:appState.stages.map(s=>s.steps?.length||0), f:appState.flowSteps.length, n:nextId});
+}
+
+function markUnsaved(){
+  const h = getStateHash();
+  if(h !== _lastAutoSaveHash) _hasUnsavedChanges = true;
+}
+
+async function autoSaveToServer(){
+  if(!appState.editing) return; // Only save in edit mode
+  markUnsaved();
+  if(!_hasUnsavedChanges) return;
+  
+  const stateData = JSON.stringify({
+    categories: appState.categories,
+    stages: appState.stages,
+    flowSteps: appState.flowSteps,
+    flowBackLinks: appState.flowBackLinks,
+    nextId,
+    publishDate: new Date().toISOString(),
+    publishedBy: (getAuthorName() || "autosave")
+  });
+  
+  try {
+    const resp = await fetch(PUBLISH_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "X-Publish-Key": PUBLISH_KEY},
+      body: stateData
+    });
+    if(resp.ok){
+      _lastAutoSaveHash = getStateHash();
+      _hasUnsavedChanges = false;
+      showToast("💾 שמירה אוטומטית ✓", 1500);
+    }
+  } catch(e){
+    console.error("Auto-save failed:", e);
+  }
+}
+
+function startAutoSave(){
+  if(_autoSaveInterval) return;
+  _lastAutoSaveHash = getStateHash();
+  _autoSaveInterval = setInterval(autoSaveToServer, 5 * 60 * 1000); // 5 minutes
+}
+
+// Warn before leaving with unsaved changes
+window.addEventListener("beforeunload", function(e){
+  if(!appState.editing) return;
+  markUnsaved();
+  if(_hasUnsavedChanges){
+    e.preventDefault();
+    e.returnValue = "יש שינויים שלא נשמרו — לצאת?";
+  }
+});
+
 function exportJSON(){
   const blob = new Blob([JSON.stringify({categories:appState.categories,stages:appState.stages,flowSteps:appState.flowSteps,flowBackLinks:appState.flowBackLinks,nextId,exportDate:new Date().toISOString()},null,2)],{type:"application/json"});
   const a = document.createElement("a");
@@ -1213,6 +1274,7 @@ function toggleEditing(){
   document.body.classList.toggle("editing", appState.editing);
   document.getElementById("toolbar").style.display = appState.editing ? "flex" : "none";
   document.getElementById("editToggle").innerHTML = appState.editing ? "✅ סיים עריכה" : "✏️ עריכה";
+  if(appState.editing) startAutoSave();
   renderAll();
 }
 
