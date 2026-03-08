@@ -32,9 +32,19 @@ def merge_step_content(existing_step, incoming_step):
     in_content = step_content_size(incoming_step)
     
     if ex_content > in_content and in_content == 0:
-        # Incoming has no content but existing does — preserve existing content
-        merged["details"] = existing_step.get("details", "")
-        merged["detailsHtml"] = existing_step.get("detailsHtml")
+        # Incoming has no content but existing does.
+        # Check if the user made OTHER changes to this step (title, icon, type, etc.)
+        # If yes → intentional edit, trust incoming (allow delete)
+        # If no → stale publish, preserve existing content
+        structural_fields = ["title", "catId", "detailType", "builtinIcon", "icon", "chpiqa"]
+        has_other_changes = any(
+            existing_step.get(f) != incoming_step.get(f) 
+            for f in structural_fields
+        )
+        if not has_other_changes:
+            # No other changes — likely stale publish, preserve content
+            merged["details"] = existing_step.get("details", "")
+            merged["detailsHtml"] = existing_step.get("detailsHtml")
     
     return merged
 
