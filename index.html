@@ -740,6 +740,24 @@ async function loadFromStorage(){
     }
   } catch(e){ console.error("Load error:",e); }
   
+  // Check for pre-refresh backup
+  const preRefreshBackup = localStorage.getItem("knesset-pre-refresh-backup");
+  if(preRefreshBackup){
+    try {
+      const backup = JSON.parse(preRefreshBackup);
+      const backupTime = backup.backupDate ? new Date(backup.backupDate).toLocaleString("he-IL") : "לא ידוע";
+      if(confirm(`נמצא גיבוי אוטומטי מ-${backupTime}.\n\nלשחזר? (אם לחצת רענן בטעות)`)){
+        if(backup.categories) appState.categories = backup.categories;
+        if(backup.stages) appState.stages = backup.stages;
+        if(backup.flowSteps) appState.flowSteps = backup.flowSteps;
+        if(backup.flowBackLinks) appState.flowBackLinks = backup.flowBackLinks;
+        if(backup.nextId) nextId = backup.nextId;
+        showToast("🔄 שוחזר מגיבוי אוטומטי");
+      }
+    } catch(ex){}
+    localStorage.removeItem("knesset-pre-refresh-backup");
+  }
+  
   // Ensure new default categories exist in loaded data
   migrateCategories();
   
@@ -958,14 +976,24 @@ function startAutoSave(){
   _autoSaveInterval = setInterval(autoSaveToServer, 5 * 60 * 1000); // 5 minutes
 }
 
-// Warn before leaving with unsaved changes
+// Warn before leaving — always offer backup in edit mode
 window.addEventListener("beforeunload", function(e){
   if(!appState.editing) return;
+  // Auto-save backup to localStorage before unload
+  try {
+    const backupData = JSON.stringify({
+      categories: appState.categories,
+      stages: appState.stages,
+      flowSteps: appState.flowSteps,
+      flowBackLinks: appState.flowBackLinks,
+      nextId,
+      backupDate: new Date().toISOString()
+    });
+    localStorage.setItem("knesset-pre-refresh-backup", backupData);
+  } catch(ex){}
   markUnsaved();
-  if(_hasUnsavedChanges){
-    e.preventDefault();
-    e.returnValue = "יש שינויים שלא נשמרו — לצאת?";
-  }
+  e.preventDefault();
+  e.returnValue = "💾 גיבוי אוטומטי נשמר. לצאת?";
 });
 
 function exportJSON(){
