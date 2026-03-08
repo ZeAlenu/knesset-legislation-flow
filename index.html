@@ -1614,6 +1614,8 @@ function renderStep(step, stage, index, skipChildren){
   header.style.background = effectiveBg;
   header.style.color = effectiveText;
   header.style.borderColor = effectiveBorder;
+  if(step.borderWidth) header.style.borderWidth = step.borderWidth + "px";
+  if(step.borderStyle) header.style.borderStyle = step.borderStyle;
   if(step.fontSize) header.style.fontSize = step.fontSize + "px";
   if(step.fontWeight) header.style.fontWeight = step.fontWeight;
 
@@ -2381,6 +2383,14 @@ function pickStepColor(event, stepId){
     <div class="preset-colors" style="margin-top:4px">
       ${presets.map(c=>`<div class="preset-color" style="background:${c}" onclick="event.stopPropagation();setStepOverrideBorder('${stepId}','${c}')"></div>`).join("")}
     </div>
+    <div style="font-size:11px;color:#888;margin:8px 0 4px;font-weight:600">עובי מסגרת:</div>
+    <div style="display:flex;gap:4px">
+      ${[1,2,3,4,5].map(w=>`<button onclick="event.stopPropagation();setStepBorderWidth('${stepId}',${w})" style="flex:1;padding:4px;border:${w}px solid #0A5E6E;border-radius:4px;background:${(step.borderWidth||2)===w?'#E6F6FB':'#fff'};cursor:pointer;font-size:10px">${w}</button>`).join("")}
+    </div>
+    <div style="font-size:11px;color:#888;margin:8px 0 4px;font-weight:600">סגנון מסגרת:</div>
+    <div style="display:flex;gap:4px">
+      ${[{v:"solid",l:"───"},{v:"dashed",l:"- - -"},{v:"dotted",l:"···"},{v:"double",l:"═══"}].map(s=>`<button onclick="event.stopPropagation();setStepBorderStyle('${stepId}','${s.v}')" style="flex:1;padding:4px;border:2px ${s.v} #0A5E6E;border-radius:4px;background:${(step.borderStyle||'solid')===s.v?'#E6F6FB':'#fff'};cursor:pointer;font-size:10px">${s.l}</button>`).join("")}
+    </div>
     <div style="display:flex;gap:6px;margin-top:10px">
       <button onclick="event.stopPropagation();document.querySelectorAll('.color-picker-popup').forEach(p=>p.remove());renderAll()" style="flex:1;padding:6px;border:none;border-radius:6px;background:var(--teal-dark);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
       <button onclick="event.stopPropagation();resetStepColors('${stepId}')" style="flex:1;padding:6px;border:1px solid #ddd;border-radius:6px;background:#f8f8f8;cursor:pointer;font-family:inherit;font-size:11px">נקה הכל</button>
@@ -2415,6 +2425,14 @@ function setStepOverrideTextColor(stepId, color){
 function setStepOverrideBorder(stepId, color){
   const found = findStepAndParent(stepId);
   if(found) found.step.overrideBorder = color;
+}
+function setStepBorderWidth(stepId, width){
+  const found = findStepAndParent(stepId);
+  if(found){ found.step.borderWidth = width; renderAll(); }
+}
+function setStepBorderStyle(stepId, style){
+  const found = findStepAndParent(stepId);
+  if(found){ found.step.borderStyle = style; renderAll(); }
 }
 function pickStepFont(event, stepId){
   event.stopPropagation();
