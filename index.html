@@ -115,6 +115,8 @@ header p{font-size:13px;opacity:.85}
 .flow-step .box.flow-active{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,.6);animation:flowGlow 1.5s ease-in-out infinite alternate}
 @keyframes flowGlow{from{box-shadow:0 0 8px rgba(255,215,0,.4)}to{box-shadow:0 0 16px rgba(255,215,0,.8)}}
 .flow-here-badge{position:absolute;left:-2px;top:50%;transform:translateY(-50%);font-size:10px;color:#FFD700;font-weight:700;white-space:nowrap;pointer-events:none;text-shadow:0 0 4px rgba(0,0,0,.3)}
+.flow-step-nav-pulse{outline:3px solid #FFD700!important;box-shadow:0 0 16px rgba(255,215,0,.8)!important;border-radius:6px;transition:outline .2s,box-shadow .2s}
+.stage-btn-nav-pulse{outline:3px solid #4ECDC4!important;box-shadow:0 0 14px rgba(78,205,196,.7)!important}
 .flow-arrow{text-align:center;color:#bbb;font-size:16px;margin:2px 0;line-height:1}
 .flow-note{font-size:10px;color:var(--waiting);text-align:center;margin:2px 0;font-weight:600}
 .flow-split{display:flex;gap:8px;justify-content:center;margin:4px 0;align-items:flex-start}
@@ -1553,6 +1555,8 @@ function renderStep(step, stage, index, skipChildren){
     if(clickTimer) return;
     clickTimer = setTimeout(function(){
       clickTimer = null;
+      // Scroll flow chart to the corresponding stage node
+      scrollFlowChartToStage(stage.id);
       if(!hasChildren) return;
       step._open = !step._open;
       renderHierarchy();
@@ -2831,14 +2835,31 @@ function pickStepIcon(event, stepId){
 
 function setStepBuiltinIcon(stepId, iconKey){
   const found = findStepAndParent(stepId);
-  if(found) found.step.builtinIcon = iconKey;
+  if(found){
+    found.step.builtinIcon = iconKey;
+    // Sync topIcon to the first linked flow step for this stage
+    if(found.stage){
+      const flowId = getStageFlowMap()[found.stage.id];
+      const flowStep = flowId ? findFlowStep(flowId) : null;
+      if(flowStep) flowStep.topIcon = {type:"builtin", icon:iconKey};
+    }
+  }
   document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
   renderAll();
 }
 
 function clearStepBuiltinIcon(stepId){
   const found = findStepAndParent(stepId);
-  if(found){ delete found.step.builtinIcon; found.step.icon = ""; delete found.step.topIcon; }
+  if(found){
+    delete found.step.builtinIcon;
+    found.step.icon = "";
+    // Sync clear to the first linked flow step for this stage
+    if(found.stage){
+      const flowId = getStageFlowMap()[found.stage.id];
+      const flowStep = flowId ? findFlowStep(flowId) : null;
+      if(flowStep) delete flowStep.topIcon;
+    }
+  }
   document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
   renderAll();
 }
@@ -2960,6 +2981,37 @@ function highlightFlowStep(){
   }
 }
 
+// Scroll the flow chart to the flow step linked to a given stage, with a pulse highlight
+function scrollFlowChartToStage(stageId){
+  const flowId = getStageFlowMap()[stageId];
+  if(!flowId) return;
+  const el = document.getElementById(flowId);
+  if(!el) return;
+  const flowCard = document.querySelector('.flow-card');
+  if(flowCard){
+    const scrollTarget = el.offsetTop - flowCard.offsetTop - (flowCard.clientHeight / 2) + (el.clientHeight / 2);
+    flowCard.scrollTo({top: Math.max(0, scrollTarget), behavior:'smooth'});
+  }
+  el.classList.add("flow-step-nav-pulse");
+  setTimeout(()=>el.classList.remove("flow-step-nav-pulse"), 1200);
+}
+
+// Scroll the hierarchy panel to a stage and flash-highlight it (called from flow chart)
+function scrollToDetailStage(stageId){
+  if(!appState.openStages.has(stageId)){
+    appState.openStages.add(stageId);
+    renderAll();
+  }
+  setTimeout(()=>{
+    const btn = document.getElementById("stage-btn-" + stageId);
+    if(btn){
+      btn.scrollIntoView({behavior:'smooth', block:'center'});
+      btn.classList.add("stage-btn-nav-pulse");
+      setTimeout(()=>btn.classList.remove("stage-btn-nav-pulse"), 1200);
+    }
+  }, 100);
+}
+
 // ============================================================
 // FLOW CHART — Render
 // ============================================================
@@ -3029,9 +3081,10 @@ function renderFlowStepElement(step, isInBranch){
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAssignCategory('${step.id}',this)" title="קטגוריה">🏷️</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowUploadImage('${step.id}')" title="תמונה">🖼️</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAddSideNote('${step.id}')" title="הערת צד">💬</button>`;
-    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowToggleTopIcon('${step.id}')" title="לוגו מעל">🔝</button>`;
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowToggleTopIcon('${step.id}',event)" title="לוגו מעל">🔝</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowSplitAfter('${step.id}')" title="פצל כאן">🔀</button>`;
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
+    if(step.stageId) html += `<button class="flow-edit-btn" onclick="event.stopPropagation();scrollToDetailStage('${step.stageId}')" title="מצא בפירוט">🔍</button>`;
     html += `</div>`;
   }
 
@@ -3682,33 +3735,69 @@ function flowAddSideNote(id){
   }
 }
 
-function flowToggleTopIcon(id){
+// Sync a flow step's topIcon back to the first detail step of the linked stage
+function syncTopIconToDetail(flowStep, iconKey){
+  if(!flowStep.stageId) return;
+  const stage = appState.stages.find(s=>s.id===flowStep.stageId);
+  if(!stage || !stage.steps || !stage.steps.length) return;
+  if(iconKey){
+    stage.steps[0].builtinIcon = iconKey;
+  } else {
+    delete stage.steps[0].builtinIcon;
+    stage.steps[0].icon = "";
+  }
+}
+
+function flowToggleTopIcon(id, event){
   const step = findFlowStep(id);
   if(!step) return;
-  pushUndo();
   if(step.topIcon){
-    // Remove
+    pushUndo();
     delete step.topIcon;
+    syncTopIconToDetail(step, null);
     renderAll();
     return;
   }
-  // Show picker: built-in icons + upload
-  const items = Object.entries(BUILTIN_ICON_LABELS).map(([k,v]) => `${v} (${k})`).join("\n");
-  const choice = prompt("בחר אייקון מעל הקופסה:\n" + items + "\n\nכתוב שם (למשל: stop-hand) או 'upload' להעלאת תמונה:");
-  if(!choice) return;
-  if(choice === "upload"){
-    const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*";
-    inp.onchange = function(){ const f = inp.files[0]; if(!f) return; const r = new FileReader(); r.onload = function(){ step.topIcon = {type:"image", src:r.result}; renderAll(); }; r.readAsDataURL(f); };
-    inp.click();
-  } else {
-    const key = choice.split("(").pop()?.replace(")","").trim() || choice.trim();
-    if(BUILTIN_ICONS[key]){
-      step.topIcon = {type:"builtin", icon: key};
-    } else {
-      step.topIcon = {type:"builtin", icon: choice.trim()};
-    }
-    renderAll();
+  // Show proper popup icon picker (same as detail panel)
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  const popup = document.createElement("div");
+  popup.className = "color-picker-popup show";
+  popup.style.cssText = "position:fixed;z-index:300;width:420px;max-width:90vw;max-height:70vh;overflow-y:auto;padding:16px";
+  let html = '<div style="font-size:13px;font-weight:700;color:#333;margin-bottom:10px">בחר סמל מעל הקופסה:</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">';
+  for(const [key, svg] of Object.entries(BUILTIN_ICONS)){
+    html += `<div style="cursor:pointer;text-align:center;padding:8px;border:1px solid #eee;border-radius:8px;background:#fafafa;transition:background .15s" onmouseover="this.style.background='#e0f0ff'" onmouseout="this.style.background='#fafafa'" onclick="event.stopPropagation();setFlowTopIcon('${id}','${key}')" title="${BUILTIN_ICON_LABELS[key]}">${svg}</div>`;
   }
+  html += '</div>';
+  html += `<button onclick="event.stopPropagation();setFlowTopIcon('${id}',null)" style="margin-top:8px;width:100%;padding:5px;border:1px solid #ddd;border-radius:6px;background:#f8f8f8;cursor:pointer;font-family:inherit;font-size:11px">הסר סמל</button>`;
+  popup.innerHTML = html;
+  if(event){
+    const rect = event.target.getBoundingClientRect();
+    popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 250) + "px";
+    popup.style.right = (window.innerWidth - rect.right) + "px";
+  }
+  document.body.appendChild(popup);
+  ensurePopupVisible(popup);
+  setTimeout(()=>{
+    document.addEventListener("click", function handler(e){
+      if(!popup.contains(e.target)){ popup.remove(); document.removeEventListener("click", handler); }
+    });
+  }, 50);
+}
+
+function setFlowTopIcon(flowStepId, iconKey){
+  const step = findFlowStep(flowStepId);
+  if(!step) return;
+  pushUndo();
+  if(iconKey && BUILTIN_ICONS[iconKey]){
+    step.topIcon = {type:"builtin", icon:iconKey};
+    syncTopIconToDetail(step, iconKey);
+  } else {
+    delete step.topIcon;
+    syncTopIconToDetail(step, null);
+  }
+  document.querySelectorAll(".color-picker-popup").forEach(p=>p.remove());
+  renderAll();
 }
 
 function flowSplitAfter(id){
