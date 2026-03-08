@@ -210,7 +210,8 @@
           "overrideColor": "#CC0000",
           "overrideTextColor": "#FFFFFF",
           "detailBgColor": "#FFFFFF",
-          "detailTextColor": "#000000"
+          "detailTextColor": "#000000",
+          "detailsHtml": "<strong>סעיף 75(ב)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif57\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 75(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>🛑 בחוק ובתקנון, הנסחות איננה שלב נדרש בתהליך וודאי שלא אמורה להיות לה שליטה בקידומו.<br><br>בפועל: הלשכה המשפטית מעבירה את הנוסח הסופי לנסחות שגם היא יכולה, בשל שליטתה בתהליך הטכני, לעכב את הנחת החוק בשל פרוצדורות שנקבעו ללא סמכות."
         },
         {
           "id": "s1_4",
@@ -233,7 +234,7 @@
               "detailType": "expand",
               "children": [],
               "_open": false,
-              "detailsHtml": "מסורתית, הנשיאות דנה בהצ\"ח להנחה בפגישתה השבועית בראשון בצהריים, בה נקבע סדר היום של הכנסת לשבוע הקרוב, <br>הצ\"ח חדשות מונחות על שולחן הכנסת, כחלק מסדר היום של הדיון ביום שני.&nbsp;<br><br>סדר היום של הנשיאות נקבע בדרך כלל בימי חמישי.&nbsp;<br>יש אפשרות חוקית, אבל בפועל נדיר עד מאד שהנשיאות דנה בפגישתה בראשון, בחוק שלא נכלל בסדר היום שנקבע בחמישי.&nbsp;<br><br><b>משמעות: </b>חוק שלא נכלל ביום חמישי בסדר היום לדיון הנשיאות בראשון, לא יונח בשני - והנחתו תתעכב לפחות עד השני שאחריו (קרי, בעשרה ימים בעצם)&nbsp;"
+              "detailsHtml": "<strong>סעיף 75(ד)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif57\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 75(ד) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>מסורתית, הנשיאות דנה בהצ\"ח להנחה בפגישתה השבועית בראשון בצהריים, בה נקבע סדר היום של הכנסת לשבוע הקרוב, <br>הצ\"ח חדשות מונחות על שולחן הכנסת, כחלק מסדר היום של הדיון ביום שני.&nbsp;<br><br>סדר היום של הנשיאות נקבע בדרך כלל בימי חמישי.&nbsp;<br>יש אפשרות חוקית, אבל בפועל נדיר עד מאד שהנשיאות דנה בפגישתה בראשון, בחוק שלא נכלל בסדר היום שנקבע בחמישי.&nbsp;<br><br><b>משמעות: </b>חוק שלא נכלל ביום חמישי בסדר היום לדיון הנשיאות בראשון, לא יונח בשני - והנחתו תתעכב לפחות עד השני שאחריו (קרי, בעשרה ימים בעצם)&nbsp;"
             }
           ],
           "showArrowAfter": true,
@@ -242,7 +243,7 @@
           "detailTextColor": "#000000",
           "builtinIcon": "usurp",
           "detailIcon": "usurp",
-          "detailsHtml": "<span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/shield-menorah.png\" width=\"42\" height=\"42\" style=\"object-fit:contain\"></span>&nbsp;החוק והתקנון מסמיכים את חבר כנסת היוזם, ורק אותו, לקדם חקיקה.&nbsp;<br><br><b>בפועל:&nbsp;<br></b><span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/usurp.png\" width=\"34\" height=\"34\" style=\"object-fit:contain\"></span>&nbsp;בשל מבנה תהליך לקוי ב\"סנהדרין\", <b>ח\"כ לא יכול להעביר חוק לידי הנשיאות</b>. <br>החוק מועבר מהח\"כ ← ליועמ\"ש ← לנסחות ורק היא מעבירה בפועל לנשיאות. <br>כתוצאה, גם הלשכה המשפטית וגם הנסחות אוחזים בכוח אפקטיבית לעכב חקיקה באופן המפר את סדר עבודת הכנסת ופוגע בסמכות החקיקה.&nbsp;"
+          "detailsHtml": "<strong>סעיף 75(ג)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif57\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 75(ג) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/shield-menorah.png\" width=\"42\" height=\"42\" style=\"object-fit:contain\"></span>&nbsp;החוק והתקנון מסמיכים את חבר כנסת היוזם, ורק אותו, לקדם חקיקה.&nbsp;<br><br><b>בפועל:&nbsp;<br></b><span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/usurp.png\" width=\"34\" height=\"34\" style=\"object-fit:contain\"></span>&nbsp;בשל מבנה תהליך לקוי ב\"סנהדרין\", <b>ח\"כ לא יכול להעביר חוק לידי הנשיאות</b>. <br>החוק מועבר מהח\"כ ← ליועמ\"ש ← לנסחות ורק היא מעבירה בפועל לנשיאות. <br>כתוצאה, גם הלשכה המשפטית וגם הנסחות אוחזים בכוח אפקטיבית לעכב חקיקה באופן המפר את סדר עבודת הכנסת ופוגע בסמכות החקיקה.&nbsp;"
         },
         {
           "id": "step_gen_1031",
@@ -355,7 +356,8 @@
               ],
               "showArrowAfter": true,
               "_open": true,
-              "builtinIcon": "check"
+              "builtinIcon": "check",
+              "detailsHtml": "<strong>סעיף 76(ב)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif58\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 76(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>תקנון הכנסת מחייב המתנה בין הנחה של חוק והצבעה עליו בקריאה טרומית עד לקבלת עמדת הממשלה או אם חלפו 45 ימים מהנחת החוק וטרם התקבלה עמדת הממשלה לגביו. <br><br>45 ימי ההנחה - נועדו לאפשר לממשלה לגבש עמדתה. מרגע שהתקבלה בכנסת הודעה על עמדת ממשלה שאיננה התנגדות לחוק,  גם אם טרם חלפו 45 הימים, יכולה הכנסת לקיים דיון מקדים (\"קריאה טרומית\") בחוק בכל זמן שסדר היום שלה מאפשר זאת. <br><br>עמדות הממשלה המאפשרות דיון עם קבלתן: <br>- תמיכה בחוק<br>- העדר התנגדות לחוק<br>- העדר התנגדות לקיום דיון בחוק<br>(לינק לסעיף בתקנון). <br><br> <br>"
             },
             {
               "id": "gen_gen_1016",
@@ -513,7 +515,8 @@
               "details": "אין דיון — עוברים מיד להצבעה.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 78(ב)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif60\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 78(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>אין דיון — עוברים מיד להצבעה."
             },
             {
               "id": "s3_2_2",
@@ -525,7 +528,8 @@
               "details": "• התנגדות הממשלה\n• אם הממשלה לא התנגדה — חבר כנסת אחר יכול להתנגד\n• אם הובעה התנגדות, יוזם ההצעה יכול לבקש דיון לסדר היום בוועדה במקום הצבעה\n• אם המליאה מצביעה בעד — דיון בוועדה שתיקבע\n• אם הצביעה נגד — רק בחלוף 6 חודשים אפשר להעלות שוב",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 78(ג)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif60\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 78(ג) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>• התנגדות הממשלה<br>• אם הממשלה לא התנגדה — חבר כנסת אחר יכול להתנגד<br>• אם הובעה התנגדות, יוזם ההצעה יכול לבקש דיון לסדר היום בוועדה במקום הצבעה<br>• אם המליאה מצביעה בעד — דיון בוועדה שתיקבע<br>• אם הצביעה נגד — רק בחלוף 6 חודשים אפשר להעלות שוב"
             }
           ],
           "_open": false,
@@ -543,7 +547,8 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "builtinIcon": "plenum"
+          "builtinIcon": "plenum",
+          "detailsHtml": "<strong>סעיף 78</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif60\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 78 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>המליאה מצביעה אם לקבל את הצעת החוק או לדחותה.<br><br>• אם ההצעה מתקבלת — ממשיכה לקביעת ועדה<br>• אם ההצעה נדחית — רק בחלוף 6 חודשים אפשר להעלות שוב"
         }
       ],
       "showArrowAfter": true,
@@ -653,7 +658,8 @@
               "details": "הוועדה יכולה למזג את ההצעה הנידונה עם הצעה אחרת. ההצעה האחרת יכולה להיות אפילו הצעה שעברה רק קריאה טרומית.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 87(א)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif69\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 87(א) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה יכולה למזג את ההצעה הנידונה עם הצעה אחרת. ההצעה האחרת יכולה להיות אפילו הצעה שעברה רק קריאה טרומית."
             },
             {
               "id": "s5_3_2",
@@ -665,7 +671,8 @@
               "details": "הוועדה יכולה להציע פיצול של ההצעה. ההצעה תונח על שולחן הכנסת והמליאה תצביע אם לפצל לפי ההצעה או לא.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 87(ב)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif69\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 87(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה יכולה להציע פיצול של ההצעה. ההצעה תונח על שולחן הכנסת והמליאה תצביע אם לפצל לפי ההצעה או לא."
             },
             {
               "id": "s5_3_3",
@@ -677,7 +684,8 @@
               "details": "לא כתוב במפורש שהוועדה יכולה לשנות את נוסח ההצעה, אך מיזוג ופיצול — שבתחום סמכותה — גורמים פעמים רבות בהכרח לשינויי נוסח.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 87(ג)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif69\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 87(ג) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>לא כתוב במפורש שהוועדה יכולה לשנות את נוסח ההצעה, אך מיזוג ופיצול — שבתחום סמכותה — גורמים פעמים רבות בהכרח לשינויי נוסח."
             }
           ],
           "_open": false
@@ -692,7 +700,8 @@
           "details": "הוועדה תזמין נציג ממשרד האוצר להערכת עלותה של ההצעה.\n\n• אין עלות צפויה, או עלות מתחת ל~7 מלש\"ח לשנה — תיכתב בהצעה + מקור תקציבי\n• עלות מעל ~7 מלש\"ח בשנה — הצעה תקציבית, מסלול נפרד\n\n(הסכום מתעדכן לפי המדד)",
           "detailType": "expand",
           "children": [],
-          "_open": false
+          "_open": false,
+          "detailsHtml": "<strong>סעיף 80</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif62\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 80 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה תזמין נציג ממשרד האוצר להערכת עלותה של ההצעה.<br><br>• אין עלות צפויה, או עלות מתחת ל~7 מלש\"ח לשנה — תיכתב בהצעה + מקור תקציבי<br>• עלות מעל ~7 מלש\"ח בשנה — הצעה תקציבית, מסלול נפרד<br><br>(הסכום מתעדכן לפי המדד)"
         },
         {
           "id": "s5_5",
@@ -704,7 +713,8 @@
           "details": "מזכיר הכנסת יניח את ההצעה על שולחן הכנסת.\n\nאם לאחר סיום הדיון ולפני ההנחה דורש חבר כנסת או ממשלה דיון מחודש (רוויזיה) בהצעה או בחלקה — היא מועברת למסלול 'דיון מחודש'.",
           "detailType": "expand",
           "children": [],
-          "_open": false
+          "_open": false,
+          "detailsHtml": "<strong>סעיף 81</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif63\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 81 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>מזכיר הכנסת יניח את ההצעה על שולחן הכנסת.<br><br>אם לאחר סיום הדיון ולפני ההנחה דורש חבר כנסת או ממשלה דיון מחודש (רוויזיה) בהצעה או בחלקה — היא מועברת למסלול 'דיון מחודש'."
         }
       ],
       "showArrowAfter": true,
@@ -752,7 +762,8 @@
           "details": "יו\"ר הכנסת יכול לדחות את ההצבעה למועד אחר בנסיבות מיוחדות, או לבקשת/בהסכמת היוזם.\n\nהמליאה מצביעה:\n• העברה לקריאה שנייה ושלישית ← ממשיך לשלב ז'\n• הסרה מסדר היום ← 6 חודשים עד העלאה מחדש",
           "detailType": "expand",
           "children": [],
-          "_open": false
+          "_open": false,
+          "detailsHtml": "<strong>סעיף 82</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif64\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 82 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>יו\"ר הכנסת יכול לדחות את ההצבעה למועד אחר בנסיבות מיוחדות, או לבקשת/בהסכמת היוזם.<br><br>המליאה מצביעה:<br>• העברה לקריאה שנייה ושלישית ← ממשיך לשלב ז'<br>• הסרה מסדר היום ← 6 חודשים עד העלאה מחדש"
         }
       ],
       "showArrowAfter": true,
@@ -832,7 +843,8 @@
               "details": "הוועדה יכולה למזג את ההצעה הנידונה עם הצעה אחרת, באישור ועדת הכנסת. ההצעה האחרת יכולה להיות אפילו הצעה שעברה רק קריאה טרומית.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 90(א)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif72\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 90(א) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה יכולה למזג את ההצעה הנידונה עם הצעה אחרת, באישור ועדת הכנסת. ההצעה האחרת יכולה להיות אפילו הצעה שעברה רק קריאה טרומית."
             },
             {
               "id": "s8_2_2",
@@ -844,7 +856,8 @@
               "details": "הוועדה יכולה להציע פיצול של ההצעה. ההצעה תונח על שולחן הכנסת והמליאה תצביע אם לפצל.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 90(ב)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif72\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 90(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה יכולה להציע פיצול של ההצעה. ההצעה תונח על שולחן הכנסת והמליאה תצביע אם לפצל."
             },
             {
               "id": "s8_2_3",
@@ -856,7 +869,8 @@
               "details": "הוועדה יכולה לתקן סעיפים בהצעה ולהוסיף סעיפים בתנאי שהם בתחום נושא ההצעה.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 90(ג)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif72\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 90(ג) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה יכולה לתקן סעיפים בהצעה ולהוסיף סעיפים בתנאי שהם בתחום נושא ההצעה."
             },
             {
               "id": "s8_2_4",
@@ -868,7 +882,8 @@
               "details": "עד לאישור ההצעה לקריאה שנייה ושלישית, חבר כנסת או ממשלה יכול לטעון שתיקון חורג מנושא ההצעה.\n\nוועדת הכנסת תכריע אם אכן מדובר בנושא חדש. חבר ממשלה שטען נדרש להגיש טענתו בכתב עד למועד הדיון.\n\nאם ועדת הכנסת הכריעה שזהו נושא חדש — התיקון יוסר ולא יוכל להופיע אפילו כהסתייגות.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 90(ד)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif72\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 90(ד) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>עד לאישור ההצעה לקריאה שנייה ושלישית, חבר כנסת או ממשלה יכול לטעון שתיקון חורג מנושא ההצעה.<br><br>וועדת הכנסת תכריע אם אכן מדובר בנושא חדש. חבר ממשלה שטען נדרש להגיש טענתו בכתב עד למועד הדיון.<br><br>אם ועדת הכנסת הכריעה שזהו נושא חדש — התיקון יוסר ולא יוכל להופיע אפילו כהסתייגות."
             }
           ],
           "_open": false,
@@ -884,7 +899,8 @@
           "details": "הוועדה תזמין נציג ממשרד האוצר להערכת עלות.\n\n• עלות מתחת ל~7 מלש\"ח — הטיפול הסתיים\n• עלות מעל ~7 מלש\"ח — הצעה תקציבית, מסלול נפרד",
           "detailType": "expand",
           "children": [],
-          "_open": false
+          "_open": false,
+          "detailsHtml": "<strong>סעיף 80</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif62\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 80 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה תזמין נציג ממשרד האוצר להערכת עלות.<br><br>• עלות מתחת ל~7 מלש\"ח — הטיפול הסתיים<br>• עלות מעל ~7 מלש\"ח — הצעה תקציבית, מסלול נפרד"
         },
         {
           "id": "s8_4",
@@ -906,7 +922,8 @@
               "details": "נשיאות הכנסת תפסול הסתייגויות גזעניות, שוללות את המדינה היהודית, פוגעניות או מזלזלות בכנסת.\n\nהסתייגויות זהות יאוחדו תחת שמות כל מציעיהן או תחת שם הסיעה.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 92</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif74\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 92 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>נשיאות הכנסת תפסול הסתייגויות גזעניות, שוללות את המדינה היהודית, פוגעניות או מזלזלות בכנסת.<br><br>הסתייגויות זהות יאוחדו תחת שמות כל מציעיהן או תחת שם הסיעה."
             },
             {
               "id": "s8_4_2",
@@ -918,7 +935,8 @@
               "details": "הוועדה תבחן הסתייגויות מבחינת עלות כלכלית באותו אופן של בחינת ההצעה עצמה.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 92(ב)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif74\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 92(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה תבחן הסתייגויות מבחינת עלות כלכלית באותו אופן של בחינת ההצעה עצמה."
             },
             {
               "id": "s8_4_3",
@@ -930,10 +948,12 @@
               "details": "אם מציע תיקון לא הגיש הסתייגות, הוא רשאי — בעת הדיון או בכתב בחתימתו ליו\"ר הוועדה — לבקש רשות דיבור בעת הקריאה השנייה.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 92(ג)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif74\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 92(ג) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>אם מציע תיקון לא הגיש הסתייגות, הוא רשאי — בעת הדיון או בכתב בחתימתו ליו\"ר הוועדה — לבקש רשות דיבור בעת הקריאה השנייה."
             }
           ],
-          "_open": false
+          "_open": false,
+          "detailsHtml": "<strong>סעיף 91</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif73\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 91 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>כל חבר כנסת וממשלה רשאי להציע תיקונים להצעה. הוועדה יכולה להכניס תיקוניו לנוסח החוק.<br><br>אם הצעותיו נדחו — ביכולתו להגיש הסתייגות על הצעת החוק. ההסתייגות תנוסח ביחס לסעיף או נושא, ולא ביחס לכולה."
         },
         {
           "id": "s8_5",
@@ -945,7 +965,8 @@
           "details": "הוועדה תצביע על הנוסח הסופי. לאחר ההצבעה תגיש את ההצעה ליו\"ר הכנסת, ותכלול בדף נלווה פרטים, הסתייגויות ובקשות דיבור לקריאה השנייה.\n\nיו\"ר הכנסת יניח את ההצעה על שולחן הכנסת.\n\nאם לאחר סיום הדיון ולפני ההנחה דורש ח\"כ או ממשלה דיון מחודש (רוויזיה) — מועבר למסלול 'דיון מחודש'.\n\nלאחר ההנחה ועד לתחילת הקריאה השנייה, הוועדה רשאית למשוך את ההצעה לדיון נוסף. בדיון הנוסף בסמכותה לשנות סעיפים ולהציע הסרה מסדר היום.",
           "detailType": "expand",
           "children": [],
-          "_open": false
+          "_open": false,
+          "detailsHtml": "<strong>סעיף 93</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif75\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 93 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה תצביע על הנוסח הסופי. לאחר ההצבעה תגיש את ההצעה ליו\"ר הכנסת, ותכלול בדף נלווה פרטים, הסתייגויות ובקשות דיבור לקריאה השנייה.<br><br>יו\"ר הכנסת יניח את ההצעה על שולחן הכנסת.<br><br>אם לאחר סיום הדיון ולפני ההנחה דורש ח\"כ או ממשלה דיון מחודש (רוויזיה) — מועבר למסלול 'דיון מחודש'.<br><br>לאחר ההנחה ועד לתחילת הקריאה השנייה, הוועדה רשאית למשוך את ההצעה לדיון נוסף. בדיון הנוסף בסמכותה לשנות סעיפים ולהציע הסרה מסדר היום."
         }
       ],
       "showArrowAfter": true,
@@ -990,7 +1011,8 @@
               "details": "כל מסתייג רשאי לנמק את הסתייגותו לפי הסדר. בהסכמת המסתייג היו\"ר יכול לקבוע שינמק במרוכז את כל הסתייגויותיו.\n\nהסתייגות שמתבטאת בכמה סעיפים מנומקת ככמה הסתייגויות.\n\nנימוק הסתייגות ח\"מ: על ידי כל שר / סגן שר במשרדו של שר מסתייג.\n\nמסתייג רשאי לחזור בו מהסתייגותו עד להצבעה.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 94</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif76\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 94 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>כל מסתייג רשאי לנמק את הסתייגותו לפי הסדר. בהסכמת המסתייג היו\"ר יכול לקבוע שינמק במרוכז את כל הסתייגויותיו.<br><br>הסתייגות שמתבטאת בכמה סעיפים מנומקת ככמה הסתייגויות.<br><br>נימוק הסתייגות ח\"מ: על ידי כל שר / סגן שר במשרדו של שר מסתייג.<br><br>מסתייג רשאי לחזור בו מהסתייגותו עד להצבעה."
             },
             {
               "id": "s9_2_2",
@@ -1002,7 +1024,8 @@
               "details": "רשות הדיבור נתנת לכל מי שביקש אותה מראש.\n\nיו\"ר הוועדה המכינה רשאי לענות להסתייגויות.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 94(ב)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif76\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 94(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>רשות הדיבור נתנת לכל מי שביקש אותה מראש.<br><br>יו\"ר הוועדה המכינה רשאי לענות להסתייגויות."
             },
             {
               "id": "s9_2_3",
@@ -1014,7 +1037,8 @@
               "details": "לאורך כל הדיון, נציג הממשלה הנוכח בדיון או יו\"ר הוועדה המכינה רשאים להציע להחזיר את ההצעה או חלקה לדיון בוועדה.\n\nאם כך הציעו — המליאה תצביע. אם הוחלט להחזירה — נכנסת למסלול 'החזרה לדיון בוועדה מקריאה שנייה'.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 95</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif77\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 95 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>לאורך כל הדיון, נציג הממשלה הנוכח בדיון או יו\"ר הוועדה המכינה רשאים להציע להחזיר את ההצעה או חלקה לדיון בוועדה.<br><br>אם כך הציעו — המליאה תצביע. אם הוחלט להחזירה — נכנסת למסלול 'החזרה לדיון בוועדה מקריאה שנייה'."
             }
           ],
           "_open": false,
@@ -1040,7 +1064,8 @@
               "details": "בתנאי שהמסתייגים או חלקם נוכחים (לחלופין מי שזכאי לנמק במקומם יכול לבקש הצבעה).\n\nההצבעה היא על קבלת ההסתייגות או דחייתה. ההצבעה היא יחידה, גם אם ההסתייגות היא על כמה סעיפים.\n\nלקבלת הסתייגות לא נדרש רוב מיוחד, מלבד להסתייגות תקציבית.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 96(ב)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif78\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 96(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>בתנאי שהמסתייגים או חלקם נוכחים (לחלופין מי שזכאי לנמק במקומם יכול לבקש הצבעה).<br><br>ההצבעה היא על קבלת ההסתייגות או דחייתה. ההצבעה היא יחידה, גם אם ההסתייגות היא על כמה סעיפים.<br><br>לקבלת הסתייגות לא נדרש רוב מיוחד, מלבד להסתייגות תקציבית."
             },
             {
               "id": "s9_3_2",
@@ -1052,7 +1077,8 @@
               "details": "אם הסתייגות התקבלה והיא סותרת הסתייגות אחרת — תיערך מיד הצבעה להכרעה בין שתי ההסתייגויות.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 96(ג)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif78\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 96(ג) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>אם הסתייגות התקבלה והיא סותרת הסתייגות אחרת — תיערך מיד הצבעה להכרעה בין שתי ההסתייגויות."
             },
             {
               "id": "s9_3_3",
@@ -1064,10 +1090,12 @@
               "details": "הצבעה על הסעיף המקורי או המעודכן, אם לא התקבלה הסתייגות שמוחקת אותו.\n\nמעבר לסעיף הבא, וחוזר חלילה.",
               "detailType": "expand",
               "children": [],
-              "_open": false
+              "_open": false,
+              "detailsHtml": "<strong>סעיף 96(ד)</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif78\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 96(ד) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הצבעה על הסעיף המקורי או המעודכן, אם לא התקבלה הסתייגות שמוחקת אותו.<br><br>מעבר לסעיף הבא, וחוזר חלילה."
             }
           ],
-          "_open": false
+          "_open": false,
+          "detailsHtml": "<strong>סעיף 96</strong> <a href=\"https://www.nevo.co.il/law/72248#Seif78\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 96 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>אם יש רצף סעיפים בלי הסתייגויות — יו\"ר הכנסת יכול, אם אף ח\"כ אינו מתנגד, להחליט להצביע עליהם ביחד."
         }
       ],
       "showArrowAfter": true,
