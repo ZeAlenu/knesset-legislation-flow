@@ -219,13 +219,13 @@ header p{font-size:13px;opacity:.85}
     <p>מיפוי סמכויות, חריגות מתקנון, והפקעת ריבונות הכנסת</p>
   </div>
   <div class="header-actions">
-    <button onclick="toggleEditing()" id="editToggle">✏️ עריכה</button>
-    <button onclick="openCatModal()">⚙️ קטגוריות</button>
-    <button onclick="saveToStorage()">💾 שמור</button>
-    <button onclick="exportJSON()">📤 ייצוא</button>
-    <button onclick="saveBackup()" style="background:#d4edda;border-color:#28a745">💾 שמור גיבוי</button>
-    <button onclick="publishState()" style="background:#2D7D46;color:#fff">🌐 פרסם לכולם</button>
-    <button onclick="showChangelog()">📋 היסטוריה</button>
+    <button onclick="toggleEditing()" id="editToggle" title="כניסה/יציאה ממצב עריכה — מאפשר לשנות תוכן, להוסיף שלבים, לערוך צבעים ומחברים">✏️ עריכה</button>
+    <button onclick="openCatModal()" title="ניהול קטגוריות — הוספה, עריכה ומחיקה של קטגוריות צבע (חק, יור, ועדה וכו׳)">⚙️ קטגוריות</button>
+    <button onclick="saveToStorage()" title="שמירה מקומית בדפדפן — נשמר גם כשסוגרים את הדף">💾 שמור</button>
+    <button onclick="exportJSON()" title="הורדת קובץ JSON עם כל הנתונים — לגיבוי או העברה למחשב אחר">📤 ייצוא</button>
+    <button onclick="saveBackup()" style="background:#d4edda;border-color:#28a745" title="הורדת גיבוי מהמצב הנוכחי בדפדפן — כולל שינויים שעדיין לא פורסמו">💾 שמור גיבוי</button>
+    <button onclick="publishState()" style="background:#2D7D46;color:#fff" title="פרסום לכולם — שומר את המצב הנוכחי לשרת כך שכל הצופים יראו אותו">🌐 פרסם לכולם</button>
+    <button onclick="showChangelog()" title="היסטוריית שינויים — רשימת כל הפרסומים עם אפשרות שחזור">📋 היסטוריה</button>
     <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
     <input type="file" id="importInput" accept=".json" class="hidden-input" onchange="importJSON(event)">
     <button onclick="loadFromServer()" title="מוחק שמירה מקומית וטוען מהשרת">🔄 טען מהשרת</button>
