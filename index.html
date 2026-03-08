@@ -783,7 +783,14 @@ function saveToStorage(){
 
 async function saveBackup(){
   try {
-    const data = JSON.parse(localStorage.getItem("knesset-legislation-v2")||"{}");
+    // Export current live state, not localStorage (which may be stale/empty)
+    const data = {
+      categories: appState.categories,
+      stages: appState.stages,
+      flowSteps: appState.flowSteps,
+      flowBackLinks: appState.flowBackLinks,
+      nextId
+    };
     const now = new Date();
     const ts = now.toISOString().replace(/[:.]/g,"-").slice(0,19);
     const d = now.toLocaleDateString("he-IL").replace(/\./g,"-");
