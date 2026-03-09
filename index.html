@@ -135,6 +135,7 @@ header p{font-size:13px;opacity:.85}
 .flow-converge-line{width:2px;height:12px;background:#bbb;margin:0 auto}
 .flow-branch-container{display:flex;justify-content:center;gap:0;margin:4px 0;position:relative}
 .flow-branch{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;position:relative}
+.flow-split-lines{position:absolute;top:0;left:0;width:100%;height:40px;pointer-events:none;z-index:1}
 .flow-branch-label{font-size:10px;color:#888;font-weight:600;margin-bottom:2px}
 
 /* MODAL */
@@ -2901,7 +2902,7 @@ const BUILTIN_ICONS = {
   "usurp": `<img src="icons/usurp.png" width="34" height="34" style="object-fit:contain">`,
   "pen": `<img src="icons/pen.png" style="width:48px;height:48px;vertical-align:middle;">`,
   "podium": `<img src="icons/podium.png" width="48" height="48" style="object-fit:contain">`,
-  "committee": `<img src="icons/committee.png?v=4" width="48" height="48" style="object-fit:contain">`,
+  "committee": `<img src="icons/committee.png?v=5" width="48" height="48" style="object-fit:contain">`,
   "committee-old": `<img src="icons/committee-old.png" width="48" height="48" style="object-fit:contain">`,
   "vote": `<img src="icons/vote.png?v=1" width="48" height="48" style="object-fit:contain">`,
   "plenum": `<img src="icons/plenum-new.png" width="48" height="48" style="object-fit:contain">`,
@@ -3375,8 +3376,24 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
 }
 
 function renderFlowSplit(step, mainIndex){
-  let html = `<div class="flow-branch-container">`;
   const branches = step.branches || [];
+  const brSep = step.branchSeparator || "או";
+  // Fork header: horizontal line with "או" in center and arrows dropping to each branch
+  let html = `<div style="position:relative;display:flex;align-items:flex-start;justify-content:center;margin:0 20px">`;
+  // Horizontal connector line
+  html += `<div style="position:absolute;top:12px;left:15%;right:15%;height:2px;background:#2E86AB"></div>`;
+  // או circle in center
+  html += `<div class="flow-or" style="position:relative;z-index:2;margin:0">${escH(brSep)}</div>`;
+  if(appState.editing){
+    html += `<div style="position:absolute;top:28px;display:flex;gap:1px;opacity:0.5;z-index:3">`;
+    [{v:"או",l:"או"},{v:"→",l:"→"},{v:"+",l:"+"},{v:"⇄",l:"⇄"},{v:"/",l:"/"}].forEach(sym=>{
+      const isCur = brSep === sym.v;
+      html += `<button class="add-step-btn" style="padding:1px 3px;font-size:8px;min-width:14px;${isCur?'background:#E6F6FB;border:1px solid #4ECDC4;':''}" onclick="event.stopPropagation();setSplitBranchSeparator('${step.id}','${sym.v}')">${sym.l}</button>`;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+  html += `<div class="flow-branch-container">`;
 
   branches.forEach((branch, bi) => {
     const borderSide = bi === 0 ? "border-left" : "border-right";
@@ -3454,20 +3471,9 @@ function renderFlowSplit(step, mainIndex){
     html += `<button class="flow-insert-btn" onclick="flowInsertBranchStep('${step.id}',${bi})" style="margin-top:4px">➕</button>`;
     html += `</div>`;
 
-    // Separator between branches
+    // Separator between branches (vertical divider line)
     if(bi < branches.length - 1){
-      const brSep = step.branchSeparator || "או";
-      html += `<div style="display:flex;align-items:center;padding:0 6px;flex-direction:column;gap:2px">`;
-      html += `<div class="flow-or">${escH(brSep)}</div>`;
-      if(appState.editing){
-        html += `<div style="display:flex;gap:1px;opacity:0.5">`;
-        [{v:"או",l:"או"},{v:"→",l:"→"},{v:"+",l:"+"},{v:"⇄",l:"⇄"},{v:"/",l:"/"}].forEach(sym=>{
-          const isCur = brSep === sym.v;
-          html += `<button class="add-step-btn" style="padding:1px 3px;font-size:8px;min-width:14px;${isCur?'background:#E6F6FB;border:1px solid #4ECDC4;':''}" onclick="event.stopPropagation();setSplitBranchSeparator('${step.id}','${sym.v}')">${sym.l}</button>`;
-        });
-        html += `</div>`;
-      }
-      html += `</div>`;
+      html += `<div style="width:1px;background:#ddd;margin:0 4px;align-self:stretch"></div>`;
     }
   });
 
