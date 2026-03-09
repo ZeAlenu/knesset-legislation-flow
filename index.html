@@ -4422,11 +4422,11 @@ function renderVoteDecision(step){
       html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
       html += `</svg>`;
       
-      // Pill at arrow tip (top)
+      // Pill at arrow tip (top) — positioned at top of the vertical line
       const pillItem = chain.find(c => c.type === 'pill');
       if(pillItem){
         const jmp = pillItem.jumpTo ? `onclick="flowJumpTo('${pillItem.jumpTo}')"` : '';
-        html += `<div style="position:absolute;top:-8px;left:50%;transform:translate(-50%,-100%);z-index:2">`;
+        html += `<div style="position:absolute;top:0;left:8px;transform:translate(-50%,-100%);z-index:2">`;
         html += `<div style="padding:4px 12px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:8px;font-weight:600;border-radius:14px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:3px" ${jmp}><span style="font-size:7px;opacity:0.8">▲</span><span>${escH(pillItem.label)}</span></div>`;
         html += `</div>`;
       }
