@@ -2902,7 +2902,7 @@ const BUILTIN_ICONS = {
   "usurp": `<img src="icons/usurp.png" width="34" height="34" style="object-fit:contain">`,
   "pen": `<img src="icons/pen.png" style="width:48px;height:48px;vertical-align:middle;">`,
   "podium": `<img src="icons/podium.png" width="48" height="48" style="object-fit:contain">`,
-  "committee": `<img src="icons/committee.png?v=5" width="48" height="48" style="object-fit:contain">`,
+  "committee": `<img src="icons/committee.png?v=6" width="48" height="48" style="object-fit:contain">`,
   "committee-old": `<img src="icons/committee-old.png" width="48" height="48" style="object-fit:contain">`,
   "vote": `<img src="icons/vote.png?v=1" width="48" height="48" style="object-fit:contain">`,
   "plenum": `<img src="icons/plenum-new.png" width="48" height="48" style="object-fit:contain">`,
@@ -3378,21 +3378,17 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
 function renderFlowSplit(step, mainIndex){
   const branches = step.branches || [];
   const brSep = step.branchSeparator || "או";
-  // Fork header: horizontal line with "או" in center and arrows dropping to each branch
-  let html = `<div style="position:relative;display:flex;align-items:flex-start;justify-content:center;margin:0 20px">`;
-  // Horizontal connector line
-  html += `<div style="position:absolute;top:12px;left:15%;right:15%;height:2px;background:#2E86AB"></div>`;
-  // או circle in center
-  html += `<div class="flow-or" style="position:relative;z-index:2;margin:0">${escH(brSep)}</div>`;
+  // Fork: "או" circle, then SVG diagonal lines drawn post-render
+  let html = `<div class="flow-or" style="margin:2px 0">${escH(brSep)}</div>`;
   if(appState.editing){
-    html += `<div style="position:absolute;top:28px;display:flex;gap:1px;opacity:0.5;z-index:3">`;
+    html += `<div style="display:flex;gap:1px;justify-content:center;opacity:0.5;margin:1px 0">`;
     [{v:"או",l:"או"},{v:"→",l:"→"},{v:"+",l:"+"},{v:"⇄",l:"⇄"},{v:"/",l:"/"}].forEach(sym=>{
       const isCur = brSep === sym.v;
       html += `<button class="add-step-btn" style="padding:1px 3px;font-size:8px;min-width:14px;${isCur?'background:#E6F6FB;border:1px solid #4ECDC4;':''}" onclick="event.stopPropagation();setSplitBranchSeparator('${step.id}','${sym.v}')">${sym.l}</button>`;
     });
     html += `</div>`;
   }
-  html += `</div>`;
+  html += `<svg class="flow-fork-svg" data-split-id="${step.id}" style="width:100%;height:40px;display:block;margin:0 auto"></svg>`;
   html += `<div class="flow-branch-container">`;
 
   branches.forEach((branch, bi) => {
@@ -3400,7 +3396,6 @@ function renderFlowSplit(step, mainIndex){
     const paddingSide = bi === 0 ? "padding-left" : "padding-right";
     html += `<div class="flow-branch" style="flex:1;${borderSide}:2px solid #ddd;${paddingSide}:10px">`;
     if(branch.label) html += `<div class="flow-branch-label">${escH(branch.label)}</div>`;
-    html += `<div class="flow-arrow" style="margin:2px 0;font-size:10px">▼</div>`;
 
     branch.steps.forEach((bStep, bsi) => {
       // Skip note steps - they're handled as side annotations
@@ -4189,13 +4184,47 @@ function deduplicateSteps(){
   }
 }
 
+function renderForkLines(){
+  document.querySelectorAll('svg.flow-fork-svg').forEach(svg => {
+    const splitId = svg.dataset.splitId;
+    const container = svg.nextElementSibling; // flow-branch-container
+    if(!container) return;
+    const branches = container.querySelectorAll(':scope > .flow-branch');
+    if(branches.length < 2) return;
+    const svgRect = svg.getBoundingClientRect();
+    const cx = svgRect.width / 2;
+    svg.setAttribute('viewBox', `0 0 ${svgRect.width} 40`);
+    svg.innerHTML = '';
+    // Draw line from top-center down to center of each branch
+    branches.forEach(branch => {
+      const brRect = branch.getBoundingClientRect();
+      const bx = brRect.left + brRect.width / 2 - svgRect.left;
+      // Line from center-top to branch-center-bottom
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', cx);
+      line.setAttribute('y1', 0);
+      line.setAttribute('x2', bx);
+      line.setAttribute('y2', 36);
+      line.setAttribute('stroke', '#2E86AB');
+      line.setAttribute('stroke-width', '2');
+      svg.appendChild(line);
+      // Arrowhead
+      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      const ax = bx;
+      const ay = 36;
+      arrow.setAttribute('points', `${ax},${ay} ${ax-4},${ay-7} ${ax+4},${ay-7}`);
+      arrow.setAttribute('fill', '#2E86AB');
+      svg.appendChild(arrow);
+    });
+  });
+}
 function renderAll(){
   deduplicateSteps();
   renderLegend();
   renderHierarchy();
   renderFlowChart();
-  // Delay back arrows rendering to ensure DOM is updated
-  setTimeout(renderBackArrows, 100);
+  // Delay back arrows + fork lines rendering to ensure DOM is updated
+  setTimeout(()=>{ renderBackArrows(); renderForkLines(); }, 100);
   // Update version badge
   const vb = document.getElementById("versionBadge");
   if(vb){
