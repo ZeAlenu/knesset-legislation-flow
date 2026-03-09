@@ -1593,13 +1593,17 @@
     {
       "id": "f10",
       "label": "קריאה ראשונה",
-      "type": "diamond",
+      "type": "voteDecision",
       "category": "yoresh",
       "stageId": "s6",
       "rejectLabel": "נדחתה",
-      "approveLabel": "",
+      "approveLabel": "אושרה",
       "note": "",
-      "noteType": ""
+      "noteType": "",
+      "voteLabel": "קריאה ראשונה",
+      "rejectNote": "6 חודשי המתנה",
+      "diamondColor": "#1B2A4A",
+      "chevronColor": "#2E86AB"
     },
     {
       "id": "f11",

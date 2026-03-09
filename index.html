@@ -3333,7 +3333,10 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
     html += `</div>`;
   }
 
-  if(step.type === "split"){
+  if(step.type === "voteDecision"){
+    if(!isInBranch) html += `<button class="flow-insert-btn" onclick="flowInsertStep(${index},'main')">➕</button>`;
+    html += renderVoteDecision(step);
+  } else if(step.type === "split"){
     // Insert button before split
     html += `<button class="flow-insert-btn" onclick="flowInsertStep(${index},'main')">➕</button>`;
     html += renderFlowSplit(step, index);
@@ -4322,6 +4325,46 @@ function renderDiamondOutcomes(step){
   html += renderOutcome(left, 'left');
   
   // Arrow LEFT/RIGHT extends from chevron edge (rendered as SVG overlay post-render)
+  
+  html += `</div>`;
+  return html;
+}
+
+function renderVoteDecision(step){
+  // Vote decision: diamond center, "נדחתה" right, "אושרה" below
+  const dColor = step.diamondColor || '#1B2A4A';
+  const cColor = step.chevronColor || '#2E86AB';
+  const dSize = 65;
+  const stageClick = step.stageId ? `onclick="flowClickStage('${step.stageId}')"` : '';
+  
+  let html = `<div id="${step.id}" style="position:relative;margin:8px 0;padding-bottom:40px">`;
+  
+  // Row: diamond + line + rejected hexagon
+  html += `<div style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0">`;
+  
+  // Diamond
+  html += `<div style="flex:0 0 auto" ${stageClick}>`;
+  html += `<div style="width:${dSize}px;height:${dSize}px;background:${dColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;cursor:pointer">`;
+  html += `<span style="transform:rotate(-45deg);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:1.2">${escH(step.voteLabel||step.label||'').replace(/\n/g,'<br>')}</span>`;
+  html += `</div></div>`;
+  
+  // Horizontal line to rejected
+  html += `<div style="flex:0 0 25px;height:2px;background:${cColor}"></div>`;
+  
+  // Rejected hexagon
+  html += `<div style="flex:0 0 auto">`;
+  html += `<div style="padding:6px 18px;background:${cColor};color:#fff;font-size:10px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)">${escH(step.rejectLabel||'נדחתה')}</div>`;
+  if(step.rejectNote) html += `<div style="font-size:8px;color:#888;text-align:center;margin-top:2px">${escH(step.rejectNote)}</div>`;
+  html += `</div>`;
+  
+  html += `</div>`; // row
+  
+  // Vertical line + approved hexagon (absolute, below diamond center)
+  html += `<div style="position:absolute;left:50%;transform:translateX(-50%);top:${dSize - 5}px;display:flex;flex-direction:column;align-items:center">`;
+  html += `<div style="width:2px;height:15px;background:${cColor}"></div>`;
+  html += `<div style="padding:4px 14px;background:${cColor};color:#fff;font-size:9px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%)">${escH(step.approveLabel||'אושרה')}</div>`;
+  html += `<div style="width:2px;height:10px;background:${cColor}"></div>`;
+  html += `</div>`;
   
   html += `</div>`;
   return html;
