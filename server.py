@@ -31,12 +31,16 @@ def merge_step_content(existing_step, incoming_step):
     merged = dict(incoming_step)
     ex_content = step_content_size(existing_step)
     in_content = step_content_size(incoming_step)
-    if ex_content > in_content and in_content == 0:
-        structural_fields = ["title", "catId", "detailType", "builtinIcon", "icon", "chpiqa"]
-        has_other_changes = any(existing_step.get(f) != incoming_step.get(f) for f in structural_fields)
-        if not has_other_changes:
-            merged["details"] = existing_step.get("details", "")
-            merged["detailsHtml"] = existing_step.get("detailsHtml")
+    # Always keep the RICHER content (more detailsHtml chars wins)
+    ex_html = existing_step.get("detailsHtml") or ""
+    in_html = incoming_step.get("detailsHtml") or ""
+    if len(ex_html) > len(in_html):
+        merged["detailsHtml"] = ex_html
+    # Same for details text
+    ex_det = existing_step.get("details") or ""
+    in_det = incoming_step.get("details") or ""
+    if len(ex_det) > len(in_det):
+        merged["details"] = ex_det
     return merged
 
 def deep_merge_steps(existing_steps, incoming_steps):
