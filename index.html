@@ -4553,7 +4553,7 @@ function renderAll(){
   renderHierarchy();
   renderFlowChart();
   // Delay back arrows + fork lines rendering to ensure DOM is updated
-  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderCrossArrows(); }, 100);
+  setTimeout(()=>{ renderBackArrows(); renderForkLines(); }, 100);
   // Update version badge
   const vb = document.getElementById("versionBadge");
   if(vb){
