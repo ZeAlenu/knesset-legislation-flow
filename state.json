@@ -1655,8 +1655,9 @@
                   "jumpLabel": "→ דיון הסרת הצעה\nמסדר היום",
                   "color": "#4A148C",
                   "textColor": "#FFFFFF",
-                  "arrowDir": "none",
-                  "connectTo": "f_removal_process"
+                  "arrowDir": "down",
+                  "connectTo": "f_removal_process",
+                  "connectLabel": "→ דיון הסרת הצעה מסדר היום"
                 },
                 {
                   "label": "רוב מתנגדים\nלהסרה",
