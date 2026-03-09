@@ -2945,6 +2945,7 @@ const BUILTIN_ICONS = {
   "plenum": `<img src="icons/plenum-new.png?v=2" width="48" height="48" style="object-fit:contain">`,
   "plenum-old": `<img src="icons/plenum.png" width="48" height="48" style="object-fit:contain">`,
   "shield-menorah": `<img src="icons/shield-menorah.png?v=2" width="42" height="42" style="object-fit:contain">`,
+  "calendar": `<img src="icons/calendar.png?v=1" width="34" height="34" style="object-fit:contain">`,
   "shortcut-wait": `<img src="icons/shortcut-wait.png?v=1" width="34" height="34" style="object-fit:contain">`
 };
 
@@ -2971,6 +2972,7 @@ const BUILTIN_ICON_LABELS = {
   "plenum": "🏟️ דיון",
   "plenum-old": "untitled",
   "shield-menorah": "🛡️🕎 מגן מנורה",
+  "calendar": "📅 לוח שנה",
   "shortcut-wait": "⏳✕ קיצור המתנה"
 };
 
@@ -4377,7 +4379,7 @@ function renderVoteDecision(step){
   // Corner is far from center axis
   if(chain.length > 0 || true){
     const arrowColor = lightColor;
-    const hLen = 80; // horizontal leg — far from center
+    const hLen = 130; // horizontal leg — far from center
     const vLen = 80; // vertical leg
     const strokeW = 2.5;
     
