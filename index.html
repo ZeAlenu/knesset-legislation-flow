@@ -4354,10 +4354,10 @@ function renderVoteDecision(step){
   const chain = step.rejectChain || [];
   const arrowDir = step.rejectArrowDir || 'up'; // 'up' or 'down'
   
-  let html = `<div id="${step.id}" style="position:relative;margin:6px 0;text-align:center">`;
+  let html = `<div id="${step.id}" style="position:relative;margin:6px 0;display:flex;justify-content:center">`;
   
   // Container: diamond centered, with chevrons attached to vertices
-  html += `<div style="display:inline-block;position:relative">`;
+  html += `<div style="position:relative;width:${ds + ds*0.3}px">`;
   
   // Diamond
   html += `<div style="width:${ds}px;height:${ds}px;background:${dColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;margin:${ds*0.15}px auto;cursor:pointer${isAct?';box-shadow:0 0 0 3px #f97316':''}" ${stageClick}>`;
