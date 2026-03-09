@@ -4431,7 +4431,7 @@ function renderVoteDecision(step){
   const chain = step.rejectChain || [];
   const arrowDir = step.rejectArrowDir || 'up'; // 'up' or 'down'
   
-  let html = `<div id="${step.id}" style="position:relative;margin:6px 0;display:flex;justify-content:center">`;
+  let html = `<div id="${step.id}" style="position:relative;margin:6px 0 20px 0;display:flex;justify-content:center">`;
   
   // Container: diamond centered, with chevrons attached to vertices
   html += `<div style="position:relative;width:${ds + ds*0.3}px">`;
