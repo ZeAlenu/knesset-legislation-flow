@@ -1653,43 +1653,24 @@
               "branchConnector": "או"
             },
             {
-              "id": "f12_h_split",
-              "label": "",
-              "type": "split",
+              "id": "f12_h_outcomes",
+              "type": "diamondOutcomes",
               "stageId": "s8",
-              "branchSeparator": "או",
-              "branches": [
+              "diamondId": "f12_h2",
+              "outcomes": [
                 {
                   "label": "חצי או יותר\nתומכים בהסרה",
-                  "steps": [
-                    {
-                      "id": "f12_h3a",
-                      "label": "→ דיון הסרת הצעה\nמסדר היום",
-                      "type": "pill",
-                      "category": "plenum",
-                      "stageId": "s8",
-                      "note": "תת-תהליך נפרד",
-                      "noteType": "info",
-                      "color": "#4A148C",
-                      "textColor": "#FFFFFF",
-                      "jumpTo": "f_removal_process"
-                    }
-                  ]
+                  "targetType": "jump",
+                  "jumpTo": "f_removal_process",
+                  "jumpLabel": "→ דיון הסרת הצעה\nמסדר היום",
+                  "color": "#4A148C",
+                  "textColor": "#FFFFFF"
                 },
                 {
                   "label": "רוב מתנגדים\nלהסרה",
-                  "steps": [
-                    {
-                      "id": "f12_h3b",
-                      "label": "→ דיון הכנת החוק",
-                      "type": "crossArrow",
-                      "category": "vaadat",
-                      "stageId": "s8",
-                      "note": "",
-                      "noteType": "",
-                      "crossTo": "f12_1"
-                    }
-                  ]
+                  "targetType": "crossBranch",
+                  "crossTo": "f12_1",
+                  "color": "#2D7D46"
                 }
               ]
             }

@@ -3482,8 +3482,9 @@ function renderFlowSplit(step, mainIndex, isNested){
         }
         html += `</div>`;
       } else if(bStep.type === "split"){
-        // Nested split: diamond-fork layout with horizontal lines from diamond tips
-        html += renderDiamondFork(bStep);
+        html += renderFlowSplit(bStep, bsi, true);
+      } else if(bStep.type === "diamondOutcomes"){
+        html += renderDiamondOutcomes(bStep);
       } else {
         html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
         html += renderFlowStepElement(bStep, true);
@@ -4246,6 +4247,48 @@ function deduplicateSteps(){
   }
 }
 
+function renderDiamondOutcomes(step){
+  // Renders outcomes from a diamond as horizontal lines from diamond tips
+  // that bend 90° down, with label at the bend, connecting to either a jump pill or cross-branch arrow
+  const outcomes = step.outcomes || [];
+  const diamondId = step.diamondId;
+  
+  let html = `<div class="diamond-outcomes" id="${step.id}" data-diamond="${diamondId}" style="position:relative;width:100%;margin:0">`;
+  
+  // SVG connector: will be drawn post-render
+  html += `<svg class="diamond-outcomes-svg" data-step-id="${step.id}" style="width:100%;height:30px;display:block;overflow:visible"></svg>`;
+  
+  // Outcomes as flex row
+  html += `<div style="display:flex;gap:10px;justify-content:space-between;direction:rtl;padding:0 4px">`;
+  
+  outcomes.forEach((out, oi) => {
+    html += `<div style="flex:1;text-align:center" class="diamond-outcome" data-index="${oi}">`;
+    
+    // Label
+    html += `<div style="font-size:9px;font-weight:600;color:#555;margin-bottom:4px;line-height:1.3">${escH(out.label).replace(/\n/g,'<br>')}</div>`;
+    
+    if(out.targetType === 'jump'){
+      // Jump pill
+      html += `<div style="display:inline-block;padding:5px 10px;background:${out.color||'#4A148C'};color:${out.textColor||'#fff'};border-radius:12px;font-size:10px;font-weight:600;cursor:pointer" onclick="flowJumpTo('${out.jumpTo}')">${escH(out.jumpLabel||'').replace(/\n/g,' ')}</div>`;
+    } else if(out.targetType === 'crossBranch'){
+      // Arrow pointing to the other branch — just show arrow indicator
+      html += `<div class="cross-branch-arrow" data-target="${out.crossTo}" style="cursor:pointer" onclick="flowJumpTo('${out.crossTo}')">`;
+      html += `<svg width="60" height="30" viewBox="0 0 60 30" style="display:block;margin:0 auto">`;
+      html += `<defs><marker id="cbArrow${oi}" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="${out.color||'#2D7D46'}"/></marker></defs>`;
+      // Arrow pointing left (toward other branch in RTL)
+      html += `<line x1="55" y1="15" x2="5" y2="15" stroke="${out.color||'#2D7D46'}" stroke-width="2.5" marker-end="url(#cbArrow${oi})"/>`;
+      html += `</svg>`;
+      html += `</div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `</div>`; // flex
+  html += `</div>`; // diamond-outcomes
+  return html;
+}
+
 function renderDiamondFork(step){
   // Renders a split as two columns connected by lines from diamond tips
   // Each column: label at top → outcome pill at bottom
@@ -4345,6 +4388,48 @@ function renderDiamondForkLines(){
   });
 }
 
+function renderDiamondOutcomeSvgs(){
+  document.querySelectorAll('.diamond-outcomes-svg').forEach(svg => {
+    const stepId = svg.dataset.stepId;
+    const container = svg.closest('.diamond-outcomes');
+    if(!container) return;
+    const diamondId = container.dataset.diamond;
+    const diamond = document.getElementById(diamondId);
+    if(!diamond) return;
+    
+    const svgRect = svg.getBoundingClientRect();
+    const dRect = diamond.getBoundingClientRect();
+    const w = svg.clientWidth;
+    const h = 30;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.innerHTML = '';
+    
+    // Diamond center X relative to SVG
+    const dCenterX = dRect.left + dRect.width/2 - svgRect.left;
+    
+    // Find outcome columns
+    const cols = container.querySelectorAll('.diamond-outcome');
+    cols.forEach((col, i) => {
+      const colRect = col.getBoundingClientRect();
+      const colCenterX = colRect.left + colRect.width/2 - svgRect.left;
+      
+      // Line from diamond center, horizontal to column, then down
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', `M ${dCenterX} 0 L ${colCenterX} 0 L ${colCenterX} ${h}`);
+      path.setAttribute('stroke', '#1B2A4A');
+      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('fill', 'none');
+      
+      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      arrow.setAttribute('points', `${colCenterX-3},${h-5} ${colCenterX+3},${h-5} ${colCenterX},${h}`);
+      arrow.setAttribute('fill', '#1B2A4A');
+      
+      svg.appendChild(path);
+      svg.appendChild(arrow);
+    });
+  });
+}
+
 function renderCrossArrows(){
   document.querySelectorAll('.cross-arrow-svg').forEach(svg => {
     const targetId = svg.dataset.target;
@@ -4422,7 +4507,7 @@ function renderAll(){
   renderHierarchy();
   renderFlowChart();
   // Delay back arrows + fork lines rendering to ensure DOM is updated
-  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderDiamondForkLines(); renderCrossArrows(); }, 100);
+  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderDiamondForkLines(); renderDiamondOutcomeSvgs(); renderCrossArrows(); }, 100);
   // Update version badge
   const vb = document.getElementById("versionBadge");
   if(vb){
