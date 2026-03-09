@@ -4409,14 +4409,14 @@ function renderVoteDecision(step){
         if(hexItem.icon && BUILTIN_ICONS[hexItem.icon]){
           iconHtml = BUILTIN_ICONS[hexItem.icon].replace(/width="[^"]*"/,'width="18"').replace(/height="[^"]*"/,'height="18"');
         }
-        html += `<div style="position:absolute;bottom:-12px;left:${8 - cornerBoxW + 6}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
+        html += `<div style="position:absolute;bottom:-20px;left:${8 - cornerBoxW + 6}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
         if(iconHtml) html += `<div>${iconHtml}</div>`;
         html += `<div style="font-size:8px;font-weight:600;color:${dColor}">${escH(hexItem.label)}</div>`;
         html += `</div>`;
       }
       
       // SVG L-arrow below the corner box
-      html += `<svg width="${svgW}" height="${svgH}" style="display:block;position:absolute;bottom:-12px;left:0">`;
+      html += `<svg width="${svgW}" height="${svgH}" style="display:block;position:absolute;bottom:-20px;left:0">`;
       html += `<line x1="${svgW}" y1="${svgH}" x2="8" y2="${svgH}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<line x1="8" y1="${svgH}" x2="8" y2="10" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
@@ -4439,7 +4439,7 @@ function renderVoteDecision(step){
         if(hexItem.icon && BUILTIN_ICONS[hexItem.icon]){
           iconHtml = BUILTIN_ICONS[hexItem.icon].replace(/width="[^"]*"/,'width="18"').replace(/height="[^"]*"/,'height="18"');
         }
-        html += `<div style="position:absolute;bottom:-12px;left:${8 - cornerBoxW + 6}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
+        html += `<div style="position:absolute;bottom:-20px;left:${8 - cornerBoxW + 6}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
         if(iconHtml) html += `<div>${iconHtml}</div>`;
         html += `<div style="font-size:8px;font-weight:600;color:${dColor}">${escH(hexItem.label)}</div>`;
         html += `</div>`;
