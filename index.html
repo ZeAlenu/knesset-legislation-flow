@@ -3383,6 +3383,7 @@ function renderFlowSplit(step, mainIndex){
     const paddingSide = bi === 0 ? "padding-left" : "padding-right";
     html += `<div class="flow-branch" style="flex:1;${borderSide}:2px solid #ddd;${paddingSide}:10px">`;
     if(branch.label) html += `<div class="flow-branch-label">${escH(branch.label)}</div>`;
+    html += `<div class="flow-arrow" style="margin:2px 0;font-size:10px">▼</div>`;
 
     branch.steps.forEach((bStep, bsi) => {
       // Skip note steps - they're handled as side annotations
