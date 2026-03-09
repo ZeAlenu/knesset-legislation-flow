@@ -4426,8 +4426,8 @@ function renderVoteDecision(step){
       const pillItem = chain.find(c => c.type === 'pill');
       if(pillItem){
         const jmp = pillItem.jumpTo ? `onclick="flowJumpTo('${pillItem.jumpTo}')"` : '';
-        html += `<div style="position:absolute;top:0;left:8px;transform:translate(-50%,-100%);z-index:2">`;
-        html += `<div style="padding:4px 12px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:8px;font-weight:600;border-radius:14px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:3px" ${jmp}><span style="font-size:7px;opacity:0.8">▲</span><span>${escH(pillItem.label)}</span></div>`;
+        html += `<div style="position:absolute;top:-4px;left:8px;transform:translate(-50%,-100%);z-index:2">`;
+        html += `<div style="padding:6px 16px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:10px;font-weight:600;border-radius:16px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:4px" ${jmp}><span style="font-size:8px;opacity:0.8">▲</span><span>${escH(pillItem.label)}</span></div>`;
         html += `</div>`;
       }
       html += `</div>`;
