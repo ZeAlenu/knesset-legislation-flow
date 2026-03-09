@@ -293,6 +293,9 @@ class ProtectedHandler(http.server.SimpleHTTPRequestHandler):
 button[onclick*="publishState"], .edit-btn-sm { display: none !important; }
 </style>"""
 
+        import time
+        cache_bust = f'<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">'
+        html = html.replace("<head>", f"<head>\n{cache_bust}")
         html = html.replace("</head>", role_script + "\n</head>")
 
         self.send_response(200)

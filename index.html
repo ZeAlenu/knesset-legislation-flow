@@ -4416,8 +4416,8 @@ function renderVoteDecision(step){
       }
       
       // SVG L-arrow below the corner box
-      html += `<svg width="${svgW}" height="${svgH}" style="display:block;position:absolute;bottom:-20px;left:0">`;
-      html += `<line x1="${svgW}" y1="${svgH}" x2="8" y2="${svgH}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      html += `<svg width="${svgW}" height="${svgH}" style="display:block;position:absolute;bottom:-20px;left:0;overflow:visible">`;
+      html += `<line x1="${svgW+4}" y1="${svgH}" x2="8" y2="${svgH}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<line x1="8" y1="${svgH}" x2="8" y2="10" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
       html += `</svg>`;
@@ -4440,8 +4440,8 @@ function renderVoteDecision(step){
       html += `<div style="position:absolute;top:50%;right:calc(50% + ${startRight}px);width:${svgW}px;height:${totalH}px">`;
       
       // SVG L-arrow at top
-      html += `<svg width="${svgW}" height="${svgH}" style="display:block">`;
-      html += `<line x1="${svgW}" y1="0" x2="8" y2="0" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      html += `<svg width="${svgW}" height="${svgH}" style="display:block;overflow:visible">`;
+      html += `<line x1="${svgW+4}" y1="0" x2="8" y2="0" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<line x1="8" y1="0" x2="8" y2="${svgH-10}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<polygon points="3,${svgH-12} 13,${svgH-12} 8,${svgH-2}" fill="${arrowColor}"/>`;
       html += `</svg>`;
