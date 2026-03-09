@@ -3482,8 +3482,8 @@ function renderFlowSplit(step, mainIndex, isNested){
         }
         html += `</div>`;
       } else if(bStep.type === "split"){
-        // Nested split inside branch
-        html += renderFlowSplit(bStep, bsi, true);
+        // Nested split: diamond-fork layout with horizontal lines from diamond tips
+        html += renderDiamondFork(bStep);
       } else {
         html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
         html += renderFlowStepElement(bStep, true);
@@ -4246,6 +4246,96 @@ function deduplicateSteps(){
   }
 }
 
+function renderDiamondFork(step){
+  // Renders a split as two columns connected by lines from diamond tips
+  // Each column: label at top → outcome pill at bottom
+  const branches = step.branches || [];
+  if(branches.length < 2) return renderFlowSplit(step, 0, true);
+  
+  let html = `<div class="diamond-fork" id="${step.id}" style="width:100%;margin:4px 0">`;
+  
+  // SVG lines: horizontal from center, bend down to each column
+  html += `<svg class="diamond-fork-svg" data-fork-id="${step.id}" style="width:100%;height:40px;display:block"></svg>`;
+  
+  // Two columns side by side
+  html += `<div style="display:flex;gap:8px;justify-content:center;direction:rtl">`;
+  
+  branches.forEach((branch, bi) => {
+    const borderColor = bi === 0 ? '#4A148C' : '#2D7D46';
+    html += `<div style="flex:1;text-align:center;border:2px solid ${borderColor};border-radius:8px;padding:6px 4px;background:#f8fafc">`;
+    
+    // Label
+    if(branch.label){
+      html += `<div style="font-size:10px;font-weight:600;color:#333;margin-bottom:6px;line-height:1.3">${escH(branch.label).replace(/\n/g,'<br>')}</div>`;
+    }
+    
+    // Steps inside branch
+    branch.steps.forEach(bStep => {
+      if(bStep.type === 'note') return;
+      html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
+      html += renderFlowStepElement(bStep, true);
+      html += `</div>`;
+      if(bStep.note){
+        const noteText = escH(bStep.note).replace(/\n/g,'<br>');
+        if(bStep.noteLink){
+          html += `<div style="font-size:9px;text-align:center;margin:2px 0"><a href="${escH(bStep.noteLink)}" target="_blank" style="color:#2E86AB;text-decoration:none">${noteText} 📜</a></div>`;
+        } else {
+          html += `<div style="font-size:9px;color:#666;text-align:center;margin:2px 0">${noteText}</div>`;
+        }
+      }
+    });
+    
+    html += `</div>`;
+  });
+  
+  html += `</div>`; // flex container
+  html += `</div>`; // diamond-fork
+  return html;
+}
+
+// Post-render: draw SVG lines for diamond forks
+function renderDiamondForkLines(){
+  document.querySelectorAll('.diamond-fork-svg').forEach(svg => {
+    const forkId = svg.dataset.forkId;
+    const container = svg.closest('.diamond-fork');
+    if(!container) return;
+    
+    const w = svg.clientWidth;
+    const h = 40;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.innerHTML = '';
+    
+    // Find the two column boxes
+    const cols = container.querySelectorAll(':scope > div > div');
+    if(cols.length < 2) return;
+    
+    const svgRect = svg.getBoundingClientRect();
+    const centerX = w / 2;
+    
+    // Draw line from center down, then fork to each column center
+    cols.forEach(col => {
+      const colRect = col.getBoundingClientRect();
+      const colCenterX = colRect.left + colRect.width/2 - svgRect.left;
+      
+      // Horizontal line from center, then 90° bend down
+      const bendY = 10;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      line.setAttribute('d', `M ${centerX} 0 L ${centerX} ${bendY} L ${colCenterX} ${bendY} L ${colCenterX} ${h}`);
+      line.setAttribute('stroke', '#1B2A4A');
+      line.setAttribute('stroke-width', '2');
+      line.setAttribute('fill', 'none');
+      
+      // Arrowhead
+      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      arrow.setAttribute('points', `${colCenterX-4},${h-6} ${colCenterX+4},${h-6} ${colCenterX},${h}`);
+      arrow.setAttribute('fill', '#1B2A4A');
+      
+      svg.appendChild(line);
+      svg.appendChild(arrow);
+    });
+  });
+}
+
 function flowJumpTo(targetId){
   const el = document.getElementById(targetId);
   if(el){
@@ -4299,7 +4389,7 @@ function renderAll(){
   renderHierarchy();
   renderFlowChart();
   // Delay back arrows + fork lines rendering to ensure DOM is updated
-  setTimeout(()=>{ renderBackArrows(); renderForkLines(); }, 100);
+  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderDiamondForkLines(); }, 100);
   // Update version badge
   const vb = document.getElementById("versionBadge");
   if(vb){
