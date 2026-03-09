@@ -4344,55 +4344,68 @@ function renderVoteDecision(step){
   const ds = isInBr ? 45 : 55;
   
   let html = `<div id="${step.id}" style="margin:6px 0">`;
-  
-  // Main row: RTL — first child = right side
-  // Reject on RIGHT (first in RTL), diamond on LEFT (second in RTL)
-  html += `<div style="display:flex;align-items:flex-start;justify-content:center;direction:rtl;gap:0">`;
-  
-  // Rejected column FIRST (= right side in RTL): "נדחתה" + chain below
-  html += `<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto;margin-top:${ds*0.2 + ds/2 - 10}px">`;
-  html += `<div style="padding:4px 12px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);white-space:nowrap">${escH(step.rejectLabel||'נדחתה')}</div>`;
-  
-  // Chain below נדחתה
   const chain = step.rejectChain || [];
-  if(chain.length > 0){
-    html += `<div style="width:2px;height:8px;background:${cColor}"></div>`;
-    for(const item of chain){
-      if(item.type === 'chevron'){
-        let iconHtml = '';
-        if(item.icon && BUILTIN_ICONS[item.icon]){
-          iconHtml = `<div style="margin-bottom:2px">${BUILTIN_ICONS[item.icon].replace(/width="[^"]*"/,'width="18"').replace(/height="[^"]*"/,'height="18"')}</div>`;
-        }
-        html += `<div style="padding:8px 16px;background:${item.color||cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);white-space:nowrap;text-align:center;direction:rtl">`;
-        html += iconHtml;
-        html += `<div>${escH(item.label)}</div>`;
-        html += `</div>`;
-        html += `<div style="width:2px;height:6px;background:${item.color||cColor}"></div>`;
-      } else if(item.type === 'pill'){
-        const jmp = item.jumpTo ? `onclick="flowJumpTo('${item.jumpTo}')"` : '';
-        html += `<svg width="16" height="12" style="margin-bottom:2px"><line x1="8" y1="12" x2="8" y2="3" stroke="${item.color||'#4A148C'}" stroke-width="2.5"/><polygon points="3,5 13,5 8,0" fill="${item.color||'#4A148C'}"/></svg>`;
-        html += `<div style="padding:4px 12px;background:${item.color||'#4A148C'};color:#fff;font-size:8px;font-weight:600;border-radius:12px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:3px" ${jmp}><span>${escH(item.label)}</span><span style="font-size:7px;opacity:0.7">▲</span></div>`;
-      }
-    }
-  }
-  html += `</div>`; // rejected column end
   
-  // Connecting line
-  html += `<div style="width:15px;height:2px;background:${cColor};margin-top:${ds*0.2 + ds/2}px;flex:0 0 auto"></div>`;
+  // Layout: horizontal RTL row
+  // [pill above chain-hex] ←── [chain-hex ⏳ 6 חודשים] ←── [נדחתה] ←── [◇ diamond] with [אושרה] below diamond
   
-  // Diamond column: diamond + "אושרה" below
+  // Pill floats above the chain hexagon — we need a 2-row structure for the left part
+  // Row 1 (main): all elements aligned horizontally
+  html += `<div style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;position:relative">`;
+  
+  // 1. Diamond + אושרה below (right side in RTL)
   html += `<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto">`;
-  html += `<div style="height:${ds*0.2}px"></div>`;
   html += `<div style="width:${ds}px;height:${ds}px;background:${dColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;cursor:pointer${actCls?';box-shadow:0 0 0 3px #f97316':''}" ${stageClick}>`;
   html += `<span style="transform:rotate(-45deg);color:#fff;font-size:${isInBr?8:9}px;font-weight:700;text-align:center;line-height:1.2">${escH(step.voteLabel||step.label||'').replace(/\n/g,'<br>')}</span>`;
   html += `</div>`;
   html += `<div style="display:flex;flex-direction:column;align-items:center;margin-top:2px">`;
-  html += `<div style="width:2px;height:6px;background:${cColor}"></div>`;
-  html += `<div style="padding:3px 10px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%)">${escH(step.approveLabel||'אושרה')}</div>`;
+  html += `<div style="width:2px;height:4px;background:${cColor}"></div>`;
+  html += `<div style="padding:2px 8px;background:${dColor};color:#fff;font-size:7px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%)">${escH(step.approveLabel||'אושרה')}</div>`;
   html += `</div>`;
-  html += `</div>`; // diamond column end
+  html += `</div>`;
   
-  html += `</div>`; // main row end
+  // 2. Line diamond → נדחתה
+  html += `<div style="width:12px;height:2px;background:${cColor};flex:0 0 auto"></div>`;
+  
+  // 3. נדחתה (small hexagon)
+  html += `<div style="padding:4px 12px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%);white-space:nowrap;flex:0 0 auto">${escH(step.rejectLabel||'נדחתה')}</div>`;
+  
+  // 4. Line נדחתה → chain hexagon
+  if(chain.length > 0){
+    html += `<div style="width:12px;height:2px;background:${cColor};flex:0 0 auto"></div>`;
+  }
+  
+  // 5. Chain items (horizontally): large hexagon + pill above it
+  for(const item of chain){
+    if(item.type === 'chevron'){
+      let iconHtml = '';
+      if(item.icon && BUILTIN_ICONS[item.icon]){
+        iconHtml = `<div style="margin-bottom:2px">${BUILTIN_ICONS[item.icon].replace(/width="[^"]*"/,'width="22"').replace(/height="[^"]*"/,'height="22"')}</div>`;
+      }
+      // Large hexagon with icon above text, pill above it
+      html += `<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto">`;
+      
+      // Pill above (if next item is pill)
+      const pillItem = chain.find(c => c.type === 'pill');
+      if(pillItem){
+        const jmp = pillItem.jumpTo ? `onclick="flowJumpTo('${pillItem.jumpTo}')"` : '';
+        html += `<div style="padding:5px 14px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:9px;font-weight:600;border-radius:14px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:4px" ${jmp}><span>${escH(pillItem.label)}</span><span style="font-size:8px;opacity:0.8">▲</span></div>`;
+        // Arrow up from hexagon to pill
+        html += `<svg width="16" height="16" style="margin-bottom:2px"><line x1="8" y1="16" x2="8" y2="3" stroke="${pillItem.color||'#4A148C'}" stroke-width="2.5"/><polygon points="3,5 13,5 8,0" fill="${pillItem.color||'#4A148C'}"/></svg>`;
+      }
+      
+      // The hexagon itself (large, with icon above text)
+      html += `<div style="padding:10px 20px;background:${item.color||cColor};color:#fff;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);text-align:center;direction:rtl">`;
+      html += iconHtml;
+      html += `<div style="font-size:9px">${escH(item.label)}</div>`;
+      html += `</div>`;
+      
+      html += `</div>`;
+    }
+    // pill is rendered above chevron, skip standalone
+  }
+  
+  html += `</div>`; // main row
   html += `</div>`;
   return html;
 }
