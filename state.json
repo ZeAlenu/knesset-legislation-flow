@@ -792,7 +792,7 @@
         }
       ],
       "showArrowAfter": true,
-      "builtinIcon": "plenum"
+      "builtinIcon": "vote"
     },
     {
       "id": "s7",
@@ -2001,7 +2001,7 @@
     }
   ],
   "nextId": 1047,
-  "publishDate": "2026-03-09T14:18:28.707Z",
+  "publishDate": "2026-03-09T14:19:21.271Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T16:18:28.304306"
+  "mergedAt": "2026-03-09T16:19:21.067633"
 }
