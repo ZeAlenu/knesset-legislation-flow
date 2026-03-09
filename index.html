@@ -4247,39 +4247,53 @@ function deduplicateSteps(){
 }
 
 function renderDiamondOutcomes(step){
-  // Renders outcomes from a diamond as horizontal lines from diamond tips
-  // that bend 90° down, with label at the bend, connecting to either a jump pill or cross-branch arrow
+  // Horizontal layout: [left outcome] ← ◇ → [right outcome]
+  // The diamond is rendered ABOVE this by the normal step flow
+  // Here we render the two outcomes side by side with the diamond between them
   const outcomes = step.outcomes || [];
-  const diamondId = step.diamondId;
   
-  let html = `<div class="diamond-outcomes" id="${step.id}" data-diamond="${diamondId}" style="position:relative;width:100%;margin:0">`;
+  let html = `<div class="diamond-outcomes" id="${step.id}" style="position:relative;width:100%;margin:4px 0">`;
   
-  // SVG connector: will be drawn post-render
-  html += `<svg class="diamond-outcomes-svg" data-step-id="${step.id}" style="width:100%;height:30px;display:block;overflow:visible"></svg>`;
-  
-  // Outcomes as flex row
-  html += `<div style="display:flex;gap:10px;justify-content:space-between;direction:rtl;padding:0 4px">`;
+  // Horizontal row: RTL so index 0 = right, index 1 = left  
+  html += `<div style="display:flex;align-items:center;justify-content:center;gap:0;direction:rtl">`;
   
   outcomes.forEach((out, oi) => {
-    html += `<div style="flex:1;text-align:center" class="diamond-outcome" data-index="${oi}">`;
+    // Chevron-shaped outcome box
+    const isRight = (oi === 0); // first outcome = right side in RTL
+    const chevronBg = out.color || '#2E86AB';
+    const chevronText = out.textColor || '#FFFFFF';
     
-    // Label
-    html += `<div style="font-size:9px;font-weight:600;color:#555;margin-bottom:4px;line-height:1.3">${escH(out.label).replace(/\n/g,'<br>')}</div>`;
-    
-    if(out.targetType === 'jump'){
-      // Jump pill
-      html += `<div style="display:inline-block;padding:5px 10px;background:${out.color||'#4A148C'};color:${out.textColor||'#fff'};border-radius:12px;font-size:10px;font-weight:600;cursor:pointer" onclick="flowJumpTo('${out.jumpTo}')">${escH(out.jumpLabel||'').replace(/\n/g,' ')}</div>`;
-    } else if(out.targetType === 'crossBranch'){
-      // Arrow pointing to the other branch — just show arrow indicator
-      html += `<div class="cross-branch-arrow" data-target="${out.crossTo}" style="cursor:pointer;padding:4px" onclick="flowJumpTo('${out.crossTo}')">`;
-      html += `<div style="font-size:9px;color:${out.color||'#2D7D46'};font-weight:600">→ דיון הכנת החוק</div>`;
+    if(out.targetType === 'crossBranch'){
+      // Left side: chevron pointing left with cross-branch arrow
+      html += `<div class="cross-branch-arrow" data-target="${out.crossTo}" style="cursor:pointer;flex:1;text-align:center">`;
+      html += `<div style="display:inline-block;padding:6px 12px;background:${chevronBg};color:${chevronText};font-size:9px;font-weight:600;line-height:1.3;border-radius:4px;clip-path:polygon(100% 0%, 100% 100%, 10% 100%, 0% 50%, 10% 0%)">${escH(out.label).replace(/\n/g,'<br>')}</div>`;
+      html += `</div>`;
+    } else if(out.targetType === 'jump'){
+      // Right side: chevron pointing right → jump
+      html += `<div style="flex:1;text-align:center;cursor:pointer" onclick="flowJumpTo('${out.jumpTo}')">`;
+      html += `<div style="display:inline-block;padding:6px 12px;background:${chevronBg};color:${chevronText};font-size:9px;font-weight:600;line-height:1.3;border-radius:4px;clip-path:polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%)">${escH(out.label).replace(/\n/g,'<br>')}</div>`;
       html += `</div>`;
     }
     
-    html += `</div>`;
+    // Diamond separator between outcomes (only after first)
+    if(oi === 0 && outcomes.length > 1){
+      html += `<div style="flex-shrink:0;margin:0 4px">`;
+      html += `<div style="width:10px;height:10px;background:#1B2A4A;transform:rotate(45deg)"></div>`;
+      html += `</div>`;
+    }
   });
   
-  html += `</div>`; // flex
+  html += `</div>`; // flex row
+  
+  // Jump pill below for the "jump" outcome
+  const jumpOut = outcomes.find(o => o.targetType === 'jump');
+  if(jumpOut){
+    html += `<div style="text-align:center;margin-top:6px">`;
+    html += `<div class="flow-arrow" style="font-size:10px">▼</div>`;
+    html += `<div style="display:inline-block;padding:6px 14px;background:${jumpOut.color||'#4A148C'};color:${jumpOut.textColor||'#fff'};border-radius:14px;font-size:10px;font-weight:600;cursor:pointer" onclick="flowJumpTo('${jumpOut.jumpTo}')">${escH(jumpOut.jumpLabel||'').replace(/\n/g,' ')}</div>`;
+    html += `</div>`;
+  }
+  
   html += `</div>`; // diamond-outcomes
   return html;
 }
