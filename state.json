@@ -1618,13 +1618,42 @@
               "noteType": "info"
             },
             {
-              "id": "f12_2",
-              "label": "תיקונים\nבוועדה",
+              "id": "f12_side1",
+              "label": "תיקונים והסתייגויות\nמחוץ לוועדה",
+              "type": "box",
+              "category": "chk",
+              "stageId": "s8",
+              "note": "↩ חזור בסיום",
+              "noteType": "info",
+              "branchConnector": "arrow"
+            },
+            {
+              "id": "f12_side2",
+              "label": "פיצול / מיזוג\n/ שינוי נוסח בוועדה",
               "type": "box",
               "category": "vaadat",
               "stageId": "s8",
-              "note": "סעיף 85–86",
-              "noteType": "info"
+              "note": "סעיף 84(ב)–(ו)\n↩ חזור בסיום",
+              "noteType": "info",
+              "branchConnector": "arrow"
+            },
+            {
+              "id": "f12_side3",
+              "label": "עלות כלכלית",
+              "type": "box",
+              "category": "gov",
+              "stageId": "s8",
+              "note": "שר האוצר · סעיף 93\n↩ חזור בסיום",
+              "noteType": "info",
+              "branchConnector": "arrow"
+            },
+            {
+              "id": "f12_req",
+              "label": "",
+              "type": "note",
+              "stageId": "s8",
+              "note": "דרישות סף\nלמעבר לשלב הבא",
+              "noteType": "warning"
             },
             {
               "id": "f12_2b",
@@ -1632,26 +1661,9 @@
               "type": "diamond",
               "category": "vaadat",
               "stageId": "s8",
-              "note": "ועדת הכנסת\nמכריעה",
-              "noteType": "warning"
-            },
-            {
-              "id": "f12_3",
-              "label": "פיצול / מיזוג\n/ שינוי נוסח",
-              "type": "box",
-              "category": "vaadat",
-              "stageId": "s8",
-              "note": "סעיף 84(ב)–(ו)",
-              "noteType": "info"
-            },
-            {
-              "id": "f12_4",
-              "label": "עלות\nכלכלית",
-              "type": "box",
-              "category": "gov",
-              "stageId": "s8",
-              "note": "שר האוצר\nסעיף 93",
-              "noteType": "info"
+              "note": "ועדת הכנסת מכריעה",
+              "noteType": "warning",
+              "branchConnector": "arrow"
             },
             {
               "id": "f12_4b",
@@ -1659,46 +1671,19 @@
               "type": "diamond",
               "category": "gov",
               "stageId": "s8",
-              "note": "דורש רוב 61",
-              "noteType": "warning"
-            },
-            {
-              "id": "f12_5",
-              "label": "הסתייגויות",
-              "type": "box",
-              "category": "chk",
-              "stageId": "s8",
-              "note": "סעיף 86",
-              "noteType": "info"
-            },
-            {
-              "id": "f12_6",
-              "label": "ניסוח נוסח\nסופי",
-              "type": "box",
-              "category": "vaadat",
-              "stageId": "s8",
-              "note": "",
-              "noteType": ""
-            },
-            {
-              "id": "f12_6b",
-              "label": "ניסוח —\nלשכה משפטית",
-              "type": "pill",
-              "category": "chriga",
-              "stageId": "s8",
-              "note": "לא בתקנון!",
+              "note": "ההצעה + הסתייגויות\nדורש רוב 61",
               "noteType": "warning",
-              "color": "#CC0000",
-              "textColor": "#FFFFFF"
+              "branchConnector": "arrow"
             },
             {
               "id": "f12_7",
-              "label": "הצבעה\nבוועדה",
+              "label": "סיום דיונים\nוהצבעה בוועדה",
               "type": "diamond",
               "category": "vaadat",
               "stageId": "s8",
               "note": "סעיף 87(א)",
-              "noteType": "info"
+              "noteType": "info",
+              "branchConnector": "arrow"
             },
             {
               "id": "f12_8",
@@ -1706,8 +1691,9 @@
               "type": "box",
               "category": "nesiut",
               "stageId": "s8",
-              "note": "המתנה יום\nסעיף 88",
-              "noteType": "info"
+              "note": "המתנה יום\nועדת הכנסת יכולה לקצר\nסעיף 88",
+              "noteType": "info",
+              "branchConnector": "arrow"
             },
             {
               "id": "f12_9",
@@ -1716,7 +1702,19 @@
               "category": "vaadat",
               "stageId": "s8",
               "note": "הוועדה רשאית\nלחדש דיונים\nסעיף 89",
-              "noteType": "info"
+              "noteType": "info",
+              "branchConnector": "arrow"
+            },
+            {
+              "id": "f12_end",
+              "label": "→ דיון במליאה\nבקריאה שנייה",
+              "type": "pill",
+              "category": "plenum",
+              "stageId": "s9",
+              "note": "",
+              "noteType": "",
+              "color": "#1B2A4A",
+              "textColor": "#FFFFFF"
             }
           ]
         },
@@ -1730,7 +1728,8 @@
               "category": "vaadat",
               "stageId": "s8",
               "note": "סעיף 94",
-              "noteType": "info"
+              "noteType": "info",
+              "branchConnector": "arrow"
             },
             {
               "id": "f12_r2",
@@ -1739,7 +1738,8 @@
               "category": "plenum",
               "stageId": "s8",
               "note": "",
-              "noteType": ""
+              "noteType": "",
+              "branchConnector": "arrow"
             },
             {
               "id": "f12_r3",
