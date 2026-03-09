@@ -1657,7 +1657,8 @@
                   "textColor": "#FFFFFF",
                   "arrowDir": "down",
                   "connectTo": "f_removal_process",
-                  "connectLabel": "→ דיון הסרת הצעה מסדר היום"
+                  "connectLabel": "→ דיון הסרת הצעה מסדר היום",
+                  "connectSub": "סעיף 94"
                 },
                 {
                   "label": "רוב מתנגדים\nלהסרה",
