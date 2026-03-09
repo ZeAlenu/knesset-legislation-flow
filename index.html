@@ -4262,27 +4262,56 @@ function renderDiamondOutcomes(step){
   
   let html = `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;margin:6px 0;width:100%">`;
   
-  // Right chevron (first outcome in RTL) — points left (toward diamond)
-  html += `<div class="diamond-outcome-right" style="flex:0 0 auto;cursor:pointer" ${right.targetType==='jump'?`onclick="flowJumpTo('${right.jumpTo}')"`:(right.targetType==='crossBranch'?`onclick="flowJumpTo('${right.crossTo}')"`:'')}>`;
-  html += `<div style="padding:6px 14px 6px 20px;background:${right.chevronColor||chevronColor};color:${right.chevronText||chevronText};font-size:9px;font-weight:600;line-height:1.4;text-align:center;clip-path:polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%);min-width:70px">${escH(right.label||'').replace(/\n/g,'<br>')}</div>`;
-  html += `</div>`;
+  // Build each outcome with its chevron + arrow
+  function renderOutcome(out, side){
+    const isRight = (side === 'right');
+    const clipPath = isRight 
+      ? 'polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%)'   // points left
+      : 'polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%)'; // points left
+    const padding = isRight ? '6px 14px 6px 20px' : '6px 20px 6px 14px';
+    const clickTarget = out.connectTo ? `onclick="flowJumpTo('${out.connectTo}')"` : '';
+    const crossClass = out.arrowDir === 'left' || out.arrowDir === 'right' ? `class="cross-branch-arrow" data-target="${out.connectTo||''}"` : '';
+    
+    let h = `<div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center" ${crossClass}>`;
+    
+    // Arrow UP (above chevron)
+    if(out.arrowDir === 'up'){
+      h += `<svg width="20" height="20" style="margin-bottom:2px"><line x1="10" y1="20" x2="10" y2="3" stroke="${out.chevronColor||chevronColor}" stroke-width="2"/><polygon points="6,6 14,6 10,0" fill="${out.chevronColor||chevronColor}"/></svg>`;
+      if(out.connectLabel) h += `<div style="font-size:7px;color:#666;margin-bottom:1px">${escH(out.connectLabel)}</div>`;
+    }
+    
+    // Chevron
+    h += `<div style="padding:${padding};background:${out.chevronColor||chevronColor};color:${out.chevronText||chevronText};font-size:9px;font-weight:600;line-height:1.4;text-align:center;clip-path:${clipPath};min-width:70px;cursor:pointer" ${clickTarget}>${escH(out.label||'').replace(/\n/g,'<br>')}</div>`;
+    
+    // Arrow DOWN (below chevron)
+    if(out.arrowDir === 'down'){
+      h += `<svg width="20" height="20" style="margin-top:2px"><line x1="10" y1="0" x2="10" y2="17" stroke="${out.chevronColor||chevronColor}" stroke-width="2"/><polygon points="6,14 14,14 10,20" fill="${out.chevronColor||chevronColor}"/></svg>`;
+      if(out.connectLabel) h += `<div style="font-size:7px;color:#666;margin-top:1px;cursor:pointer" ${clickTarget}>${escH(out.connectLabel)}</div>`;
+    }
+    
+    h += `</div>`;
+    return h;
+  }
+  
+  // RIGHT outcome (first in RTL)
+  html += renderOutcome(right, 'right');
   
   // Line: right chevron → diamond
-  html += `<div style="flex:0 0 20px;height:2px;background:${lineColor}"></div>`;
+  html += `<div style="flex:0 0 20px;height:2px;background:${lineColor};align-self:center"></div>`;
   
   // Diamond (center)
-  html += `<div style="flex:0 0 auto">`;
+  html += `<div style="flex:0 0 auto;align-self:center">`;
   html += `<div style="width:${dSize}px;height:${dSize}px;background:${diamondColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center">`;
   html += `<span style="transform:rotate(-45deg);color:${diamondText};font-size:9px;font-weight:600;text-align:center;line-height:1.2">${escH(step.diamondLabel||'הצבעה\nלהסיר').replace(/\n/g,'<br>')}</span>`;
   html += `</div></div>`;
   
   // Line: diamond → left chevron
-  html += `<div style="flex:0 0 20px;height:2px;background:${lineColor}"></div>`;
+  html += `<div style="flex:0 0 20px;height:2px;background:${lineColor};align-self:center"></div>`;
   
-  // Left chevron (second outcome in RTL) — points left (away from diamond)  
-  html += `<div class="diamond-outcome-left" ${left.targetType==='crossBranch'?`class="cross-branch-arrow" data-target="${left.crossTo}"`:''}  style="flex:0 0 auto;cursor:pointer" ${left.targetType==='jump'?`onclick="flowJumpTo('${left.jumpTo}')"`:(left.targetType==='crossBranch'?`onclick="flowJumpTo('${left.crossTo}')"`:'')}>`;
-  html += `<div style="padding:6px 20px 6px 14px;background:${left.chevronColor||chevronColor};color:${left.chevronText||chevronText};font-size:9px;font-weight:600;line-height:1.4;text-align:center;clip-path:polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%);min-width:70px">${escH(left.label||'').replace(/\n/g,'<br>')}</div>`;
-  html += `</div>`;
+  // LEFT outcome (second in RTL)
+  html += renderOutcome(left, 'left');
+  
+  // Arrow LEFT/RIGHT extends from chevron edge (rendered as SVG overlay post-render)
   
   html += `</div>`;
   return html;
