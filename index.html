@@ -746,19 +746,46 @@ async function loadFromStorage(){
     localStorage.removeItem("knesset-code-reload-state");
   }
   
-  // Check for pre-refresh backup
+  // Check for pre-refresh backup — only show if backup has unsaved changes
   const preRefreshBackup = localStorage.getItem("knesset-pre-refresh-backup");
   if(preRefreshBackup){
     try {
       const backup = JSON.parse(preRefreshBackup);
-      const backupTime = backup.backupDate ? new Date(backup.backupDate).toLocaleString("he-IL") : "לא ידוע";
-      if(confirm(`נמצא גיבוי אוטומטי מ-${backupTime}.\n\nלשחזר? (אם לחצת רענן בטעות)`)){
-        if(backup.categories) appState.categories = backup.categories;
-        if(backup.stages) appState.stages = backup.stages;
-        if(backup.flowSteps) appState.flowSteps = backup.flowSteps;
-        if(backup.flowBackLinks) appState.flowBackLinks = backup.flowBackLinks;
-        if(backup.nextId) nextId = backup.nextId;
-        showToast("🔄 שוחזר מגיבוי אוטומטי");
+      // Compare backup hash vs current server state to detect unsaved changes
+      const backupHash = JSON.stringify({s:backup.stages?.map(s=>(s.steps||[]).length), f:backup.flowSteps?.length});
+      const serverHash = JSON.stringify({s:appState.stages.map(s=>(s.steps||[]).length), f:appState.flowSteps.length});
+      const hasUnsaved = backup.wasEditing || backupHash !== serverHash;
+      if(hasUnsaved){
+        // Show custom dialog instead of confirm()
+        const overlay = document.createElement("div");
+        overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center";
+        const backupTime = backup.backupDate ? new Date(backup.backupDate).toLocaleString("he-IL") : "";
+        overlay.innerHTML = `<div style="background:#fff;border-radius:12px;padding:24px 32px;max-width:400px;text-align:center;direction:rtl;font-family:inherit;box-shadow:0 8px 32px rgba(0,0,0,0.3)">
+          <div style="font-size:16px;font-weight:600;margin-bottom:12px">⚠️ יש שינויים שלא פורסמו</div>
+          <div style="font-size:13px;color:#666;margin-bottom:20px">${backupTime ? 'גיבוי מ-' + backupTime : ''}</div>
+          <div style="display:flex;gap:12px;justify-content:center">
+            <button id="refreshRestore" style="padding:10px 20px;border:none;border-radius:8px;background:#e74c3c;color:#fff;font-size:14px;cursor:pointer;font-family:inherit">ביטול רענון</button>
+            <button id="refreshContinue" style="padding:10px 20px;border:none;border-radius:8px;background:#2E86AB;color:#fff;font-size:14px;cursor:pointer;font-family:inherit">המשך עדכון מהשרת</button>
+          </div>
+        </div>`;
+        document.body.appendChild(overlay);
+        await new Promise(resolve => {
+          overlay.querySelector("#refreshRestore").onclick = () => {
+            if(backup.categories) appState.categories = backup.categories;
+            if(backup.stages) appState.stages = backup.stages;
+            if(backup.flowSteps) appState.flowSteps = backup.flowSteps;
+            if(backup.flowBackLinks) appState.flowBackLinks = backup.flowBackLinks;
+            if(backup.nextId) nextId = backup.nextId;
+            showToast("↩️ שוחזר — השינויים שלך נשמרו");
+            overlay.remove();
+            resolve();
+          };
+          overlay.querySelector("#refreshContinue").onclick = () => {
+            showToast("🔄 תוכן עודכן מהשרת");
+            overlay.remove();
+            resolve();
+          };
+        });
       }
     } catch(ex){}
     localStorage.removeItem("knesset-pre-refresh-backup");
@@ -1006,7 +1033,8 @@ window.addEventListener("beforeunload", function(e){
       flowSteps: appState.flowSteps,
       flowBackLinks: appState.flowBackLinks,
       nextId,
-      backupDate: new Date().toISOString()
+      backupDate: new Date().toISOString(),
+      wasEditing: appState.editing
     });
     localStorage.setItem("knesset-pre-refresh-backup", backupData);
   } catch(ex){}
