@@ -33,8 +33,10 @@ header p{font-size:13px;opacity:.85}
 
 /* LAYOUT */
 .container{display:flex;gap:30px;padding:24px 40px;max-width:1900px;margin:0 auto}
-.hierarchy-panel{flex:1;min-width:0}
-.flow-panel{width:600px;flex-shrink:0;position:sticky;top:20px;align-self:flex-start}
+.hierarchy-panel{flex:1;min-width:200px;overflow:auto}
+.panel-resizer{width:6px;cursor:col-resize;background:linear-gradient(90deg,#ddd 1px,transparent 1px,transparent 5px,#ddd 5px);flex-shrink:0;transition:background .2s;border-radius:3px}
+.panel-resizer:hover,.panel-resizer.dragging{background:linear-gradient(90deg,#2E86AB 1px,transparent 1px,transparent 5px,#2E86AB 5px)}
+.flow-panel{width:600px;min-width:200px;flex-shrink:0;position:sticky;top:20px;align-self:flex-start}
 
 /* LEGEND */
 .legend{background:#fff;border-radius:12px;padding:14px 20px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.08);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -260,6 +262,7 @@ header p{font-size:13px;opacity:.85}
 
 <div class="container">
   <div class="hierarchy-panel" id="hierarchyPanel"></div>
+  <div class="panel-resizer" id="panelResizer"></div>
   <div class="flow-panel" id="flowPanel"></div>
 </div>
 
@@ -4212,6 +4215,39 @@ function countSteps(steps){ return (steps||[]).reduce((n,s)=>n+1+countSteps(s.ch
   initializeDefaultBackArrow();
   renderAll();
   setTimeout(highlightFlowStep, 300);
+
+  // Panel resizer drag
+  const resizer = document.getElementById('panelResizer');
+  const flowPanel = document.getElementById('flowPanel');
+  const container = document.querySelector('.container');
+  let startX, startW;
+  resizer.addEventListener('mousedown', function(e){
+    e.preventDefault();
+    startX = e.clientX;
+    startW = flowPanel.offsetWidth;
+    resizer.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    function onMove(e){
+      const dx = startX - e.clientX; // RTL: moving left = wider flow
+      flowPanel.style.width = Math.max(200, Math.min(startW + dx, window.innerWidth - 300)) + 'px';
+    }
+    function onUp(){
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      resizer.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      try{ localStorage.setItem('knesset-flow-width', flowPanel.style.width); }catch(e){}
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+  // Restore saved width
+  try{
+    const savedW = localStorage.getItem('knesset-flow-width');
+    if(savedW) flowPanel.style.width = savedW;
+  }catch(e){}
 })();
 
 </script>
