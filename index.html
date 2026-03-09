@@ -647,7 +647,9 @@ function genId(){ return "gen_" + (nextId++); }
 const undoStack = [];
 const MAX_UNDO = 30;
 
+let _userHasEdited = false;
 function pushUndo(){
+  _userHasEdited = true;
   undoStack.push(JSON.stringify({
     categories: appState.categories,
     stages: appState.stages,
@@ -751,10 +753,8 @@ async function loadFromStorage(){
   if(preRefreshBackup){
     try {
       const backup = JSON.parse(preRefreshBackup);
-      // Compare backup hash vs current server state to detect unsaved changes
-      const backupHash = JSON.stringify({s:backup.stages?.map(s=>(s.steps||[]).length), f:backup.flowSteps?.length});
-      const serverHash = JSON.stringify({s:appState.stages.map(s=>(s.steps||[]).length), f:appState.flowSteps.length});
-      const hasUnsaved = backup.wasEditing || backupHash !== serverHash;
+      // Only show if there were actual unsaved edits (flag set by pushUndo)
+      const hasUnsaved = backup.hadEdits === true;
       if(hasUnsaved){
         // Show custom dialog instead of confirm()
         const overlay = document.createElement("div");
@@ -944,6 +944,8 @@ async function publishState(){
     });
     if(resp.ok){
       showToast("🌐 פורסם בהצלחה! כולם יראו את השינויים");
+      localStorage.removeItem("knesset-pre-refresh-backup"); // Clear backup after successful publish
+      _userHasEdited = false;
     } else {
       const err = await resp.text();
       showToast("❌ שגיאה: " + err);
@@ -1034,7 +1036,7 @@ window.addEventListener("beforeunload", function(e){
       flowBackLinks: appState.flowBackLinks,
       nextId,
       backupDate: new Date().toISOString(),
-      wasEditing: appState.editing
+      hadEdits: _userHasEdited
     });
     localStorage.setItem("knesset-pre-refresh-backup", backupData);
   } catch(ex){}
