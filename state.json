@@ -812,167 +812,314 @@
       "letter": "ח",
       "title": "הכנה לקריאה שנייה ושלישית",
       "subtitle": "דיון בוועדה",
+      "details": "סעיפים 84–87 לתקנון הכנסת — הכנת הצעת חוק לקריאה השנייה ולקריאה השלישית",
+      "detailsHtml": "<a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"צפה בתקנון הכנסת — סעיפים 84–87\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>&nbsp;סעיפים 84–87 לתקנון הכנסת — הכנת הצעת חוק לקריאה השנייה ולקריאה השלישית",
       "steps": [
         {
           "id": "s8_1",
-          "title": "דיון בהסרת ההצעה",
-          "icon": "❌",
+          "title": "דיון בוועדה",
+          "icon": "",
+          "builtinIcon": "shield-menorah",
           "catId": "vaadat",
           "chpiqa": false,
           "depth": 0,
-          "details": "הוועדה יכולה לדון בהסרת ההצעה מסדר היום.\n\nאם רוב או חצי מחבריה תומכים בהסרה — ההצעה עוברת למסלול של הסרה מסדר היום.\n📜 מקור: [סעיף 94 לתקנון הכנסת — הסרת הצעת חוק מסדר היום](https://www.nevo.co.il/law/72248#Seif100) | [סעיף 84 לתקנון הכנסת — הכנת הצעת חוק לקריאה השנייה ולקריאה השלישית](https://www.nevo.co.il/law/72248#Seif66)",
           "detailType": "expand",
-          "children": [],
-          "_open": false,
-          "detailsHtml": "הוועדה יכולה לדון בהסרת ההצעה מסדר היום.<br><br>אם רוב או חצי מחבריה תומכים בהסרה — ההצעה עוברת למסלול של הסרה מסדר היום.<br>📜 מקור: <a href=\"https://www.nevo.co.il/law/72248#Seif100\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 94 לתקנון הכנסת — הסרת הצעת חוק מסדר היום</a> | <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=132\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 84 לתקנון הכנסת — הכנת הצעת חוק לקריאה השנייה ולקריאה השלישית</a>"
+          "detailsHtml": "<strong>סעיף 84(א)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 84(א) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>אושרה הצעת חוק בקריאה הראשונה, הוועדה שאליה הועברה תכין אותה לקריאה השנייה ולקריאה השלישית — או תציע לכנסת להסירה מסדר היום.<br><br>אם הקולות בוועדה שקולים — הוועדה תציע להסיר את הצעת החוק מסדר היום.",
+          "children": [
+            {
+              "id": "s8_1_1",
+              "title": "הוועדה המכינה",
+              "icon": "",
+              "builtinIcon": "israel",
+              "catId": "vaadat",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 83</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=98\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 83 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>• <strong>הצעת חוק פרטית או מטעם ועדה:</strong> תועבר לוועדה שהכינה אותה לקריאה הראשונה <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=98\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 83(א)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><br>• <strong>הצעת חוק ממשלתית:</strong> יו\"ר הישיבה יודיע לאיזו ועדה תועבר. כל ח\"כ רשאי להציע העברה לוועדה אחרת (או ועדה משותפת), וועדת הכנסת תכריע. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=98\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 83(ב)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><br>• <strong>העברה בין ועדות:</strong> ועדת הכנסת רשאית להעביר הצעת חוק לוועדה אחרת, אם ביקש זאת אחד מאלה: היוזם, יו\"ר הוועדה הנוכחית, יו\"ר ועדה אחרת הסבור שהנושא בסמכותה, או הממשלה. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=98\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 83(ג)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
+              "children": [],
+              "_open": false
+            }
+          ],
+          "_open": false
         },
         {
           "id": "s8_2",
-          "title": "מיזוג, פיצול ושינוי נוסח (אופציונלי)",
+          "title": "תיקונים בוועדה",
+          "icon": "",
+          "builtinIcon": "pen",
+          "catId": "vaadat",
+          "chpiqa": false,
+          "depth": 0,
+          "detailType": "expand",
+          "detailsHtml": "<strong>סעיף 85(א)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=101\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 85(א) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה רשאית לתקן את הצעת החוק, כולל סעיפי חוק שלא נזכרו בנוסח שאושר בקריאה הראשונה — <strong>בתנאי שהתיקונים לא יחרגו מנושא הצעת החוק.</strong>",
+          "children": [
+            {
+              "id": "s8_2_who",
+              "title": "מי רשאי להציע תיקונים?",
+              "icon": "",
+              "builtinIcon": "israel",
+              "catId": "chk",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 86(א)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=104\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 86(א) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>• <strong>חבר כנסת</strong><br>• <strong>שר</strong><br>• <strong>סגן שר</strong> (בענייני המשרד שבו הוא מכהן)<br><br>רשאים להציע תיקונים כל עוד הוועדה לא אישרה את הצעת החוק לקריאה השנייה — או עד מועד מוקדם יותר שעליו הודיע מראש יו\"ר הוועדה.",
+              "children": [],
+              "_open": false
+            },
+            {
+              "id": "s8_2_topic",
+              "title": "טענת 'נושא חדש'",
+              "icon": "⚠️",
+              "catId": "vaadat",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 85(ב)–(ה)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=101\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 85(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><strong>מי רשאי לטעון:</strong> חבר כנסת, שר, או סגן שר <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=101\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 85(ב)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><br><strong>מה קורה:</strong> יו\"ר הוועדה מביא את העניין להכרעת ועדת הכנסת. הוועדה לא תסיים את הדיון בתיקון לפני ההחלטה. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=101\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 85(ג)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><br><strong>תנאי:</strong> נציג ממשלה שטען — חייב להגיש טענתו בכתב עד למועד הדיון בוועדת הכנסת. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=101\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 85(ב)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><br><strong>לו\"ז:</strong> ועדת הכנסת תדון בשלוש ישיבותיה הקרובות. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=101\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 85(ד)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><br><strong>תוצאה:</strong> אם ועדת הכנסת הכריעה שזהו נושא חדש — <strong>התיקון יוסר ולא יוכל להופיע אפילו כהסתייגות.</strong><br><br><strong>חלון ההזדמנות:</strong> לא תישמע טענת נושא חדש לאחר שהוועדה אישרה את הצעת החוק. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=101\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 85(ה)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
+              "children": [],
+              "_open": false
+            }
+          ],
+          "_open": false
+        },
+        {
+          "id": "s8_3",
+          "title": "מיזוג, פיצול ושינוי נוסח",
           "icon": "✂️",
           "catId": "vaadat",
           "chpiqa": false,
           "depth": 0,
-          "details": "📜 מקור: [סעיף 84 לתקנון הכנסת — הכנת הצעת חוק לקריאה השנייה ולקריאה השלישית, פיצול ומיזוג](https://www.nevo.co.il/law/72248#Seif66)",
+          "detailType": "expand",
+          "detailsHtml": "<strong>סעיף 84(ב)–(ו)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 84 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
           "children": [
             {
-              "id": "s8_2_1",
-              "title": "מיזוג",
-              "icon": "",
-              "catId": "vaadat",
-              "chpiqa": false,
-              "depth": 1,
-              "details": "הוועדה יכולה למזג את ההצעה הנידונה עם הצעה אחרת, באישור ועדת הכנסת. ההצעה האחרת יכולה להיות אפילו הצעה שעברה רק קריאה טרומית.",
-              "detailType": "expand",
-              "children": [],
-              "_open": false,
-              "detailsHtml": "<strong>סעיף 90(א)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=140\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 90(א) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה יכולה למזג את ההצעה הנידונה עם הצעה אחרת, באישור ועדת הכנסת. ההצעה האחרת יכולה להיות אפילו הצעה שעברה רק קריאה טרומית."
-            },
-            {
-              "id": "s8_2_2",
+              "id": "s8_3_split",
               "title": "פיצול",
               "icon": "",
               "catId": "vaadat",
               "chpiqa": false,
               "depth": 1,
-              "details": "הוועדה יכולה להציע פיצול של ההצעה. ההצעה תונח על שולחן הכנסת והמליאה תצביע אם לפצל.",
               "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 84(ב)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 84(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><strong>הסמכות:</strong> הוועדה, <strong>באישור הכנסת</strong> (המליאה).<br><br><strong>מה:</strong> פיצול הצעת חוק לשתיים או יותר, שיובאו כהצעות נפרדות לקריאה שנייה ושלישית.<br><br><strong>איך:</strong> הצעת הפיצול תונח על שולחן הכנסת עם דברי הסבר, ויפורטו בהם החלקים מנוסח הקריאה הראשונה שייכללו בכל אחת מההצעות הנפרדות.",
               "children": [],
-              "_open": false,
-              "detailsHtml": "<strong>סעיף 90(ב)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=140\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 90(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה יכולה להציע פיצול של ההצעה. ההצעה תונח על שולחן הכנסת והמליאה תצביע אם לפצל."
+              "_open": false
             },
             {
-              "id": "s8_2_3",
-              "title": "שינוי נוסח",
+              "id": "s8_3_merge",
+              "title": "מיזוג",
               "icon": "",
               "catId": "vaadat",
               "chpiqa": false,
               "depth": 1,
-              "details": "הוועדה יכולה לתקן סעיפים בהצעה ולהוסיף סעיפים בתנאי שהם בתחום נושא ההצעה.",
               "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 84(ג)–(ד)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 84(ג)–(ד) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><strong>אופציה א' — שתי הצעות שעברו קריאה ראשונה:</strong><br>הוועדה רשאית, <strong>באישור ועדת הכנסת</strong>, למזג שתי הצעות חוק או יותר באותו נושא. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 84(ג)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><br><strong>אופציה ב' — מיזוג עם הצעה שעברה רק קריאה טרומית:</strong><br>הוועדה רשאית, <strong>באישור ועדת הכנסת</strong>, למזג הצעה שעברה קריאה ראשונה (\"ההצעה העיקרית\") עם הצעה שעברה רק דיון מוקדם (\"ההצעה הנוספת\"). הדיון יהיה על בסיס הנוסח שאושר בקריאה הראשונה. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 84(ד)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><br><strong>חזרה מהצעה ממוזגת:</strong> אם כל יוזמי הצעה חזרו בהם — רואים אותה כאילו לא מוזגה. אם חזרו יוזמי ההצעה העיקרית — ההצעה הנוספת חוזרת לשלב שלפני המיזוג. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 84(ה)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
               "children": [],
-              "_open": false,
-              "detailsHtml": "<strong>סעיף 90(ג)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=140\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 90(ג) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה יכולה לתקן סעיפים בהצעה ולהוסיף סעיפים בתנאי שהם בתחום נושא ההצעה."
+              "_open": false
             },
             {
-              "id": "s8_2_4",
-              "title": "'נושא חדש'",
-              "icon": "⚠️",
-              "catId": "vaadat",
+              "id": "s8_3_ria",
+              "title": "דוח הערכת השפעות רגולציה (RIA)",
+              "icon": "",
+              "catId": "gov",
               "chpiqa": false,
               "depth": 1,
-              "details": "עד לאישור ההצעה לקריאה שנייה ושלישית, חבר כנסת או ממשלה יכול לטעון שתיקון חורג מנושא ההצעה.\n\nוועדת הכנסת תכריע אם אכן מדובר בנושא חדש. חבר ממשלה שטען נדרש להגיש טענתו בכתב עד למועד הדיון.\n\nאם ועדת הכנסת הכריעה שזהו נושא חדש — התיקון יוסר ולא יוכל להופיע אפילו כהסתייגות.",
               "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 84(ו)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 84(ו) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><strong>הסמכות:</strong> השר הממונה על ביצוע החוק<br><br>אם הכינה הממשלה דוח RIA — השר יעבירו לוועדה בסמוך לאחר העברת ההצעה ויציג אותו בפני הוועדה.<br><br><strong>חשוב:</strong> אין באמור כדי למנוע הצבעה על הצעת החוק בוועדה או בכנסת.",
               "children": [],
-              "_open": false,
-              "detailsHtml": "<strong>סעיף 90(ד)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=140\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 90(ד) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>עד לאישור ההצעה לקריאה שנייה ושלישית, חבר כנסת או ממשלה יכול לטעון שתיקון חורג מנושא ההצעה.<br><br>וועדת הכנסת תכריע אם אכן מדובר בנושא חדש. חבר ממשלה שטען נדרש להגיש טענתו בכתב עד למועד הדיון.<br><br>אם ועדת הכנסת הכריעה שזהו נושא חדש — התיקון יוסר ולא יוכל להופיע אפילו כהסתייגות."
+              "_open": false
             }
           ],
-          "_open": false,
-          "detailsHtml": "📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=132\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 84 לתקנון הכנסת — הכנת הצעת חוק לקריאה השנייה ולקריאה השלישית, פיצול ומיזוג</a>"
+          "_open": false
         },
         {
-          "id": "s8_3",
+          "id": "s8_4",
           "title": "דיון בעלות הכלכלית",
           "icon": "💰",
           "catId": "gov",
           "chpiqa": false,
           "depth": 0,
-          "details": "הוועדה תזמין נציג ממשרד האוצר להערכת עלות.\n\n• עלות מתחת ל~7 מלש\"ח — הטיפול הסתיים\n• עלות מעל ~7 מלש\"ח — הצעה תקציבית, מסלול נפרד",
           "detailType": "expand",
-          "children": [],
-          "_open": false,
-          "detailsHtml": "<strong>סעיף 80</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=76\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 80 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה תזמין נציג ממשרד האוצר להערכת עלות.<br><br>• עלות מתחת ל~7 מלש\"ח — הטיפול הסתיים<br>• עלות מעל ~7 מלש\"ח — הצעה תקציבית, מסלול נפרד"
+          "detailsHtml": "<strong>סעיף 93</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=113\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 93 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
+          "children": [
+            {
+              "id": "s8_4_who",
+              "title": "הערכת שר האוצר",
+              "icon": "",
+              "builtinIcon": "israel",
+              "catId": "gov",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 93(א)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=113\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 93(א) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><strong>הסמכות:</strong> הוועדה מזמינה את שר האוצר (או מי שהוא הסמיך) לברר את הערכתו בדבר העלות התקציבית.<br><br><strong>הערכה חלופית:</strong> חבר כנסת רשאי להציע לוועדה לקבל הערכה אחרת, בדרך כלל ממרכז המחקר והמידע של הכנסת. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=113\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 93(ב)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
+              "children": [],
+              "_open": false
+            },
+            {
+              "id": "s8_4_budget",
+              "title": "הצעה תקציבית",
+              "icon": "",
+              "catId": "gov",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 93(ד)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=114\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 93(ד) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>אם הוועדה קבעה שהעלות עולה על הסכום הנקוב בחוק-יסוד: משק המדינה — יצוין על הנוסח שהצעת החוק היא <strong>\"הצעת חוק תקציבית\"</strong>.<br><br><strong>משמעות:</strong> הצעת חוק תקציבית דורשת רוב מיוחד (61 ח\"כים) בקריאה השנייה והשלישית — אלא אם הממשלה נתנה הסכמתה.<br><br><strong>שינוי עמדת הממשלה:</strong> הממשלה רשאית לשנות את הסכמתה עד ליום שלפני הדיון. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=115\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 93(ה)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
+              "children": [],
+              "_open": false
+            }
+          ],
+          "_open": false
         },
         {
-          "id": "s8_4",
-          "title": "תיקונים והסתייגויות",
+          "id": "s8_5",
+          "title": "הסתייגויות",
           "icon": "📝",
           "catId": "chk",
           "chpiqa": false,
           "depth": 0,
-          "details": "כל חבר כנסת וממשלה רשאי להציע תיקונים להצעה. הוועדה יכולה להכניס תיקוניו לנוסח החוק.\n\nאם הצעותיו נדחו — ביכולתו להגיש הסתייגות על הצעת החוק. ההסתייגות תנוסח ביחס לסעיף או נושא, ולא ביחס לכולה.",
           "detailType": "expand",
+          "detailsHtml": "<strong>סעיף 86</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=104\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 86 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>כל חבר כנסת, שר, או סגן שר רשאי להציע תיקונים להצעת החוק בוועדה.",
           "children": [
             {
-              "id": "s8_4_1",
+              "id": "s8_5_who",
+              "title": "מי רשאי להגיש הסתייגות?",
+              "icon": "",
+              "builtinIcon": "israel",
+              "catId": "chk",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 86(ב)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=104\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 86(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>אם הוועדה דחתה הצעת תיקון (או שהקולות שקולים) — <strong>מציע ההצעה רשאי לבקש שהצעתו תצורף כהסתייגות.</strong><br><br><strong>תנאי:</strong> הבקשה חייבת להיות בטרם הסתיים הדיון שבו אישרה הוועדה את הצעת החוק, ובהתקיים אחד מאלה:<br>• הציג בעצמו את הצעתו בדיון <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=104\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 86(ב)(1)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>• ח\"כ אחר הציג בשמו (ולשר/סגן — נציג הממשלה), בתנאי שהעביר את ההסתייגות בחתימתו לפני ההנחה <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=104\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 86(ב)(2)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>• הגיש בכתב לפני הדיון וביקש שהוועדה תדון גם ללא נוכחותו, ויו\"ר הוועדה אישר <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=104\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 86(ב)(3)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
+              "children": [],
+              "_open": false
+            },
+            {
+              "id": "s8_5_format",
+              "title": "ניסוח הסתייגויות",
+              "icon": "",
+              "catId": "process",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 86(ג)–(ה)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=105\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 86(ג)–(ה) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>• הסתייגות תנוסח <strong>כתיקון להצעת החוק</strong> ותירשם לסעיף מסוים.<br>• <strong>הסתייגות לנושא</strong> (שמוסדר ביותר מסעיף אחד) תירשם לסעיף הראשון, ולצדה יצוינו שאר הסעיפים.<br>• הסתייגויות זהות של כמה מסתייגים יירשמו כהסתייגות אחת בשם כולם.",
+              "children": [],
+              "_open": false
+            },
+            {
+              "id": "s8_5_limits",
               "title": "פסילת הסתייגויות",
               "icon": "",
               "catId": "nesiut",
               "chpiqa": false,
               "depth": 1,
-              "details": "נשיאות הכנסת תפסול הסתייגויות גזעניות, שוללות את המדינה היהודית, פוגעניות או מזלזלות בכנסת.\n\nהסתייגויות זהות יאוחדו תחת שמות כל מציעיהן או תחת שם הסיעה.",
               "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 86(ד)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=105\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 86(ד) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><strong>הסמכות:</strong> נשיאות הכנסת<br><br>נשיאות הכנסת תפסול הסתייגות שהיא:<br>• שוללת את עצם הצעת החוק<br>• שוללת את קיומה של מדינת ישראל כמדינתו של העם היהודי<br>• גזענית במהותה<br>• מכילה ביטוי פוגע או גזעני, או פגיעה בכבוד הכנסת<br>• משנה את שם הצעת חוק המתקנת חוק קיים",
               "children": [],
-              "_open": false,
-              "detailsHtml": "<strong>סעיף 92</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=144\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 92 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>נשיאות הכנסת תפסול הסתייגויות גזעניות, שוללות את המדינה היהודית, פוגעניות או מזלזלות בכנסת.<br><br>הסתייגויות זהות יאוחדו תחת שמות כל מציעיהן או תחת שם הסיעה."
+              "_open": false
             },
             {
-              "id": "s8_4_2",
-              "title": "עלות כלכלית של הסתייגויות",
-              "icon": "",
-              "catId": "gov",
-              "chpiqa": false,
-              "depth": 1,
-              "details": "הוועדה תבחן הסתייגויות מבחינת עלות כלכלית באותו אופן של בחינת ההצעה עצמה.",
-              "detailType": "expand",
-              "children": [],
-              "_open": false,
-              "detailsHtml": "<strong>סעיף 92(ב)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=144\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 92(ב) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה תבחן הסתייגויות מבחינת עלות כלכלית באותו אופן של בחינת ההצעה עצמה."
-            },
-            {
-              "id": "s8_4_3",
-              "title": "בקשת רשות דיבור",
+              "id": "s8_5_speak",
+              "title": "בקשת רשות דיבור במליאה",
               "icon": "",
               "catId": "chk",
               "chpiqa": false,
               "depth": 1,
-              "details": "אם מציע תיקון לא הגיש הסתייגות, הוא רשאי — בעת הדיון או בכתב בחתימתו ליו\"ר הוועדה — לבקש רשות דיבור בעת הקריאה השנייה.",
               "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 86(ו)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=105\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 86(ו) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>חבר כנסת שלא הגיש הסתייגות — רשאי לבקש <strong>רשות דיבור במליאה</strong> בעת הקריאה השנייה. הבקשה תוצג בדיון בוועדה או תוגש ליו\"ר הוועדה בחתימתו, לפני שהוועדה אישרה את הצעת החוק.",
               "children": [],
-              "_open": false,
-              "detailsHtml": "<strong>סעיף 92(ג)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=144\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 92(ג) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>אם מציע תיקון לא הגיש הסתייגות, הוא רשאי — בעת הדיון או בכתב בחתימתו ליו\"ר הוועדה — לבקש רשות דיבור בעת הקריאה השנייה."
+              "_open": false
             }
           ],
-          "_open": false,
-          "detailsHtml": "<strong>סעיף 91</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=142\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 91 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>כל חבר כנסת וממשלה רשאי להציע תיקונים להצעה. הוועדה יכולה להכניס תיקוניו לנוסח החוק.<br><br>אם הצעותיו נדחו — ביכולתו להגיש הסתייגות על הצעת החוק. ההסתייגות תנוסח ביחס לסעיף או נושא, ולא ביחס לכולה."
+          "_open": false
         },
         {
-          "id": "s8_5",
-          "title": "סיום הדיון בהצעה",
-          "icon": "✅",
+          "id": "s8_6",
+          "title": "ניסוח הנוסח לקריאה שנייה",
+          "icon": "",
           "catId": "vaadat",
           "chpiqa": false,
           "depth": 0,
-          "details": "הוועדה תצביע על הנוסח הסופי. לאחר ההצבעה תגיש את ההצעה ליו\"ר הכנסת, ותכלול בדף נלווה פרטים, הסתייגויות ובקשות דיבור לקריאה השנייה.\n\nיו\"ר הכנסת יניח את ההצעה על שולחן הכנסת.\n\nאם לאחר סיום הדיון ולפני ההנחה דורש ח\"כ או ממשלה דיון מחודש (רוויזיה) — מועבר למסלול 'דיון מחודש'.\n\nלאחר ההנחה ועד לתחילת הקריאה השנייה, הוועדה רשאית למשוך את ההצעה לדיון נוסף. בדיון הנוסף בסמכותה לשנות סעיפים ולהציע הסרה מסדר היום.",
           "detailType": "expand",
+          "detailsHtml": "<strong>סעיף 84(א) + המחקר</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 84 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>התקנון קובע שהוועדה תכין את הצעת החוק — כלומר <strong>הוועדה אחראית לנוסח.</strong>",
+          "children": [
+            {
+              "id": "s8_6_usurp",
+              "title": "הלשכה המשפטית — שליטה שאיננה בתקנון",
+              "icon": "",
+              "catId": "chriga",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "🛑<br>לפי התקנון, <strong>הוועדה אחראית לנוסח הצעת החוק</strong> בהכנה לקריאה השנייה.<br><br>בפועל: במערכת 'סנהדרין', <strong>ליועמ\"ש הוועדה ולמנהל הוועדה שליטה בלעדית בנוסח.</strong> לחברי הכנסת ולוועדה אין גישת עריכה.<br><br>בחוברת 'הליך החקיקה' של הלשכה המשפטית נקבע שמנסח הצעת החוק בהכנה לקריאות הוא <strong>יועמ\"ש הוועדה</strong>, בתיאום עם הממונה על נוסח החוק בלשכה המשפטית — <strong>לכך אין זכר בתקנון.</strong><br><br>📜 מקורות: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 84 לתקנון</a> | חוברת המחקר 'ריבונות הכנסת' פרק ג', עמ' 32–35",
+              "children": [],
+              "_open": false
+            }
+          ],
+          "_open": false
+        },
+        {
+          "id": "s8_7",
+          "title": "הצבעה ואישור בוועדה",
+          "icon": "",
+          "builtinIcon": "check",
+          "catId": "vaadat",
+          "chpiqa": false,
+          "depth": 0,
+          "detailType": "expand",
+          "detailsHtml": "<strong>סעיף 87(א)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=106\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 87(א) לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><strong>הסמכות:</strong> הוועדה<br><br>הוועדה מצביעה ומאשרת את הנוסח הסופי. לאחר ההצבעה, תגיש את ההצעה ליו\"ר הכנסת בנוסח שקבעה, בצירוף:<br>• דף נלווה עם פרטי הצעת החוק<br>• הסתייגויות (אם יש)<br>• בקשות רשות דיבור במליאה (אם יש)",
+          "children": [
+            {
+              "id": "s8_7_revision",
+              "title": "דיון מחודש (רוויזיה) — לפני ההנחה",
+              "icon": "🔄",
+              "catId": "chk",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 89(א)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=107\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 89 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><strong>מי רשאי:</strong> הוועדה עצמה (לאחר שהכינה את הנוסח ולפני שהחלה הקריאה השנייה)<br><br><strong>מה:</strong> הוועדה רשאית לחדש את דיוניה, לתקן את הנוסח ואף להציע הסרה מסדר היום.<br><br><strong>תהליך:</strong> יו\"ר הוועדה מודיע ליו\"ר הכנסת, מזכיר הכנסת מודיע לכנסת, והוועדה מכינה מחדש את ההצעה.",
+              "children": [],
+              "_open": false
+            }
+          ],
+          "_open": false
+        },
+        {
+          "id": "s8_8",
+          "title": "הנחה על שולחן הכנסת",
+          "icon": "",
+          "builtinIcon": "shield-menorah",
+          "catId": "nesiut",
+          "chpiqa": false,
+          "depth": 0,
+          "detailType": "expand",
+          "detailsHtml": "<strong>סעיף 88</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=107\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 88 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><strong>הסמכות:</strong> מזכיר הכנסת מניח את ההצעה על שולחן הכנסת. יו\"ר הכנסת מעמיד אותה על סדר היום. <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=107\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 88(א)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br><br><strong>המתנה:</strong> הקריאה השנייה תחל לכל המוקדם <strong>למחרת ההנחה</strong>.<br><br><strong>קיצור:</strong> ועדת הכנסת רשאית לקצר את תקופת ההנחה, לפי בקשה בכתב של הוועדה שהכינה את הצעת החוק (ולגבי הצעה ממשלתית — גם הממשלה). <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=107\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 88(ב)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
           "children": [],
-          "_open": false,
-          "detailsHtml": "<strong>סעיף 93</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=145\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 93 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>הוועדה תצביע על הנוסח הסופי. לאחר ההצבעה תגיש את ההצעה ליו\"ר הכנסת, ותכלול בדף נלווה פרטים, הסתייגויות ובקשות דיבור לקריאה השנייה.<br><br>יו\"ר הכנסת יניח את ההצעה על שולחן הכנסת.<br><br>אם לאחר סיום הדיון ולפני ההנחה דורש ח\"כ או ממשלה דיון מחודש (רוויזיה) — מועבר למסלול 'דיון מחודש'.<br><br>לאחר ההנחה ועד לתחילת הקריאה השנייה, הוועדה רשאית למשוך את ההצעה לדיון נוסף. בדיון הנוסף בסמכותה לשנות סעיפים ולהציע הסרה מסדר היום."
+          "_open": false
+        },
+        {
+          "id": "s8_9",
+          "title": "הסרה מסדר היום",
+          "icon": "❌",
+          "catId": "vaadat",
+          "chpiqa": false,
+          "depth": 0,
+          "detailType": "expand",
+          "detailsHtml": "<strong>סעיף 94</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=116\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 94 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
+          "children": [
+            {
+              "id": "s8_9_how",
+              "title": "איך מסירים הצעה מסדר היום?",
+              "icon": "",
+              "catId": "vaadat",
+              "chpiqa": false,
+              "depth": 1,
+              "detailType": "expand",
+              "detailsHtml": "<strong>סעיף 94(א)–(ג)</strong> <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=116\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 94 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a><br>1. הוועדה מחליטה להציע לכנסת להסיר.<br>2. הצעת ההחלטה מונחת על שולחן הכנסת.<br>3. יו\"ר הוועדה מציג, הממשלה רשאית להביע עמדה.<br>4. היוזם רשאי להשיב.<br>5. <strong>המליאה מצביעה</strong> — אם מאשרת, ההצעה מוסרת.<br><br><strong>אם המליאה דחתה את הצעת ההסרה</strong> (או שהקולות שקולים):<br>• לאחר קריאה ראשונה: הוועדה תמשיך להכין ותגיש תוך 3 חודשים (ניתן להאריך). <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=116\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 94(ד)\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
+              "children": [],
+              "_open": false
+            }
+          ],
+          "_open": false
         }
-      ],
-      "showArrowAfter": true,
-      "builtinIcon": "committee"
+      ]
     },
     {
       "id": "s9",
