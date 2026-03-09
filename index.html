@@ -4459,47 +4459,9 @@ function renderDiamondOutcomeSvgs(){
 }
 
 function renderCrossArrows(){
-  // Remove old overlays
+  // Disabled for now — cross-branch visual arrows will be re-implemented
+  // The click-to-jump still works via flowJumpTo
   document.querySelectorAll('.cross-branch-overlay').forEach(o => o.remove());
-  
-  // Draw SVG overlay from cross-branch arrows to their targets
-  document.querySelectorAll('.cross-branch-arrow').forEach(el => {
-    const targetId = el.dataset.target;
-    if(!targetId) return;
-    const targetEl = document.getElementById(targetId);
-    if(!targetEl) return;
-    
-    const flowContainer = document.getElementById('flowPanel');
-    if(!flowContainer) return;
-    
-    const containerRect = flowContainer.getBoundingClientRect();
-    const srcRect = el.getBoundingClientRect();
-    const tgtRect = targetEl.getBoundingClientRect();
-    
-    // Account for scroll
-    const scrollTop = flowContainer.scrollTop;
-    const scrollLeft = flowContainer.scrollLeft;
-    
-    const startX = srcRect.left - containerRect.left + scrollLeft;
-    const startY = srcRect.bottom - containerRect.top + scrollTop;
-    const endX = tgtRect.left + tgtRect.width/2 - containerRect.left + scrollLeft;
-    const endY = tgtRect.top + tgtRect.height/2 - containerRect.top + scrollTop;
-    
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.classList.add('cross-branch-overlay');
-    const totalH = flowContainer.scrollHeight;
-    const totalW = flowContainer.scrollWidth;
-    svg.style.cssText = `position:absolute;top:0;left:0;width:${totalW}px;height:${totalH}px;pointer-events:none;z-index:5;overflow:visible`;
-    
-    // Simple L-shaped path: go left from chevron, then down/up to target
-    svg.innerHTML = `
-      <defs><marker id="crossBranchHead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2D7D46"/></marker></defs>
-      <path d="M ${startX} ${startY} L ${startX} ${endY} L ${endX} ${endY}" stroke="#2D7D46" stroke-width="2" fill="none" marker-end="url(#crossBranchHead)"/>
-    `;
-    
-    flowContainer.style.position = 'relative';
-    flowContainer.appendChild(svg);
-  });
 }
 
 function flowJumpTo(targetId){
