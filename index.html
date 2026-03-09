@@ -4459,52 +4459,42 @@ function renderDiamondOutcomeSvgs(){
 }
 
 function renderCrossArrows(){
-  // Draw SVG overlay from cross-branch arrows to their targets across the main split
+  // Remove old overlays
+  document.querySelectorAll('.cross-branch-overlay').forEach(o => o.remove());
+  
+  // Draw SVG overlay from cross-branch arrows to their targets
   document.querySelectorAll('.cross-branch-arrow').forEach(el => {
     const targetId = el.dataset.target;
+    if(!targetId) return;
     const targetEl = document.getElementById(targetId);
     if(!targetEl) return;
     
-    // Find the flowchart container (common ancestor of both branches)
     const flowContainer = document.getElementById('flowPanel');
     if(!flowContainer) return;
-    
-    // Remove old overlay
-    document.querySelectorAll('.cross-branch-overlay').forEach(o => o.remove());
     
     const containerRect = flowContainer.getBoundingClientRect();
     const srcRect = el.getBoundingClientRect();
     const tgtRect = targetEl.getBoundingClientRect();
     
+    // Account for scroll
+    const scrollTop = flowContainer.scrollTop;
+    const scrollLeft = flowContainer.scrollLeft;
+    
+    const startX = srcRect.left - containerRect.left + scrollLeft;
+    const startY = srcRect.bottom - containerRect.top + scrollTop;
+    const endX = tgtRect.left + tgtRect.width/2 - containerRect.left + scrollLeft;
+    const endY = tgtRect.top + tgtRect.height/2 - containerRect.top + scrollTop;
+    
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.classList.add('cross-branch-overlay');
-    svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible';
+    const totalH = flowContainer.scrollHeight;
+    const totalW = flowContainer.scrollWidth;
+    svg.style.cssText = `position:absolute;top:0;left:0;width:${totalW}px;height:${totalH}px;pointer-events:none;z-index:5;overflow:visible`;
     
-    const startX = srcRect.left + srcRect.width/2 - containerRect.left;
-    const startY = srcRect.bottom - containerRect.top;
-    const endX = tgtRect.left + tgtRect.width/2 - containerRect.left;
-    const endY = tgtRect.top - containerRect.top;
-    
-    // Route through the gap between branches: go horizontal first, then down to target
-    // Find the midpoint between the two branches (the "dead space")
-    const srcBranch = el.closest('.flow-branch');
-    const tgtBranch = targetEl.closest('.flow-branch');
-    let midX;
-    if(srcBranch && tgtBranch){
-      const srcBR = srcBranch.getBoundingClientRect();
-      const tgtBR = tgtBranch.getBoundingClientRect();
-      // Gap between branches
-      const gapLeft = Math.min(srcBR.right, tgtBR.right);
-      const gapRight = Math.max(srcBR.left, tgtBR.left);
-      midX = (gapLeft + gapRight) / 2 - containerRect.left;
-    } else {
-      midX = (startX + endX) / 2;
-    }
-    
-    // Solid line: horizontal to gap, down in gap, horizontal to target
+    // Simple L-shaped path: go left from chevron, then down/up to target
     svg.innerHTML = `
       <defs><marker id="crossBranchHead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2D7D46"/></marker></defs>
-      <path d="M ${startX} ${startY} L ${startX} ${startY+10} L ${midX} ${startY+10} L ${midX} ${endY} L ${endX} ${endY}" stroke="#2D7D46" stroke-width="2.5" fill="none" marker-end="url(#crossBranchHead)"/>
+      <path d="M ${startX} ${startY} L ${startX} ${endY} L ${endX} ${endY}" stroke="#2D7D46" stroke-width="2" fill="none" marker-end="url(#crossBranchHead)"/>
     `;
     
     flowContainer.style.position = 'relative';
@@ -4565,7 +4555,7 @@ function renderAll(){
   renderHierarchy();
   renderFlowChart();
   // Delay back arrows + fork lines rendering to ensure DOM is updated
-  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderDiamondForkLines(); renderDiamondOutcomeSvgs(); renderCrossArrows(); }, 100);
+  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderCrossArrows(); }, 100);
   // Update version badge
   const vb = document.getElementById("versionBadge");
   if(vb){
