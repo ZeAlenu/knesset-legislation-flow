@@ -193,7 +193,7 @@
           "detailBgColor": "#f7f7f7",
           "detailTextColor": "#000000",
           "showArrowAfter": true,
-          "detailsHtml": "🛑<br>חוק יסוד: הכנסת קובע שהכנסת תקבע את סדרי עבודתה. <br>בחוק הכנסת נקבע שיש ליועמ\"ש אחריות לייעץ לחברי הכנסת וועדותיה ולהבטיח את תקינות הליך החקיקה. <br>היועמ\"ש לא מופיעה בכלל בתקנון ואין לחברי הכנסת חובה להוועץ איתה. <br><br>מכאן, שלפי סדרי עבודת הכנסת החוקיים, אין ליועמ\"ש סמכות לעכב, לאשר נוסח או למנוע הגשה.<br><br>בפועל: מערכת 'הסנהדרין' מעניקה ליועמ\"ש הרשאות שהחוק והתקנון ייעדו לח\"כ ולהפך. <br>כיוון שיש ללשכה המשפטית שליטה בהתקדמות החוק בתהליך, יש לה למעשה שליטה בחוק - היא יכולה לעכב את ההגשה של חוק ולהתנות את ההגשה בהסכמה של ח\"כ לשינויים בחוק.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=115\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 75 לתקנון הכנסת — הגשת הצעת חוק פרטית, אישורה והנחתה על שולחן הכנסת</a>"
+          "detailsHtml": "🛑<br>חוק יסוד: הכנסת קובע שהכנסת תקבע את סדרי עבודתה. <br>בחוק הכנסת נקבע שיש ליועמ\"ש אחריות לייעץ לחברי הכנסת וועדותיה ולהבטיח את תקינות הליך החקיקה. <br>היועמ\"ש לא מופיעה בכלל בתקנון ואין לחברי הכנסת חובה להוועץ איתה. <br><br>מכאן, שלפי סדרי עבודת הכנסת החוקיים, אין ליועמ\"ש סמכות לעכב, לאשר נוסח או למנוע הגשה.<br><br>בפועל: מערכת 'הסנהדרין' מעניקה ליועמ\"ש הרשאות שהחוק והתקנון ייעדו לח\"כ ולהפך. <br>כיוון שיש ללשכה המשפטית שליטה בהתקדמות החוק בתהליך, יש לה למעשה שליטה בחוק - היא יכולה לעכב את ההגשה של חוק ולהתנות את ההגשה בהסכמה של ח\"כ לשינויים בחוק.<br>סעיף 75 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=115\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 75 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s1_3",
@@ -469,7 +469,7 @@
           "detailType": "chriga",
           "children": [],
           "_open": false,
-          "detailsHtml": "תקנון: לא כתוב בסמכות מי לקבוע דמיון.<br><br>בפועל: הלשכה המשפטית של הכנסת נטלה לעצמה את הסמכות לקבוע דמיון.<br><br>אם ההצעה הקודמת הוסרה מסדר היום לפני קריאה שניה, הוסרה בהמלצת ועדה מכינה, או נדונה כהצעה לסדר היום — יש להמתין 6 חודשים מסיום הטיפול בהצעה הקודמת.<br><br>אם חל שינוי של ממש בנסיבות, יו\"ר הכנסת יכול להקדים את הדיון לבקשת היוזם.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=118\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 76 לתקנון הכנסת — מועד הדיון המוקדם והצמדה</a>"
+          "detailsHtml": "תקנון: לא כתוב בסמכות מי לקבוע דמיון.<br><br>בפועל: הלשכה המשפטית של הכנסת נטלה לעצמה את הסמכות לקבוע דמיון.<br><br>אם ההצעה הקודמת הוסרה מסדר היום לפני קריאה שניה, הוסרה בהמלצת ועדה מכינה, או נדונה כהצעה לסדר היום — יש להמתין 6 חודשים מסיום הטיפול בהצעה הקודמת.<br><br>אם חל שינוי של ממש בנסיבות, יו\"ר הכנסת יכול להקדים את הדיון לבקשת היוזם.<br>סעיף 76 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=118\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 76 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         }
       ],
       "showArrowAfter": true,
@@ -493,7 +493,7 @@
           "children": [],
           "_open": false,
           "builtinIcon": "podium",
-          "detailsHtml": "בקריאה טרומית, חייב היוזם (או מחליף שמינה לכך) לנמק את הצעת החוק שלו. <br>אם הוא נעדר מבלי להסמיך מחליף אין דיון. <br>אם היו\"ר לא מוצא את ההעדרות מוצדקת, המכסה אבדה והחוק חוזר להמתנה \"בתור\" הסיעתי.<br><br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=120\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 77 לתקנון הכנסת — סדרי הדיון המוקדם</a>"
+          "detailsHtml": "בקריאה טרומית, חייב היוזם (או מחליף שמינה לכך) לנמק את הצעת החוק שלו. <br>אם הוא נעדר מבלי להסמיך מחליף אין דיון. <br>אם היו\"ר לא מוצא את ההעדרות מוצדקת, המכסה אבדה והחוק חוזר להמתנה \"בתור\" הסיעתי.<br><br>סעיף 77 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=120\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 77 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s3_2",
@@ -533,7 +533,7 @@
             }
           ],
           "_open": false,
-          "detailsHtml": "אם חבר ממשלה הודיע בהסכמת יוזם ההצעה על הבעת עמדת הממשלה במועד אחר, ההצבעה נדחית.<br><br>לבקשת היוזם היא תתקיים במועד אחר בישיבה יעודית להצעות חוק, או בישיבה אחרת כהצעה מוצמדת.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=120\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 77 לתקנון הכנסת — סדרי הדיון המוקדם</a>",
+          "detailsHtml": "אם חבר ממשלה הודיע בהסכמת יוזם ההצעה על הבעת עמדת הממשלה במועד אחר, ההצבעה נדחית.<br><br>לבקשת היוזם היא תתקיים במועד אחר בישיבה יעודית להצעות חוק, או בישיבה אחרת כהצעה מוצמדת.<br>סעיף 77 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=120\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 77 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
           "builtinIcon": "plenum"
         },
         {
@@ -571,7 +571,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "&nbsp;<span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/state-emblem.png\" width=\"28\" height=\"28\" style=\"object-fit:contain\"></span>&nbsp;יו\"ר הכנסת היושב בדיון, מודיע לאיזו ועדה מוועדות הכנסת תעבור הצעת החוק לצורך הכנתה לקריאה הראשונה.<br><br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=124\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 78 לתקנון הכנסת — קביעת ועדה לדיון בהצעת חוק אחרי הדיון המוקדם</a>",
+          "detailsHtml": "&nbsp;<span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/state-emblem.png\" width=\"28\" height=\"28\" style=\"object-fit:contain\"></span>&nbsp;יו\"ר הכנסת היושב בדיון, מודיע לאיזו ועדה מוועדות הכנסת תעבור הצעת החוק לצורך הכנתה לקריאה הראשונה.<br><br>סעיף 78 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=124\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 78 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>",
           "builtinIcon": "israel",
           "showArrowAfter": false,
           "connector": "+"
@@ -603,7 +603,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "יוזם ההצעה, ראש הוועדה אליה הועברה וראש ועדה אחרת יכולים לבקש החלפת ועדה.<br><br>• אם הוועדה כבר החלה בדיונים — נדרש אישור יו\"ר הוועדה להליך ההחלפה<br>• אם הדיונים עוד לא החלו — יושעו עד לסיום ההליך<br><br>וועדת הכנסת תדון אם להמליץ על החלפה:<br>• אם מחליטה שלא — הוועדה נקבעה סופית<br>• אם ממליצה להחליף — מליאת הכנסת תצביע ללא דיון<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=124\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 78 לתקנון הכנסת — קביעת ועדה לדיון בהצעת חוק אחרי הדיון המוקדם</a>"
+          "detailsHtml": "יוזם ההצעה, ראש הוועדה אליה הועברה וראש ועדה אחרת יכולים לבקש החלפת ועדה.<br><br>• אם הוועדה כבר החלה בדיונים — נדרש אישור יו\"ר הוועדה להליך ההחלפה<br>• אם הדיונים עוד לא החלו — יושעו עד לסיום ההליך<br><br>וועדת הכנסת תדון אם להמליץ על החלפה:<br>• אם מחליטה שלא — הוועדה נקבעה סופית<br>• אם ממליצה להחליף — מליאת הכנסת תצביע ללא דיון<br>סעיף 78 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=124\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 78 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         }
       ],
       "showArrowAfter": true,
@@ -626,7 +626,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "ליו\"ר הוועדה אסור להקדים הצעה שלו להצעות אחרות שהגיעו לוועדה לפניה, ולא נדונו בחצי השנה האחרונה.<br><br>מותר לו להקדים את שלו אם יוזמי ההצעות המוקדמות מבקשים לדון קודם בהצעתו או אם חלפה יותר מחצי שנה מאז שהצעתו הגיעה לוועדה.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=125\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 79 לתקנון הכנסת — הכנת הצעת חוק פרטית לקריאה הראשונה, פיצול ומיזוג ופרסום ברשומות</a>"
+          "detailsHtml": "ליו\"ר הוועדה אסור להקדים הצעה שלו להצעות אחרות שהגיעו לוועדה לפניה, ולא נדונו בחצי השנה האחרונה.<br><br>מותר לו להקדים את שלו אם יוזמי ההצעות המוקדמות מבקשים לדון קודם בהצעתו או אם חלפה יותר מחצי שנה מאז שהצעתו הגיעה לוועדה.<br>סעיף 79 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=125\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 79 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s5_2",
@@ -639,7 +639,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "הוועדה יכולה לדון בהסרת ההצעה מסדר היום.<br><br>אם רוב או חצי מחבריה תומכים בהסרה — ההצעה עוברת למסלול של הסרה מסדר היום.<br>📜 מקור: <a href=\"https://www.nevo.co.il/law/72248#Seif100\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 94 לתקנון הכנסת — הסרת הצעת חוק מסדר היום</a>"
+          "detailsHtml": "הוועדה יכולה לדון בהסרת ההצעה מסדר היום.<br><br>אם רוב או חצי מחבריה תומכים בהסרה — ההצעה עוברת למסלול של הסרה מסדר היום.<br>סעיף 94 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=116\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 94 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s5_3",
@@ -739,7 +739,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "יו\"ר הכנסת קובע את המועד, ואינו מחויב לסד זמנים. ביכולתו לקבוע דיון משולב בכמה הצעות בנושא דומה.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=127\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 81 לתקנון הכנסת — הנחה על שולחן הכנסת ומועד הקריאה הראשונה</a>"
+          "detailsHtml": "יו\"ר הכנסת קובע את המועד, ואינו מחויב לסד זמנים. ביכולתו לקבוע דיון משולב בכמה הצעות בנושא דומה.<br>סעיף 81 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=127\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 81 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s6_2",
@@ -752,7 +752,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "היוזם או מחליפו מנמק את ההצעה.<br>חבר הממשלה רשאי להביע את דעתה.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=128\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 82 לתקנון הכנסת — סדרי הקריאה הראשונה</a>"
+          "detailsHtml": "היוזם או מחליפו מנמק את ההצעה.<br>חבר הממשלה רשאי להביע את דעתה.<br>סעיף 82 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=128\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 82 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s6_3",
@@ -788,7 +788,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "הצעת החוק נשארת באותה הוועדה שהכינה אותה לקריאה הראשונה.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=130\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 83 לתקנון הכנסת — קביעת ועדה לדיון בהצעת חוק אחרי הקריאה ראשונה</a>"
+          "detailsHtml": "הצעת החוק נשארת באותה הוועדה שהכינה אותה לקריאה הראשונה.<br>סעיף 83 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=130\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 83 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s7_2",
@@ -801,7 +801,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "יוזם ההצעה, ראש הוועדה אליה הועברה וראש ועדה אחרת יכולים לבקש החלפה.<br><br>• אם הוועדה כבר החלה בדיונים — נדרש אישור יו\"ר הוועדה<br>• אם לא החלו — יושעו עד סיום ההליך<br><br>וועדת הכנסת תדון אם להמליץ על החלפה:<br>• אם לא — הוועדה נקבעה סופית<br>• אם כן — מליאת הכנסת תצביע ללא דיון<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=130\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 83 לתקנון הכנסת — קביעת ועדה לדיון בהצעת חוק אחרי הקריאה ראשונה</a>"
+          "detailsHtml": "יוזם ההצעה, ראש הוועדה אליה הועברה וראש ועדה אחרת יכולים לבקש החלפה.<br><br>• אם הוועדה כבר החלה בדיונים — נדרש אישור יו\"ר הוועדה<br>• אם לא החלו — יושעו עד סיום ההליך<br><br>וועדת הכנסת תדון אם להמליץ על החלפה:<br>• אם לא — הוועדה נקבעה סופית<br>• אם כן — מליאת הכנסת תצביע ללא דיון<br>סעיף 83 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=130\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 83 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         }
       ],
       "showArrowAfter": true,
@@ -1138,7 +1138,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "יו\"ר הכנסת קובע את המועד, ואינו מחויב לסד זמנים. ביכולתו לקבוע דיון משולב בכמה הצעות בנושא דומה.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=139\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 88 לתקנון הכנסת — הנחה על שולחן הכנסת ומועד הקריאה השנייה</a>"
+          "detailsHtml": "יו\"ר הכנסת קובע את המועד, ואינו מחויב לסד זמנים. ביכולתו לקבוע דיון משולב בכמה הצעות בנושא דומה.<br>סעיף 88 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=139\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 88 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s9_2",
@@ -1191,7 +1191,7 @@
             }
           ],
           "_open": false,
-          "detailsHtml": "יו\"ר הוועדה המכינה מנמק את ההצעה.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=140\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 90 לתקנון הכנסת — סדרי הדיון וההצבעה בקריאה השנייה</a>"
+          "detailsHtml": "יו\"ר הוועדה המכינה מנמק את ההצעה.<br>סעיף 90 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=140\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 90 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s9_3",
@@ -1267,7 +1267,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "כברירת מחדל, הקריאה השלישית חלה מיד לאחר הקריאה השנייה.<br><br>אם התקבלה לפחות הסתייגות אחת — יו\"ר הוועדה המכינה או נציג הממשלה יכולים לדרוש את דחיית ההצבעה לשבוע הבא.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=144\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 92 לתקנון הכנסת — סדרי הקריאה השלישית</a>"
+          "detailsHtml": "כברירת מחדל, הקריאה השלישית חלה מיד לאחר הקריאה השנייה.<br><br>אם התקבלה לפחות הסתייגות אחת — יו\"ר הוועדה המכינה או נציג הממשלה יכולים לדרוש את דחיית ההצבעה לשבוע הבא.<br>סעיף 92 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=144\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 92 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         },
         {
           "id": "s10_2",
@@ -1280,7 +1280,7 @@
           "detailType": "expand",
           "children": [],
           "_open": false,
-          "detailsHtml": "המליאה מצביעה על החוק כולו:<br><br>✅ אושר — החוק נכנס לספר החוקים<br>❌ נדחה — הוסר מסדר היום. הסרתו מונעת ל-6 חודשים את העלאתו מחדש.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=144\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 92 לתקנון הכנסת — סדרי הקריאה השלישית</a>"
+          "detailsHtml": "המליאה מצביעה על החוק כולו:<br><br>✅ אושר — החוק נכנס לספר החוקים<br>❌ נדחה — הוסר מסדר היום. הסרתו מונעת ל-6 חודשים את העלאתו מחדש.<br>סעיף 92 <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=144\" target=\"_blank\" rel=\"noopener\" style=\"text-decoration:none;cursor:pointer\" title=\"סעיף 92 לתקנון הכנסת\"><img src=\"icons/scroll.png\" width=\"18\" height=\"22\" style=\"object-fit:contain;vertical-align:middle\"></a>"
         }
       ],
       "builtinIcon": "plenum"
