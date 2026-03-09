@@ -4345,8 +4345,9 @@ function renderDiamondOutcomes(step){
   // RIGHT outcome (first in RTL)
   html += renderOutcome(right, 'right');
   
-  // Line: right chevron → diamond
-  html += `<div style="flex:0 0 20px;height:2px;background:${lineColor};align-self:center"></div>`;
+  // Line: right chevron → diamond (longer to push approved chain away from center)
+  const lineLen = step.lineLength || 50;
+  html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
   
   // Diamond (center)
   html += `<div style="flex:0 0 auto;align-self:center">`;
@@ -4355,7 +4356,7 @@ function renderDiamondOutcomes(step){
   html += `</div></div>`;
   
   // Line: diamond → left chevron
-  html += `<div style="flex:0 0 20px;height:2px;background:${lineColor};align-self:center"></div>`;
+  html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
   
   // LEFT outcome (second in RTL)
   html += renderOutcome(left, 'left');
