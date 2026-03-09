@@ -4076,6 +4076,50 @@ function flowDeleteStep(id){
   }
 }
 
+function editDiamondOutcome(stepId, part, outcomeIdx){
+  // Find the step in flowSteps or in branch steps
+  let step = findFlowStep(stepId);
+  if(!step){
+    // Search in branches
+    for(const fs of appState.flowSteps){
+      if(fs.branches){
+        for(const br of fs.branches){
+          for(const bs of (br.steps||[])){
+            if(bs.id === stepId) { step = bs; break; }
+          }
+        }
+      }
+    }
+  }
+  if(!step) return;
+  pushUndo();
+  
+  if(part === 'diamond'){
+    const newLabel = prompt("טקסט מעוין:", (step.diamondLabel||'').replace(/\n/g,' '));
+    if(newLabel !== null) step.diamondLabel = newLabel.replace(/ /g,'\n');
+    const newColor = prompt("צבע מעוין (hex):", step.diamondColor || '#1B2A4A');
+    if(newColor !== null && newColor.trim()) step.diamondColor = newColor.trim();
+    renderAll();
+  } else if(part === 'outcome' && step.outcomes && step.outcomes[outcomeIdx]){
+    const out = step.outcomes[outcomeIdx];
+    const newLabel = prompt("טקסט שברון:", out.label||'');
+    if(newLabel !== null) out.label = newLabel;
+    const newColor = prompt("צבע שברון (hex):", out.chevronColor||'#2E86AB');
+    if(newColor !== null && newColor.trim()) out.chevronColor = newColor.trim();
+    if(out.connectLabel !== undefined){
+      const newConn = prompt("טקסט תיבה:", out.connectLabel||'');
+      if(newConn !== null) out.connectLabel = newConn;
+    }
+    if(out.connectLabel2 !== undefined){
+      const newConn2 = prompt("טקסט תיבה שנייה:", out.connectLabel2||'');
+      if(newConn2 !== null) out.connectLabel2 = newConn2;
+    }
+    const newJumpColor = prompt("צבע תיבות (hex):", out.jumpColor||'#1B2A4A');
+    if(newJumpColor !== null && newJumpColor.trim()) out.jumpColor = newJumpColor.trim();
+    renderAll();
+  }
+}
+
 function flowInsertStep(index, context){
   pushUndo();
   const newStep = {
@@ -4297,20 +4341,21 @@ function renderDiamondOutcomes(step){
     let h = `<div style="flex:0 0 auto;position:relative;display:flex;align-items:center" ${crossClass}>`;
     
     // Chevron — voteDecision style (hexagonal, attached to diamond)
-    h += `<div style="padding:${padding};background:${out.chevronColor||chevronColor};color:${out.chevronText||chevronText};font-size:7px;font-weight:600;line-height:1.4;text-align:center;clip-path:${clipPath};min-width:50px;white-space:nowrap;cursor:pointer" ${clickTarget}>${escH(out.label||'').replace(/\n/g,'<br>')}</div>`;
+    const editChevron = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','outcome',${outcomes.indexOf(out)})" title="ערוך שברון"` : clickTarget;
+    h += `<div style="padding:${padding};background:${out.chevronColor||chevronColor};color:${out.chevronText||chevronText};font-size:7px;font-weight:600;line-height:1.4;text-align:center;clip-path:${clipPath};min-width:50px;white-space:nowrap;cursor:pointer" ${editChevron}>${escH(out.label||'').replace(/\n/g,'<br>')}</div>`;
     
     // Arrow DOWN (absolute, doesn't affect height)
     if(out.arrowDir === 'down'){
       const pillColor = out.jumpColor || '#4A148C';
       h += `<div style="position:absolute;top:calc(100% + 1px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
-      h += `<svg width="16" height="10"><line x1="8" y1="0" x2="8" y2="7" stroke="${pillColor}" stroke-width="2"/><polygon points="4,6 12,6 8,10" fill="${pillColor}"/></svg>`;
+      h += `<svg width="16" height="20"><line x1="8" y1="0" x2="8" y2="16" stroke="${pillColor}" stroke-width="2"/><polygon points="4,14 12,14 8,20" fill="${pillColor}"/></svg>`;
       if(out.connectLabel){
-        h += `<div style="padding:3px 10px;background:${pillColor};color:#fff;border-radius:5px;cursor:pointer;text-align:center;font-size:8px;font-weight:600;line-height:1.2;white-space:nowrap" ${clickTarget}>${escH(out.connectLabel)}</div>`;
+        h += `<div style="padding:4px 12px;background:${pillColor};color:#fff;border-radius:5px;cursor:pointer;text-align:center;font-size:8px;font-weight:600;line-height:1.3;white-space:nowrap" ${clickTarget}>${escH(out.connectLabel)}</div>`;
       }
       // Second box below (connectLabel2)
       if(out.connectLabel2){
-        h += `<svg width="16" height="10"><line x1="8" y1="0" x2="8" y2="7" stroke="${pillColor}" stroke-width="2"/><polygon points="4,6 12,6 8,10" fill="${pillColor}"/></svg>`;
-        h += `<div style="padding:4px 12px;background:${pillColor};color:#fff;border-radius:5px;cursor:pointer;text-align:center;font-size:9px;font-weight:600;line-height:1.2;white-space:nowrap">${escH(out.connectLabel2)}</div>`;
+        h += `<svg width="16" height="20"><line x1="8" y1="0" x2="8" y2="16" stroke="${pillColor}" stroke-width="2"/><polygon points="4,14 12,14 8,20" fill="${pillColor}"/></svg>`;
+        h += `<div style="padding:5px 14px;background:${pillColor};color:#fff;border-radius:5px;cursor:pointer;text-align:center;font-size:9px;font-weight:600;line-height:1.3;white-space:nowrap">${escH(out.connectLabel2)}</div>`;
       }
       h += `</div>`;
     }
@@ -4346,8 +4391,9 @@ function renderDiamondOutcomes(step){
   html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
   
   // Diamond (center)
+  const editDiamond = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" style="cursor:pointer" title="ערוך מעוין"` : '';
   html += `<div style="flex:0 0 auto;align-self:center">`;
-  html += `<div style="width:${dSize}px;height:${dSize}px;background:${diamondColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center">`;
+  html += `<div ${editDiamond} style="width:${dSize}px;height:${dSize}px;background:${diamondColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;${appState.editing?'cursor:pointer':''}">`;
   html += `<span style="transform:rotate(-45deg);color:${diamondText};font-size:9px;font-weight:600;text-align:center;line-height:1.2">${escH(step.diamondLabel||'הצבעה\nלהסיר').replace(/\n/g,'<br>')}</span>`;
   html += `</div></div>`;
   
