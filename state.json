@@ -1865,7 +1865,7 @@
           "chevronColor": "#2E86AB",
           "jumpColor": "#1B2A4A",
           "crossArrowTo": "f14",
-          "chainHeight": 150
+          "chainHeight": 250
         },
         {
           "label": "נדחתה",
@@ -2091,5 +2091,5 @@
   "nextId": 1047,
   "publishDate": "2026-03-09T21:59:54.669Z",
   "publishedBy": "zan2026",
-  "mergedAt": "2026-03-10T00:25:52.295437"
+  "mergedAt": "2026-03-10T00:26:58.605894"
 }
