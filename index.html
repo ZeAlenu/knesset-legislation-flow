@@ -4272,12 +4272,8 @@ function renderDiamondOutcomes(step){
       html += `<div style="display:inline-block;padding:5px 10px;background:${out.color||'#4A148C'};color:${out.textColor||'#fff'};border-radius:12px;font-size:10px;font-weight:600;cursor:pointer" onclick="flowJumpTo('${out.jumpTo}')">${escH(out.jumpLabel||'').replace(/\n/g,' ')}</div>`;
     } else if(out.targetType === 'crossBranch'){
       // Arrow pointing to the other branch — just show arrow indicator
-      html += `<div class="cross-branch-arrow" data-target="${out.crossTo}" style="cursor:pointer" onclick="flowJumpTo('${out.crossTo}')">`;
-      html += `<svg width="60" height="30" viewBox="0 0 60 30" style="display:block;margin:0 auto">`;
-      html += `<defs><marker id="cbArrow${oi}" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="${out.color||'#2D7D46'}"/></marker></defs>`;
-      // Arrow pointing left (toward other branch in RTL)
-      html += `<line x1="55" y1="15" x2="5" y2="15" stroke="${out.color||'#2D7D46'}" stroke-width="2.5" marker-end="url(#cbArrow${oi})"/>`;
-      html += `</svg>`;
+      html += `<div class="cross-branch-arrow" data-target="${out.crossTo}" style="cursor:pointer;padding:4px" onclick="flowJumpTo('${out.crossTo}')">`;
+      html += `<div style="font-size:9px;color:${out.color||'#2D7D46'};font-weight:600">↩ חזרה לדיון הכנה ←</div>`;
       html += `</div>`;
     }
     
@@ -4431,26 +4427,44 @@ function renderDiamondOutcomeSvgs(){
 }
 
 function renderCrossArrows(){
-  document.querySelectorAll('.cross-arrow-svg').forEach(svg => {
-    const targetId = svg.dataset.target;
+  // Draw SVG overlay lines from cross-branch arrows to their targets
+  document.querySelectorAll('.cross-branch-arrow').forEach(el => {
+    const targetId = el.dataset.target;
     const targetEl = document.getElementById(targetId);
-    if(!targetEl || !svg.clientWidth) return;
+    if(!targetEl) return;
     
-    const svgRect = svg.getBoundingClientRect();
-    const targetRect = targetEl.getBoundingClientRect();
-    const w = svg.clientWidth;
-    const h = 30;
-    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    // Find the common parent (the split container)
+    const splitContainer = el.closest('.flow-branch-container') || el.closest('.flow-branch');
+    if(!splitContainer) return;
     
-    // Arrow pointing right (toward the other branch)
-    const startX = w/2;
-    const endX = w;  // point to the right edge (toward other branch)
-    const midY = h/2;
+    // Remove old overlay if any
+    const oldOverlay = splitContainer.querySelector('.cross-branch-overlay');
+    if(oldOverlay) oldOverlay.remove();
+    
+    const containerRect = splitContainer.getBoundingClientRect();
+    const srcRect = el.getBoundingClientRect();
+    const tgtRect = targetEl.getBoundingClientRect();
+    
+    // Create SVG overlay
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('cross-branch-overlay');
+    svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible';
+    
+    const startX = srcRect.left + srcRect.width/2 - containerRect.left;
+    const startY = srcRect.bottom - containerRect.top;
+    const endX = tgtRect.left + tgtRect.width/2 - containerRect.left;
+    const endY = tgtRect.top + tgtRect.height/2 - containerRect.top;
+    
+    // Curved path from source to target
+    const midY = Math.max(startY, endY) + 20;
     
     svg.innerHTML = `
-      <defs><marker id="crossHead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2D7D46"/></marker></defs>
-      <path d="M ${startX} 0 Q ${startX} ${midY} ${endX} ${midY}" stroke="#2D7D46" stroke-width="2" fill="none" marker-end="url(#crossHead)" stroke-dasharray="4,3"/>
+      <defs><marker id="crossBranchHead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2D7D46"/></marker></defs>
+      <path d="M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}" stroke="#2D7D46" stroke-width="2.5" fill="none" marker-end="url(#crossBranchHead)" stroke-dasharray="6,4"/>
     `;
+    
+    splitContainer.style.position = 'relative';
+    splitContainer.appendChild(svg);
   });
 }
 
