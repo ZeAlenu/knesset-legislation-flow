@@ -4,6 +4,7 @@ import http.server
 import os
 import json
 import hashlib
+import subprocess
 from urllib.parse import parse_qs, urlparse
 from datetime import datetime, timedelta
 import secrets
@@ -19,6 +20,47 @@ EDITOR_PASS = "עורכת2026"     # View + edit
 sessions = {}  # token -> {"role": "viewer"|"editor", "expires": datetime}
 
 SESSION_HOURS = 24
+PUBLISH_KEY = "97d2870b8acfb063d9bc11e3ef9ce2db"
+STATE_FILE = os.path.join(SITE_DIR, "state.json")
+
+# --- Merge logic (from publish.py) ---
+def step_content_size(step):
+    return len(step.get("details", "") or "") + len(step.get("detailsHtml", "") or "")
+
+def merge_step_content(existing_step, incoming_step):
+    merged = dict(incoming_step)
+    ex_content = step_content_size(existing_step)
+    in_content = step_content_size(incoming_step)
+    if ex_content > in_content and in_content == 0:
+        structural_fields = ["title", "catId", "detailType", "builtinIcon", "icon", "chpiqa"]
+        has_other_changes = any(existing_step.get(f) != incoming_step.get(f) for f in structural_fields)
+        if not has_other_changes:
+            merged["details"] = existing_step.get("details", "")
+            merged["detailsHtml"] = existing_step.get("detailsHtml")
+    return merged
+
+def deep_merge_steps(existing_steps, incoming_steps):
+    if not existing_steps: return incoming_steps or []
+    if not incoming_steps: return existing_steps
+    ex_map = {s["id"]: s for s in existing_steps}
+    result, seen = [], set()
+    for s in incoming_steps:
+        seen.add(s["id"])
+        if s["id"] in ex_map:
+            merged = merge_step_content(ex_map[s["id"]], s)
+            merged["children"] = deep_merge_steps(ex_map[s["id"]].get("children", []), s.get("children", []))
+            result.append(merged)
+        else:
+            result.append(s)
+    for s in existing_steps:
+        if s["id"] not in seen:
+            result.append(s)
+    return result
+
+def deep_merge_stage(existing_stage, incoming_stage):
+    merged = dict(incoming_stage)
+    merged["steps"] = deep_merge_steps(existing_stage.get("steps", []), incoming_stage.get("steps", []))
+    return merged
 
 def make_token():
     return secrets.token_hex(32)
@@ -99,8 +141,17 @@ class ProtectedHandler(http.server.SimpleHTTPRequestHandler):
         # Serve static files normally
         super().do_GET()
 
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "POST")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Publish-Key")
+        self.end_headers()
+
     def do_POST(self):
-        if self.path == "/login":
+        path = urlparse(self.path).path
+
+        if path == "/login":
             length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(length).decode("utf-8")
             params = parse_qs(body)
@@ -123,8 +174,86 @@ class ProtectedHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_login_page(error=True)
             return
 
-        # Forward other POSTs
-        super().do_GET()
+        if path == "/publish":
+            self.handle_publish()
+            return
+
+        if path == "/report":
+            self.handle_report()
+            return
+
+        self.send_error(404)
+
+    def handle_publish(self):
+        key = self.headers.get("X-Publish-Key", "")
+        if key != PUBLISH_KEY:
+            self.send_response(401)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(b'{"error":"unauthorized"}')
+            return
+        length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(length)
+        try:
+            data = json.loads(body)
+            existing = {}
+            if os.path.exists(STATE_FILE):
+                with open(STATE_FILE, "r") as f:
+                    try: existing = json.load(f)
+                    except: pass
+            if existing.get("stages") and data.get("stages"):
+                existing_map = {s["id"]: s for s in existing["stages"]}
+                merged_stages, seen = [], set()
+                for s in data["stages"]:
+                    seen.add(s["id"])
+                    if s["id"] in existing_map:
+                        merged_stages.append(deep_merge_stage(existing_map[s["id"]], s))
+                    else:
+                        merged_stages.append(s)
+                for s in existing["stages"]:
+                    if s["id"] not in seen:
+                        merged_stages.append(s)
+                data["stages"] = merged_stages
+            author = data.get("publishedBy", "unknown")
+            data["mergedAt"] = datetime.now().isoformat()
+            with open(STATE_FILE, "w") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            subprocess.run(["git", "add", "state.json"], cwd=SITE_DIR, check=True)
+            subprocess.run(["git", "commit", "-m", f"publish: merge by {author}"], cwd=SITE_DIR, check=True)
+            subprocess.run(["git", "push"], cwd=SITE_DIR, check=True)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(b'{"ok":true}')
+        except Exception as e:
+            self.send_response(500)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
+
+    def handle_report(self):
+        length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(length)
+        try:
+            data = json.loads(body)
+            reports_dir = os.path.join(SITE_DIR, "reports")
+            os.makedirs(reports_dir, exist_ok=True)
+            ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            reporter = data.get("reporter", "unknown").replace("/","_").replace("..","")
+            filename = f"issues-{ts}-{reporter}.json"
+            with open(os.path.join(reports_dir, filename), "w") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"ok": True, "file": filename}).encode())
+        except Exception as e:
+            self.send_response(500)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
 
     def send_login_page(self, error=False):
         error_html = '<p class="error" style="display:block">סיסמה שגויה</p>' if error else ''
