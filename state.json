@@ -1840,10 +1840,17 @@
       ]
     },
     {
+      "id": "f13",
+      "label": "קריאה שנייה",
+      "type": "box",
+      "category": "plenum",
+      "stageId": "s9"
+    },
+    {
       "id": "f13_vote",
       "type": "diamondOutcomes",
       "stageId": "s9",
-      "diamondLabel": "קריאה\nשנייה",
+      "diamondLabel": "הצבעה על\nנוסח כל סעיף",
       "outcomes": [
         {
           "label": "אושרה",
@@ -2060,5 +2067,5 @@
   "nextId": 1047,
   "publishDate": "2026-03-09T16:45:45.957Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T21:09:48.083394"
+  "mergedAt": "2026-03-09T21:11:32.776319"
 }
