@@ -1863,7 +1863,9 @@
           "connectLabel": "הוספה",
           "connectLabel2": "נוסח חוק סופי",
           "chevronColor": "#2E86AB",
-          "jumpColor": "#1B2A4A"
+          "jumpColor": "#1B2A4A",
+          "crossArrowTo": "f14",
+          "chainHeight": 150
         },
         {
           "label": "נדחתה",
@@ -1884,7 +1886,7 @@
       "diamondColor": "#1B2A4A",
       "chevronColor": "#2E86AB",
       "rejectArrowDir": "up",
-      "rejectArmLength": 146,
+      "rejectArmLength": 90,
       "rejectChain": [
         {
           "type": "chevron",
@@ -1906,6 +1908,16 @@
       ],
       "id": "f14",
       "label": "קריאה שלישית"
+    },
+    {
+      "id": "f15_celebrate",
+      "label": "מזל טוב!\nבשעה טובה, נולד חוק!",
+      "type": "box",
+      "category": "plenum",
+      "stageId": "s10",
+      "specialBg": "#FFD700",
+      "specialText": "#1B2A4A",
+      "specialBorder": "#DAA520"
     },
     {
       "id": "f_removal_process",
@@ -2079,5 +2091,5 @@
   "nextId": 1047,
   "publishDate": "2026-03-09T21:59:54.669Z",
   "publishedBy": "zan2026",
-  "mergedAt": "2026-03-09T23:59:54.670425"
+  "mergedAt": "2026-03-10T00:25:52.295437"
 }
