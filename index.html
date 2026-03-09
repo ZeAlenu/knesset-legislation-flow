@@ -2930,7 +2930,7 @@ const BUILTIN_ICONS = {
   "lock": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><rect x="20" y="45" width="60" height="45" rx="6" fill="#B8860B"/><path d="M32,45 L32,32 C32,15 68,15 68,32 L68,45" fill="none" stroke="#B8860B" stroke-width="8"/><circle cx="50" cy="65" r="6" fill="white"/></svg>`,
   "star": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><polygon points="50,5 61,38 95,38 68,60 79,93 50,73 21,93 32,60 5,38 39,38" fill="#FFD700" stroke="#B8860B" stroke-width="2"/></svg>`,
   "hourglass": `<img src="icons/hourglass.png?v=2" width="34" height="34" style="object-fit:contain">`,
-  "israel": `<img src="icons/state-emblem.png?v=2" width="49" height="49" style="object-fit:contain">`,
+  "israel": `<img src="icons/state-emblem.png" width="28" height="28" style="object-fit:contain">`,
 
   "menorah": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28"><path d="M50,85 L50,40" stroke="#B8860B" stroke-width="4" fill="none"/><path d="M20,85 L80,85" stroke="#B8860B" stroke-width="4" fill="none"/><path d="M30,85 L30,50 C30,35 50,30 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M70,85 L70,50 C70,35 50,30 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M20,85 L20,55 C20,38 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M80,85 L80,55 C80,38 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M38,85 L38,47 C38,33 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><path d="M62,85 L62,47 C62,33 50,28 50,40" stroke="#B8860B" stroke-width="3" fill="none"/><circle cx="20" cy="52" r="3" fill="#FF8C00"/><circle cx="30" cy="47" r="3" fill="#FF8C00"/><circle cx="38" cy="44" r="3" fill="#FF8C00"/><circle cx="50" cy="37" r="3" fill="#FF8C00"/><circle cx="62" cy="44" r="3" fill="#FF8C00"/><circle cx="70" cy="47" r="3" fill="#FF8C00"/><circle cx="80" cy="52" r="3" fill="#FF8C00"/></svg>`,
   "scroll": `<img src="icons/scroll.png" width="18" height="22" style="object-fit:contain;vertical-align:middle">`,
@@ -4400,37 +4400,27 @@ function renderVoteDecision(step){
     const cornerBoxW = hexItem ? 70 : 0;
     
     if(arrowDir === 'up'){
-      // Layout top-to-bottom: [arrowhead] → [vertical line] → [corner box] → [horizontal line to נדחתה]
-      // Arrow is BELOW the box. Box sits above the bend.
-      // The horizontal line is at the BOTTOM, at the level of נדחתה (50% of diamond)
-      // The box sits just above the horizontal line
-      // The vertical line + arrowhead go up from above the box
-      
       const totalH = svgH + cornerBoxH;
-      html += `<div style="position:absolute;bottom:calc(50% - 1px);right:calc(50% + ${startRight}px);width:${svgW}px;height:${totalH}px">`;
+      html += `<div style="position:absolute;top:calc(50% - ${totalH}px);right:calc(50% + ${startRight}px);width:${svgW}px;height:${totalH}px">`;
       
-      // Horizontal line at very bottom (connects to נדחתה)
-      html += `<svg width="${svgW}" height="3" style="position:absolute;bottom:0;left:0"><line x1="${svgW}" y1="1" x2="8" y2="1" stroke="${arrowColor}" stroke-width="${strokeW}"/></svg>`;
-      
-      // Corner box just above horizontal line
+      // Corner box — sits just above the CORNER of the L (where horizontal meets vertical)
       if(hexItem){
         let iconHtml = '';
         if(hexItem.icon && BUILTIN_ICONS[hexItem.icon]){
           iconHtml = BUILTIN_ICONS[hexItem.icon].replace(/width="[^"]*"/,'width="18"').replace(/height="[^"]*"/,'height="18"');
         }
-        html += `<div style="position:absolute;bottom:3px;left:${8 - cornerBoxW/2}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl;z-index:1">`;
+        html += `<div style="position:absolute;bottom:0;left:${8 - cornerBoxW/2}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
         if(iconHtml) html += `<div>${iconHtml}</div>`;
         html += `<div style="font-size:8px;font-weight:600;color:${dColor}">${escH(hexItem.label)}</div>`;
         html += `</div>`;
       }
       
-      // Vertical line + arrowhead going up from above the box
-      const vertStart = cornerBoxH + 3; // just above box
-      html += `<svg width="16" height="${svgH}" style="position:absolute;bottom:${vertStart}px;left:0">`;
+      // SVG L-arrow below the corner box
+      html += `<svg width="${svgW}" height="${svgH}" style="display:block;position:absolute;bottom:0;left:0">`;
+      html += `<line x1="${svgW}" y1="${svgH}" x2="8" y2="${svgH}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<line x1="8" y1="${svgH}" x2="8" y2="10" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
       html += `</svg>`;
-      
       html += `</div>`;
     } else {
       const totalH = svgH + cornerBoxH;
@@ -4449,7 +4439,7 @@ function renderVoteDecision(step){
         if(hexItem.icon && BUILTIN_ICONS[hexItem.icon]){
           iconHtml = BUILTIN_ICONS[hexItem.icon].replace(/width="[^"]*"/,'width="18"').replace(/height="[^"]*"/,'height="18"');
         }
-        html += `<div style="position:absolute;bottom:0;left:${8 - cornerBoxW/2}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
+        html += `<div style="position:absolute;bottom:0;left:${8 - cornerBoxW/2}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
         if(iconHtml) html += `<div>${iconHtml}</div>`;
         html += `<div style="font-size:8px;font-weight:600;color:${dColor}">${escH(hexItem.label)}</div>`;
         html += `</div>`;
