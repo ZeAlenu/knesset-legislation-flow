@@ -4386,32 +4386,32 @@ function renderVoteDecision(step){
     // The left tip is at 0% 50% — that's the leftmost point of the chevron
     const startRight = ds/2 + chevW; // distance from center to the left tip of נדחתה
     
-    html += `<div style="position:absolute;top:50%;right:calc(50% + ${startRight}px);transform:translateY(-50%)">`;
+    // Position: right edge of SVG touches the tip of נדחתה chevron
+    const svgW = hLen;
+    const svgH = vLen;
     
     if(arrowDir === 'up'){
-      // L going left then up: start at right-middle, go left, turn up
-      const svgW = hLen + 10;
-      const svgH = vLen + 10;
-      html += `<svg width="${svgW}" height="${svgH}" style="overflow:visible;position:relative;top:-${vLen - 5}px">`;
-      // Horizontal leg (bottom, going left from right edge)
-      html += `<line x1="${svgW}" y1="${svgH}" x2="${10}" y2="${svgH}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
-      // Vertical leg (going up from corner)
-      html += `<line x1="${10}" y1="${svgH}" x2="${10}" y2="${10}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
-      // Arrowhead at top
-      html += `<polygon points="5,14 15,14 10,4" fill="${arrowColor}"/>`;
+      // L-shape: right edge → left (horizontal), then up (vertical), arrowhead at top
+      html += `<div style="position:absolute;top:calc(50% - ${svgH}px);right:calc(50% + ${startRight}px);width:${svgW}px;height:${svgH}px">`;
+      html += `<svg width="${svgW}" height="${svgH}" style="display:block">`;
+      // Horizontal leg at bottom: from right edge to left corner
+      html += `<line x1="${svgW}" y1="${svgH}" x2="8" y2="${svgH}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      // Vertical leg: from corner up to top
+      html += `<line x1="8" y1="${svgH}" x2="8" y2="10" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      // Arrowhead pointing up
+      html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
       html += `</svg>`;
+      html += `</div>`;
     } else {
-      // L going left then down
-      const svgW = hLen + 10;
-      const svgH = vLen + 10;
-      html += `<svg width="${svgW}" height="${svgH}" style="overflow:visible">`;
-      html += `<line x1="${svgW}" y1="0" x2="${10}" y2="0" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
-      html += `<line x1="${10}" y1="0" x2="${10}" y2="${svgH - 10}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
-      html += `<polygon points="5,${svgH-14} 15,${svgH-14} 10,${svgH-4}" fill="${arrowColor}"/>`;
+      // L-shape: right edge → left, then down
+      html += `<div style="position:absolute;top:50%;right:calc(50% + ${startRight}px);width:${svgW}px;height:${svgH}px">`;
+      html += `<svg width="${svgW}" height="${svgH}" style="display:block">`;
+      html += `<line x1="${svgW}" y1="0" x2="8" y2="0" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      html += `<line x1="8" y1="0" x2="8" y2="${svgH-10}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      html += `<polygon points="3,${svgH-12} 13,${svgH-12} 8,${svgH-2}" fill="${arrowColor}"/>`;
       html += `</svg>`;
+      html += `</div>`;
     }
-    
-    html += `</div>`;
   }
   
   html += `</div>`;
