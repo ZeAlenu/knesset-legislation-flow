@@ -4377,13 +4377,14 @@ function renderVoteDecision(step){
   // Corner is far from center axis
   if(chain.length > 0 || true){
     const arrowColor = lightColor;
-    const hLen = 60; // horizontal leg — far from center
-    const vLen = 80; // vertical leg — tall enough
+    const hLen = 80; // horizontal leg — far from center
+    const vLen = 80; // vertical leg
     const strokeW = 2.5;
     
-    // SVG overlay for the L-shaped arrow
-    // Positioned from the left edge of נדחתה chevron
-    const startRight = ds/2 + chevW + 2; // distance from center to end of נדחתה
+    // Arrow starts from the LEFT TIP (vertex) of the נדחתה chevron
+    // Chevron clip-path: polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%)
+    // The left tip is at 0% 50% — that's the leftmost point of the chevron
+    const startRight = ds/2 + chevW; // distance from center to the left tip of נדחתה
     
     html += `<div style="position:absolute;top:50%;right:calc(50% + ${startRight}px);transform:translateY(-50%)">`;
     
