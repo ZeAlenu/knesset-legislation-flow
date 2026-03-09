@@ -1588,6 +1588,11 @@
           "color": "#2E86AB"
         },
         {
+          "type": "box",
+          "label": "הסרה מסדר היום",
+          "color": "#1B2A4A"
+        },
+        {
           "type": "pill",
           "label": "הגשה לנשיאות",
           "jumpTo": "f3",
@@ -1632,6 +1637,11 @@
           "icon": "hourglass",
           "label": "6 חודשים",
           "color": "#2E86AB"
+        },
+        {
+          "type": "box",
+          "label": "הסרה מסדר היום",
+          "color": "#1B2A4A"
         },
         {
           "type": "pill",
@@ -2019,5 +2029,5 @@
   "nextId": 1047,
   "publishDate": "2026-03-09T16:45:45.957Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T19:37:58.900787"
+  "mergedAt": "2026-03-09T19:52:42.495008"
 }
