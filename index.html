@@ -4272,21 +4272,25 @@ function renderDiamondOutcomes(step){
     const clickTarget = out.connectTo ? `onclick="flowJumpTo('${out.connectTo}')"` : '';
     const crossClass = out.arrowDir === 'left' || out.arrowDir === 'right' ? `class="cross-branch-arrow" data-target="${out.connectTo||''}"` : '';
     
-    let h = `<div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center" ${crossClass}>`;
+    let h = `<div style="flex:0 0 auto;position:relative;display:flex;align-items:center" ${crossClass}>`;
     
-    // Arrow UP (above chevron)
-    if(out.arrowDir === 'up'){
-      h += `<svg width="20" height="20" style="margin-bottom:2px"><line x1="10" y1="20" x2="10" y2="3" stroke="${out.chevronColor||chevronColor}" stroke-width="2"/><polygon points="6,6 14,6 10,0" fill="${out.chevronColor||chevronColor}"/></svg>`;
-      if(out.connectLabel) h += `<div style="font-size:7px;color:#666;margin-bottom:1px">${escH(out.connectLabel)}</div>`;
-    }
-    
-    // Chevron
+    // Chevron (this is the only element that determines height)
     h += `<div style="padding:${padding};background:${out.chevronColor||chevronColor};color:${out.chevronText||chevronText};font-size:9px;font-weight:600;line-height:1.4;text-align:center;clip-path:${clipPath};min-width:70px;cursor:pointer" ${clickTarget}>${escH(out.label||'').replace(/\n/g,'<br>')}</div>`;
     
-    // Arrow DOWN (below chevron)
+    // Arrow DOWN (absolute, doesn't affect height)
     if(out.arrowDir === 'down'){
-      h += `<svg width="20" height="20" style="margin-top:2px"><line x1="10" y1="0" x2="10" y2="17" stroke="${out.chevronColor||chevronColor}" stroke-width="2"/><polygon points="6,14 14,14 10,20" fill="${out.chevronColor||chevronColor}"/></svg>`;
-      if(out.connectLabel) h += `<div style="font-size:7px;color:#666;margin-top:1px;cursor:pointer" ${clickTarget}>${escH(out.connectLabel)}</div>`;
+      h += `<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
+      h += `<svg width="20" height="20"><line x1="10" y1="0" x2="10" y2="17" stroke="${out.chevronColor||chevronColor}" stroke-width="2"/><polygon points="6,14 14,14 10,20" fill="${out.chevronColor||chevronColor}"/></svg>`;
+      if(out.connectLabel) h += `<div style="font-size:7px;color:#666;white-space:nowrap;cursor:pointer" ${clickTarget}>${escH(out.connectLabel)}</div>`;
+      h += `</div>`;
+    }
+    
+    // Arrow UP (absolute)
+    if(out.arrowDir === 'up'){
+      h += `<div style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
+      if(out.connectLabel) h += `<div style="font-size:7px;color:#666">${escH(out.connectLabel)}</div>`;
+      h += `<svg width="20" height="20"><line x1="10" y1="20" x2="10" y2="3" stroke="${out.chevronColor||chevronColor}" stroke-width="2"/><polygon points="6,6 14,6 10,0" fill="${out.chevronColor||chevronColor}"/></svg>`;
+      h += `</div>`;
     }
     
     h += `</div>`;
