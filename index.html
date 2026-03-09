@@ -2097,7 +2097,20 @@ function editStageName(id){
   const newTitle = prompt("שם השלב:", stage.title);
   if(newTitle !== null && newTitle.trim() !== ""){
     stage.title = newTitle.trim();
+    // Sync: update all flowSteps that reference this stage
+    syncStageToFlow(id, newTitle.trim());
     renderAll();
+  }
+}
+
+function syncStageToFlow(stageId, newTitle){
+  if(!appState.flowSteps) return;
+  for(const fs of appState.flowSteps){
+    if(fs.stageId === stageId){
+      fs.label = newTitle;
+      // Also update voteLabel for voteDecision type
+      if(fs.type === 'voteDecision' && fs.voteLabel) fs.voteLabel = newTitle;
+    }
   }
 }
 
