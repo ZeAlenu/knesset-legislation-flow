@@ -1655,9 +1655,8 @@
                   "jumpLabel": "→ דיון הסרת הצעה\nמסדר היום",
                   "color": "#4A148C",
                   "textColor": "#FFFFFF",
-                  "arrowDir": "down",
-                  "connectTo": "f_removal_process",
-                  "connectLabel": "דיון הסרת הצעה מסדר היום"
+                  "arrowDir": "none",
+                  "connectTo": "f_removal_process"
                 },
                 {
                   "label": "רוב מתנגדים\nלהסרה",
@@ -1665,8 +1664,7 @@
                   "crossTo": "f12_1",
                   "color": "#2D7D46",
                   "arrowDir": "left",
-                  "connectTo": "f12_1",
-                  "connectLabel": "דיון הכנת החוק"
+                  "connectTo": "f12_1"
                 }
               ],
               "diamondLabel": "הצבעה\nלהסיר"

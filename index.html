@@ -4463,9 +4463,41 @@ function renderDiamondOutcomeSvgs(){
 }
 
 function renderCrossArrows(){
-  // Disabled for now — cross-branch visual arrows will be re-implemented
-  // The click-to-jump still works via flowJumpTo
   document.querySelectorAll('.cross-branch-overlay').forEach(o => o.remove());
+  
+  document.querySelectorAll('.cross-branch-arrow').forEach(el => {
+    const targetId = el.dataset.target;
+    if(!targetId) return;
+    const targetEl = document.getElementById(targetId);
+    if(!targetEl) return;
+    
+    // Find closest common scrollable ancestor
+    const splitContainer = el.closest('.flow-branch-container');
+    if(!splitContainer) return;
+    
+    // Check if target is inside the same split (nearby)
+    if(!splitContainer.contains(targetEl)) return;
+    
+    const ref = splitContainer.getBoundingClientRect();
+    const src = el.getBoundingClientRect();
+    const tgt = targetEl.getBoundingClientRect();
+    
+    const x1 = src.left - ref.left;
+    const y1 = src.top + src.height/2 - ref.top;
+    const x2 = tgt.left + tgt.width/2 - ref.left;
+    const y2 = tgt.top + tgt.height/2 - ref.top;
+    
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('cross-branch-overlay');
+    svg.style.cssText = `position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5`;
+    svg.innerHTML = `
+      <defs><marker id="cbHead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2D7D46"/></marker></defs>
+      <path d="M${x1},${y1} L${x2},${y2}" stroke="#2D7D46" stroke-width="2" fill="none" marker-end="url(#cbHead)"/>
+    `;
+    
+    splitContainer.style.position = 'relative';
+    splitContainer.appendChild(svg);
+  });
 }
 
 function flowJumpTo(targetId){
