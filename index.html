@@ -4283,7 +4283,7 @@ function renderDiamondOutcomes(step){
   const chevronText = '#FFFFFF';
   const dSize = 50;
   
-  let html = `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;margin:6px 0;width:100%">`;
+  let html = `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;margin:2px 0;width:100%">`;
   
   // Build each outcome with its chevron + arrow
   function renderOutcome(out, side){
@@ -4302,15 +4302,15 @@ function renderDiamondOutcomes(step){
     // Arrow DOWN (absolute, doesn't affect height)
     if(out.arrowDir === 'down'){
       const pillColor = out.jumpColor || '#4A148C';
-      h += `<div style="position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
-      h += `<svg width="20" height="14"><line x1="10" y1="0" x2="10" y2="10" stroke="${pillColor}" stroke-width="2"/><polygon points="6,8 14,8 10,14" fill="${pillColor}"/></svg>`;
+      h += `<div style="position:absolute;top:calc(100% + 1px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
+      h += `<svg width="16" height="10"><line x1="8" y1="0" x2="8" y2="7" stroke="${pillColor}" stroke-width="2"/><polygon points="4,6 12,6 8,10" fill="${pillColor}"/></svg>`;
       if(out.connectLabel){
-        h += `<div style="padding:5px 14px;background:${pillColor};color:#fff;border-radius:6px;cursor:pointer;margin-top:1px;text-align:center;font-size:9px;font-weight:600;line-height:1.3;white-space:nowrap" ${clickTarget}>${escH(out.connectLabel)}</div>`;
+        h += `<div style="padding:3px 10px;background:${pillColor};color:#fff;border-radius:5px;cursor:pointer;text-align:center;font-size:8px;font-weight:600;line-height:1.2;white-space:nowrap" ${clickTarget}>${escH(out.connectLabel)}</div>`;
       }
       // Second box below (connectLabel2)
       if(out.connectLabel2){
-        h += `<svg width="20" height="14"><line x1="10" y1="0" x2="10" y2="10" stroke="${pillColor}" stroke-width="2"/><polygon points="6,8 14,8 10,14" fill="${pillColor}"/></svg>`;
-        h += `<div style="padding:8px 18px;background:${pillColor};color:#fff;border-radius:6px;cursor:pointer;margin-top:1px;text-align:center;font-size:11px;font-weight:700;line-height:1.3;white-space:nowrap">${escH(out.connectLabel2)}</div>`;
+        h += `<svg width="16" height="10"><line x1="8" y1="0" x2="8" y2="7" stroke="${pillColor}" stroke-width="2"/><polygon points="4,6 12,6 8,10" fill="${pillColor}"/></svg>`;
+        h += `<div style="padding:4px 12px;background:${pillColor};color:#fff;border-radius:5px;cursor:pointer;text-align:center;font-size:9px;font-weight:600;line-height:1.2;white-space:nowrap">${escH(out.connectLabel2)}</div>`;
       }
       h += `</div>`;
     }
@@ -4342,7 +4342,7 @@ function renderDiamondOutcomes(step){
   html += renderOutcome(right, 'right');
   
   // Line: right chevron → diamond (longer to push approved chain away from center)
-  const lineLen = step.lineLength || 80;
+  const lineLen = step.lineLength || 120;
   html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
   
   // Diamond (center)
