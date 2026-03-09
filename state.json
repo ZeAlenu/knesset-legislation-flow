@@ -1840,37 +1840,13 @@
       ]
     },
     {
-      "type": "voteDecision",
+      "id": "f13",
+      "label": "קריאה שנייה",
+      "type": "diamond",
       "category": "plenum",
       "stageId": "s9",
-      "voteLabel": "קריאה שנייה",
-      "rejectLabel": "נדחתה",
-      "approveLabel": "אושרה",
-      "diamondColor": "#1B2A4A",
-      "chevronColor": "#2E86AB",
-      "rejectArrowDir": "up",
-      "rejectArmLength": 146,
-      "rejectChain": [
-        {
-          "type": "chevron",
-          "icon": "hourglass",
-          "label": "6 חודשים",
-          "color": "#2E86AB"
-        },
-        {
-          "type": "box",
-          "label": "הסרה מסדר היום",
-          "color": "#1B2A4A"
-        },
-        {
-          "type": "pill",
-          "label": "הגשה לנשיאות",
-          "jumpTo": "f3",
-          "color": "#4A148C"
-        }
-      ],
-      "id": "f13",
-      "label": "קריאה שנייה"
+      "note": "",
+      "noteType": ""
     },
     {
       "type": "voteDecision",
@@ -2070,5 +2046,5 @@
   "nextId": 1047,
   "publishDate": "2026-03-09T16:45:45.957Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T20:45:47.389807"
+  "mergedAt": "2026-03-09T20:49:19.622557"
 }
