@@ -1840,32 +1840,25 @@
       ]
     },
     {
-      "id": "f13",
-      "label": "קריאה שנייה",
-      "type": "box",
-      "category": "plenum",
-      "stageId": "s9",
-      "note": "דיון סעיף-סעיף והצבעה",
-      "noteType": ""
-    },
-    {
       "id": "f13_vote",
       "type": "diamondOutcomes",
       "stageId": "s9",
-      "diamondLabel": "הצבעה על\nנוסח סעיף",
+      "diamondLabel": "קריאה\nשנייה",
       "outcomes": [
         {
-          "label": "אושר",
+          "label": "אושרה",
           "arrowDir": "down",
-          "connectLabel": "נוסח סופי\nלקריאה שלישית",
+          "connectLabel": "הוספה",
+          "connectLabel2": "נוסח חוק סופי",
           "chevronColor": "#2E86AB",
-          "jumpColor": "#0e5825"
+          "jumpColor": "#1B2A4A"
         },
         {
-          "label": "נדחה",
-          "arrowDir": "right",
-          "connectLabel": "נמחק מנוסח",
-          "chevronColor": "#8B4513"
+          "label": "נדחתה",
+          "arrowDir": "left",
+          "connectLabel": "הסרה מהנוסח",
+          "chevronColor": "#2E86AB",
+          "jumpColor": "#1B2A4A"
         }
       ]
     },
@@ -2067,5 +2060,5 @@
   "nextId": 1047,
   "publishDate": "2026-03-09T16:45:45.957Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T21:00:09.486242"
+  "mergedAt": "2026-03-09T21:09:48.083394"
 }
