@@ -1842,10 +1842,19 @@
     {
       "id": "f13",
       "label": "קריאה שנייה",
+      "type": "box",
+      "category": "plenum",
+      "stageId": "s9",
+      "note": "דיון סעיף-סעיף והצבעה",
+      "noteType": ""
+    },
+    {
+      "id": "f13_vote",
+      "label": "הצבעה על נוסח סעיף",
       "type": "voteDecision",
       "category": "plenum",
       "stageId": "s9",
-      "voteLabel": "קריאה שנייה",
+      "voteLabel": "הצבעה על\nנוסח סעיף",
       "rejectLabel": "נדחה",
       "approveLabel": "אושר",
       "diamondColor": "#1B2A4A",
@@ -1855,10 +1864,19 @@
       "rejectChain": [
         {
           "type": "box",
-          "label": "סעיף נמחק מהנוסח",
+          "label": "נמחק מנוסח",
           "color": "#8B4513"
         }
       ]
+    },
+    {
+      "id": "f13_approved",
+      "label": "נוסח סופי\nלקריאה שלישית",
+      "type": "box",
+      "category": "plenum",
+      "stageId": "s9",
+      "note": "",
+      "noteType": ""
     },
     {
       "type": "voteDecision",
@@ -2058,5 +2076,5 @@
   "nextId": 1047,
   "publishDate": "2026-03-09T16:45:45.957Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T20:50:38.812593"
+  "mergedAt": "2026-03-09T20:56:10.570873"
 }
