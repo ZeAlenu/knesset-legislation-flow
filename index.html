@@ -4331,39 +4331,34 @@ function renderDiamondOutcomes(step){
 }
 
 function renderVoteDecision(step){
-  // Vote decision: diamond center, "נדחתה" right, "אושרה" below
+  // Diamond stays centered. Rejected + approved are absolute overlays.
   const dColor = step.diamondColor || '#1B2A4A';
   const cColor = step.chevronColor || '#2E86AB';
-  const dSize = 65;
+  const dSize = 85; // same as regular diamond
   const stageClick = step.stageId ? `onclick="flowClickStage('${step.stageId}')"` : '';
+  const active = appState.activeFlowStage;
+  const isAct = step.stageId && active === step.stageId;
+  const actCls = isAct ? " flow-active" : "";
   
-  let html = `<div id="${step.id}" style="position:relative;margin:8px 0;padding-bottom:40px">`;
+  let html = `<div id="${step.id}" style="position:relative;text-align:center;margin:6px 0;padding-bottom:30px;min-height:${dSize + 40}px">`;
   
-  // Row: diamond + line + rejected hexagon
-  html += `<div style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0">`;
-  
-  // Diamond
-  html += `<div style="flex:0 0 auto" ${stageClick}>`;
-  html += `<div style="width:${dSize}px;height:${dSize}px;background:${dColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;cursor:pointer">`;
-  html += `<span style="transform:rotate(-45deg);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:1.2">${escH(step.voteLabel||step.label||'').replace(/\n/g,'<br>')}</span>`;
-  html += `</div></div>`;
-  
-  // Horizontal line to rejected
-  html += `<div style="flex:0 0 25px;height:2px;background:${cColor}"></div>`;
-  
-  // Rejected hexagon
-  html += `<div style="flex:0 0 auto">`;
-  html += `<div style="padding:6px 18px;background:${cColor};color:#fff;font-size:10px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)">${escH(step.rejectLabel||'נדחתה')}</div>`;
-  if(step.rejectNote) html += `<div style="font-size:8px;color:#888;text-align:center;margin-top:2px">${escH(step.rejectNote)}</div>`;
+  // Diamond — centered, normal size
+  html += `<div class="flow-diamond${actCls}" style="background:${dColor};color:#fff" ${stageClick}>`;
+  html += `<span>${escH(step.voteLabel||step.label||'').replace(/\n/g,'<br>')}</span>`;
   html += `</div>`;
   
-  html += `</div>`; // row
+  // Rejected hexagon — absolute, to the left of diamond (RTL: visually right)
+  html += `<div style="position:absolute;top:50%;right:0;transform:translateY(-50%);display:flex;align-items:center;direction:rtl">`;
+  html += `<div style="width:20px;height:2px;background:${cColor}"></div>`;
+  html += `<div>`;
+  html += `<div style="padding:5px 16px;background:${cColor};color:#fff;font-size:9px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)">${escH(step.rejectLabel||'נדחתה')}</div>`;
+  if(step.rejectNote) html += `<div style="font-size:7px;color:#888;text-align:center;margin-top:2px">${escH(step.rejectNote)}</div>`;
+  html += `</div></div>`;
   
-  // Vertical line + approved hexagon (absolute, below diamond center)
-  html += `<div style="position:absolute;left:50%;transform:translateX(-50%);top:${dSize - 5}px;display:flex;flex-direction:column;align-items:center">`;
-  html += `<div style="width:2px;height:15px;background:${cColor}"></div>`;
-  html += `<div style="padding:4px 14px;background:${cColor};color:#fff;font-size:9px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%)">${escH(step.approveLabel||'אושרה')}</div>`;
-  html += `<div style="width:2px;height:10px;background:${cColor}"></div>`;
+  // Approved hexagon — absolute, below diamond center
+  html += `<div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
+  html += `<div style="width:2px;height:8px;background:${cColor}"></div>`;
+  html += `<div style="padding:4px 12px;background:${cColor};color:#fff;font-size:9px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%)">${escH(step.approveLabel||'אושרה')}</div>`;
   html += `</div>`;
   
   html += `</div>`;
