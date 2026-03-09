@@ -4422,15 +4422,21 @@ function renderVoteDecision(step){
       html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
       html += `</svg>`;
       
-      // Pill at arrow tip — use foreignObject inside the SVG so it's perfectly aligned
+      // Chain items at arrow tip (top) — stacked: box then pill, 0px gap from arrow
+      const boxItem = chain.find(c => c.type === 'box');
       const pillItem = chain.find(c => c.type === 'pill');
+      let tipOffset = svgH; // bottom offset where items stack (arrow tip)
+      
+      if(boxItem){
+        html += `<div style="position:absolute;bottom:${tipOffset}px;left:8px;transform:translateX(-50%);z-index:2">`;
+        html += `<div style="padding:5px 12px;background:${boxItem.color||'#1B2A4A'};color:#fff;font-size:9px;font-weight:600;border-radius:8px;white-space:nowrap;text-align:center">${escH(boxItem.label)}</div>`;
+        html += `</div>`;
+        tipOffset += 30; // box height + small gap
+      }
+      
       if(pillItem){
         const jmp = pillItem.jumpTo ? `onclick="flowJumpTo('${pillItem.jumpTo}')"` : '';
-        // Position above the SVG, aligned with the vertical line (x=8)
-        // The SVG is at bottom:-20px in the container. SVG top = container bottom - svgH - 20
-        // Arrow tip at SVG y=2. In container coords: totalH - svgH + 2 - 20... 
-        // Simpler: just use the SVG's absolute position
-        html += `<div style="position:absolute;bottom:${svgH - 20}px;left:8px;transform:translateX(-50%);z-index:2">`;
+        html += `<div style="position:absolute;bottom:${tipOffset}px;left:8px;transform:translateX(-50%);z-index:2">`;
         html += `<div style="padding:6px 16px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:10px;font-weight:600;border-radius:16px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:4px" ${jmp}><span style="font-size:8px;opacity:0.8">▲</span><span>${escH(pillItem.label)}</span></div>`;
         html += `</div>`;
       }
