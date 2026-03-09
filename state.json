@@ -338,7 +338,7 @@
           "depth": 0,
           "details": "",
           "detailType": "expand",
-          "_open": true,
+          "_open": false,
           "parallel": true,
           "children": [
             {
@@ -518,7 +518,7 @@
         }
       ],
       "showArrowAfter": true,
-      "builtinIcon": "clock"
+      "builtinIcon": "calendar"
     },
     {
       "id": "s3",
@@ -2000,7 +2000,7 @@
     }
   ],
   "nextId": 1047,
-  "publishDate": "2026-03-09T16:35:17.154Z",
+  "publishDate": "2026-03-09T16:45:45.957Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T18:35:17.074443"
+  "mergedAt": "2026-03-09T18:45:45.564167"
 }
