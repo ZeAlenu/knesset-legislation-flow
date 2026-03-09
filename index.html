@@ -231,7 +231,7 @@ header p{font-size:13px;opacity:.85}
     <button onclick="showChangelog()" title="היסטוריית שינויים — רשימת כל הפרסומים עם אפשרות שחזור">📋 היסטוריה</button>
     <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
     <input type="file" id="importInput" accept=".json" class="hidden-input" onchange="importJSON(event)">
-    <button onclick="loadFromServer()" title="טוען תוכן עדכני מהשרת">🔄 טען תוכן מהשרת</button>
+    <button onclick="loadFromServer()" title="טוען פונקציונליות חדשה, שומר תוכן">🔧 עדכן פונקציונליות</button>
     <a href="manual.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📘 מדריך</a>
     <a href="system.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">⚙️ תפעול</a>
     <a href="issues.html" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📋 דיווח בעיות</a>
@@ -731,7 +731,20 @@ async function loadFromStorage(){
     }
   } catch(e){ /* no shared state file, use defaults */ }
   
-  // 2. Refresh always loads fresh content from server (no localStorage override)
+  // 2. Check if this is a code-only reload (🔧 עדכן פונקציונליות) — restore content
+  const codeReloadState = localStorage.getItem("knesset-code-reload-state");
+  if(codeReloadState){
+    try {
+      const d = JSON.parse(codeReloadState);
+      if(d.categories) appState.categories = d.categories;
+      if(d.stages) appState.stages = d.stages;
+      if(d.flowSteps) appState.flowSteps = d.flowSteps;
+      if(d.flowBackLinks) appState.flowBackLinks = d.flowBackLinks;
+      if(d.nextId) nextId = d.nextId;
+      showToast("🔧 פונקציונליות עודכנה — התוכן נשמר");
+    } catch(e){ console.error("Code reload restore error:", e); }
+    localStorage.removeItem("knesset-code-reload-state");
+  }
   
   // Check for pre-refresh backup
   const preRefreshBackup = localStorage.getItem("knesset-pre-refresh-backup");
@@ -920,6 +933,15 @@ async function publishState(){
 }
 
 function loadFromServer(){
+  // Save current content, reload page for new code, then restore content
+  const stateBackup = JSON.stringify({
+    categories: appState.categories,
+    stages: appState.stages,
+    flowSteps: appState.flowSteps,
+    flowBackLinks: appState.flowBackLinks,
+    nextId: nextId
+  });
+  localStorage.setItem("knesset-code-reload-state", stateBackup);
   location.reload();
 }
 
@@ -976,8 +998,7 @@ function startAutoSave(){
 
 // Warn before leaving — always offer backup in edit mode
 window.addEventListener("beforeunload", function(e){
-  if(!appState.editing) return;
-  // Auto-save backup to localStorage before unload
+  // Auto-save backup to localStorage before unload (always, not just in edit mode)
   try {
     const backupData = JSON.stringify({
       categories: appState.categories,
