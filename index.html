@@ -2945,7 +2945,7 @@ const BUILTIN_ICONS = {
   "plenum": `<img src="icons/plenum-new.png?v=2" width="48" height="48" style="object-fit:contain">`,
   "plenum-old": `<img src="icons/plenum.png" width="48" height="48" style="object-fit:contain">`,
   "shield-menorah": `<img src="icons/shield-menorah.png?v=2" width="42" height="42" style="object-fit:contain">`,
-  "shortcut-wait": `<img src="icons/shortcut-wait.png?v=1" width="42" height="42" style="object-fit:contain">`
+  "shortcut-wait": `<img src="icons/shortcut-wait.png?v=1" width="34" height="34" style="object-fit:contain">`
 };
 
 const BUILTIN_ICON_LABELS = {
@@ -4372,58 +4372,45 @@ function renderVoteDecision(step){
   
   html += `</div>`; // diamond container
   
-  // 90° arrow from נדחתה with chain items
-  if(chain.length > 0){
-    // Position the L-shaped arrow to the left of the diamond
-    // Horizontal leg goes left from נדחתה, then vertical leg goes up/down
-    const hexItem = chain.find(c => c.type === 'chevron');
-    const pillItem = chain.find(c => c.type === 'pill');
+  // 90° L-shaped arrow from נדחתה
+  // Horizontal leg goes LEFT, then turns 90° UP (or DOWN)
+  // Corner is far from center axis
+  if(chain.length > 0 || true){
     const arrowColor = lightColor;
-    const hLen = 30; // horizontal leg length
-    const vLen = 50; // vertical leg length
+    const hLen = 60; // horizontal leg — far from center
+    const vLen = 80; // vertical leg — tall enough
+    const strokeW = 2.5;
     
-    html += `<div style="position:absolute;top:50%;right:calc(50% + ${ds/2 + chevW + 2}px);transform:translateY(-50%);display:flex;align-items:center;direction:ltr">`;
+    // SVG overlay for the L-shaped arrow
+    // Positioned from the left edge of נדחתה chevron
+    const startRight = ds/2 + chevW + 2; // distance from center to end of נדחתה
     
-    // Horizontal line going left
-    html += `<div style="width:${hLen}px;height:2px;background:${arrowColor}"></div>`;
-    
-    // Corner: vertical structure
-    html += `<div style="display:flex;flex-direction:column;align-items:center">`;
+    html += `<div style="position:absolute;top:50%;right:calc(50% + ${startRight}px);transform:translateY(-50%)">`;
     
     if(arrowDir === 'up'){
-      // Pill at top
-      if(pillItem){
-        const jmp = pillItem.jumpTo ? `onclick="flowJumpTo('${pillItem.jumpTo}')"` : '';
-        html += `<div style="padding:4px 12px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:8px;font-weight:600;border-radius:14px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:3px;margin-bottom:3px" ${jmp}><span style="font-size:7px;opacity:0.8">▲</span><span>${escH(pillItem.label)}</span></div>`;
-      }
-      // Vertical arrow up
-      html += `<svg width="16" height="${vLen}"><line x1="8" y1="${vLen}" x2="8" y2="6" stroke="${arrowColor}" stroke-width="2"/><polygon points="4,8 12,8 8,0" fill="${arrowColor}"/></svg>`;
+      // L going left then up: start at right-middle, go left, turn up
+      const svgW = hLen + 10;
+      const svgH = vLen + 10;
+      html += `<svg width="${svgW}" height="${svgH}" style="overflow:visible;position:relative;top:-${vLen - 5}px">`;
+      // Horizontal leg (bottom, going left from right edge)
+      html += `<line x1="${svgW}" y1="${svgH}" x2="${10}" y2="${svgH}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      // Vertical leg (going up from corner)
+      html += `<line x1="${10}" y1="${svgH}" x2="${10}" y2="${10}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      // Arrowhead at top
+      html += `<polygon points="5,14 15,14 10,4" fill="${arrowColor}"/>`;
+      html += `</svg>`;
+    } else {
+      // L going left then down
+      const svgW = hLen + 10;
+      const svgH = vLen + 10;
+      html += `<svg width="${svgW}" height="${svgH}" style="overflow:visible">`;
+      html += `<line x1="${svgW}" y1="0" x2="${10}" y2="0" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      html += `<line x1="${10}" y1="0" x2="${10}" y2="${svgH - 10}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      html += `<polygon points="5,${svgH-14} 15,${svgH-14} 10,${svgH-4}" fill="${arrowColor}"/>`;
+      html += `</svg>`;
     }
     
-    // Wait hexagon at the corner
-    if(hexItem){
-      let iconHtml = '';
-      if(hexItem.icon && BUILTIN_ICONS[hexItem.icon]){
-        iconHtml = `<div style="margin-bottom:2px">${BUILTIN_ICONS[hexItem.icon].replace(/width="[^"]*"/,'width="20"').replace(/height="[^"]*"/,'height="20"')}</div>`;
-      }
-      html += `<div style="padding:8px 16px;background:${hexItem.color||lightColor};color:#fff;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);text-align:center;direction:rtl">`;
-      html += iconHtml;
-      html += `<div style="font-size:8px">${escH(hexItem.label)}</div>`;
-      html += `</div>`;
-    }
-    
-    if(arrowDir === 'down'){
-      // Vertical arrow down
-      html += `<svg width="16" height="${vLen}"><line x1="8" y1="0" x2="8" y2="${vLen-6}" stroke="${arrowColor}" stroke-width="2"/><polygon points="4,${vLen-8} 12,${vLen-8} 8,${vLen}" fill="${arrowColor}"/></svg>`;
-      // Pill at bottom
-      if(pillItem){
-        const jmp = pillItem.jumpTo ? `onclick="flowJumpTo('${pillItem.jumpTo}')"` : '';
-        html += `<div style="padding:4px 12px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:8px;font-weight:600;border-radius:14px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:3px;margin-top:3px" ${jmp}><span>${escH(pillItem.label)}</span><span style="font-size:7px;opacity:0.8">▼</span></div>`;
-      }
-    }
-    
-    html += `</div>`; // vertical structure
-    html += `</div>`; // arrow container
+    html += `</div>`;
   }
   
   html += `</div>`;
