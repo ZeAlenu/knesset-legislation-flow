@@ -4416,7 +4416,7 @@ function renderVoteDecision(step){
       }
       
       // SVG L-arrow below the corner box
-      html += `<svg width="${svgW}" height="${svgH}" style="display:block;position:absolute;bottom:-20px;left:0;overflow:visible">`;
+      html += `<svg width="${svgW}" height="${svgH}" style="display:block;position:absolute;bottom:0;left:0;overflow:visible">`;
       html += `<line x1="${svgW+4}" y1="${svgH}" x2="8" y2="${svgH}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<line x1="8" y1="${svgH}" x2="8" y2="10" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
