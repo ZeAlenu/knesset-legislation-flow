@@ -4330,7 +4330,8 @@ function renderDiamondOutcomes(step){
   // Calculate margin-bottom for absolute-positioned down chains
   const hasDown = outcomes.some(o => o.arrowDir === 'down');
   const hasDown2 = outcomes.some(o => o.arrowDir === 'down' && o.connectLabel2);
-  const mbPx = hasDown2 ? 80 : hasDown ? 50 : 0;
+  const chainH = outcomes.find(o => o.chainHeight)?.chainHeight || 0;
+  const mbPx = chainH || (hasDown2 ? 80 : hasDown ? 50 : 0);
   let html = `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;margin:2px 0 ${mbPx}px 0;width:100%">`;
   
   // Build each outcome with its chevron + arrow
@@ -4358,8 +4359,9 @@ function renderDiamondOutcomes(step){
       }
       // Second box below (connectLabel2)
       if(out.connectLabel2){
-        h += `<svg width="16" height="20"><line x1="8" y1="0" x2="8" y2="16" stroke="${pillColor}" stroke-width="2"/><polygon points="4,14 12,14 8,20" fill="${pillColor}"/></svg>`;
-        h += `<div style="padding:5px 14px;background:${pillColor};color:#fff;border-radius:5px;cursor:pointer;text-align:center;font-size:9px;font-weight:600;line-height:1.3;white-space:nowrap">${escH(out.connectLabel2)}</div>`;
+        const longH = out.chainHeight ? Math.max(40, out.chainHeight - 80) : 20;
+        h += `<svg width="16" height="${longH}"><line x1="8" y1="0" x2="8" y2="${longH-4}" stroke="${pillColor}" stroke-width="2"/><polygon points="4,${longH-6} 12,${longH-6} 8,${longH}" fill="${pillColor}"/></svg>`;
+        h += `<div id="${step.id}_label2" style="padding:5px 14px;background:${pillColor};color:#fff;border-radius:5px;cursor:pointer;text-align:center;font-size:9px;font-weight:600;line-height:1.3;white-space:nowrap">${escH(out.connectLabel2)}</div>`;
       }
       h += `</div>`;
     }
@@ -4754,6 +4756,50 @@ function renderCrossArrows(){
   });
 }
 
+function renderOutcomeToFlowArrows(){
+  // Draw arrows from diamondOutcomes down-chain labels to other flow steps
+  // Uses crossArrowTo data on outcomes
+  document.querySelectorAll('.outcome-to-flow-arrow').forEach(o => o.remove());
+  
+  for(const fs of appState.flowSteps){
+    if(fs.type !== 'diamondOutcomes' || !fs.outcomes) continue;
+    for(const out of fs.outcomes){
+      if(!out.crossArrowTo) continue;
+      // Find source element (label2 box)
+      const srcEl = document.getElementById(fs.id + '_label2');
+      const tgtEl = document.getElementById(out.crossArrowTo);
+      if(!srcEl || !tgtEl) continue;
+      
+      // Find the flowPanel as reference
+      const panel = document.getElementById('flowPanel');
+      if(!panel) continue;
+      const panelRect = panel.getBoundingClientRect();
+      const srcRect = srcEl.getBoundingClientRect();
+      const tgtRect = tgtEl.getBoundingClientRect();
+      
+      // Arrow from bottom of source → left side of target (horizontal then down)
+      const sx = srcRect.left + srcRect.width/2 - panelRect.left;
+      const sy = srcRect.bottom - panelRect.top;
+      const tx = tgtRect.left + tgtRect.width/2 - panelRect.left;
+      const ty = tgtRect.top + tgtRect.height/2 - panelRect.top;
+      
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.classList.add('outcome-to-flow-arrow');
+      svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible';
+      
+      // L-shaped: go down from source, then left to target center
+      const midY = ty;
+      svg.innerHTML = `
+        <defs><marker id="otfHead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#1B2A4A"/></marker></defs>
+        <path d="M${sx},${sy} L${sx},${midY} L${tx},${midY}" stroke="#1B2A4A" stroke-width="2" fill="none" marker-end="url(#otfHead)" stroke-dasharray="none"/>
+      `;
+      
+      panel.style.position = 'relative';
+      panel.appendChild(svg);
+    }
+  }
+}
+
 function flowJumpTo(targetId){
   const el = document.getElementById(targetId);
   if(el){
@@ -4807,7 +4853,7 @@ function renderAll(){
   renderHierarchy();
   renderFlowChart();
   // Delay back arrows + fork lines rendering to ensure DOM is updated
-  setTimeout(()=>{ renderBackArrows(); renderForkLines(); }, 100);
+  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderCrossArrows(); renderOutcomeToFlowArrows(); }, 100);
   // Update version badge
   const vb = document.getElementById("versionBadge");
   if(vb){
