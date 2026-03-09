@@ -4413,12 +4413,14 @@ function renderVoteDecision(step){
     const cornerBoxW = hexItem ? 90 : 0;
     
     if(arrowDir === 'up'){
-      // Layout: נדחתה →→ straight line →→ [הסרה מסדר היום] →↑ vertical with [⏳] →↑ [pill]
+      // Layout: נדחתה →→ straight line →→ [box] →↑ vertical with [⏳] →↑ [pill]
+      // If no chevron/pill — just horizontal line + box (no vertical part)
       const boxItem = chain.find(c => c.type === 'box');
       const boxW = 90;
       const boxH = 32;
-      const vertLen = 70;
-      const totalH = boxH/2 + vertLen + 30; // enough height above center
+      const hasVertical = !!(hexItem || pillItem);
+      const vertLen = hasVertical ? 70 : 0;
+      const totalH = boxH/2 + vertLen + (hasVertical ? 30 : 0);
       
       // Container anchored at chevron center height, extends left and up
       html += `<div style="position:absolute;top:calc(50% - ${totalH}px);right:calc(50% + ${startRight}px);width:${svgW}px;height:${totalH + boxH/2}px">`;
@@ -4438,12 +4440,14 @@ function renderVoteDecision(step){
         html += `</div>`;
       }
       
-      // 3. Vertical arrow going UP from box top
-      const arrowBottom = centerY - boxH/2; // top of box = start of vertical arrow
+      // 3. Vertical arrow going UP from box top (only if there's a vertical chain)
+      const arrowBottom = centerY - boxH/2;
+      if(hasVertical){
       html += `<svg width="16" height="${vertLen}" style="position:absolute;top:${arrowBottom - vertLen}px;left:-8px;overflow:visible">`;
       html += `<line x1="8" y1="${vertLen}" x2="8" y2="10" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
       html += `</svg>`;
+      }
       
       // 4. Corner box (⏳) along the vertical arrow, on the outer side
       if(hexItem){
