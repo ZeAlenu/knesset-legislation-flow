@@ -4386,7 +4386,7 @@ function renderVoteDecision(step){
     // Arrow starts from the LEFT TIP (vertex) of the נדחתה chevron
     // Chevron clip-path: polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%)
     // The left tip is at 0% 50% — that's the leftmost point of the chevron
-    const startRight = ds/2 + chevW; // distance from center to the left tip of נדחתה
+    const startRight = ds*0.65 + chevW + 1; // distance from center to the left tip of נדחתה
     
     // Position: right edge of SVG touches the tip of נדחתה chevron
     const svgW = hLen;
