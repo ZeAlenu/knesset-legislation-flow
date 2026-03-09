@@ -4272,6 +4272,15 @@ function renderDiamondFork(step){
     // Steps inside branch
     branch.steps.forEach(bStep => {
       if(bStep.type === 'note') return;
+      if(bStep.type === 'crossArrow'){
+        // Render as a curved arrow pointing to the other branch
+        const targetId = bStep.crossTo || '';
+        html += `<div class="flow-step" id="${bStep.id}" style="position:relative;cursor:pointer" onclick="flowJumpTo('${targetId}')">`;
+        html += `<div style="font-size:11px;color:#2D7D46;font-weight:600;padding:4px">↩ ${escH(bStep.label || '')}</div>`;
+        html += `<svg class="cross-arrow-svg" data-target="${targetId}" style="width:100%;height:30px;display:block"></svg>`;
+        html += `</div>`;
+        return;
+      }
       html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
       html += renderFlowStepElement(bStep, true);
       html += `</div>`;
@@ -4336,6 +4345,30 @@ function renderDiamondForkLines(){
   });
 }
 
+function renderCrossArrows(){
+  document.querySelectorAll('.cross-arrow-svg').forEach(svg => {
+    const targetId = svg.dataset.target;
+    const targetEl = document.getElementById(targetId);
+    if(!targetEl || !svg.clientWidth) return;
+    
+    const svgRect = svg.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+    const w = svg.clientWidth;
+    const h = 30;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    
+    // Arrow pointing right (toward the other branch)
+    const startX = w/2;
+    const endX = w;  // point to the right edge (toward other branch)
+    const midY = h/2;
+    
+    svg.innerHTML = `
+      <defs><marker id="crossHead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2D7D46"/></marker></defs>
+      <path d="M ${startX} 0 Q ${startX} ${midY} ${endX} ${midY}" stroke="#2D7D46" stroke-width="2" fill="none" marker-end="url(#crossHead)" stroke-dasharray="4,3"/>
+    `;
+  });
+}
+
 function flowJumpTo(targetId){
   const el = document.getElementById(targetId);
   if(el){
@@ -4389,7 +4422,7 @@ function renderAll(){
   renderHierarchy();
   renderFlowChart();
   // Delay back arrows + fork lines rendering to ensure DOM is updated
-  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderDiamondForkLines(); }, 100);
+  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderDiamondForkLines(); renderCrossArrows(); }, 100);
   // Update version badge
   const vb = document.getElementById("versionBadge");
   if(vb){

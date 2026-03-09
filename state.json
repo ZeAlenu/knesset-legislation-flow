@@ -1681,15 +1681,13 @@
                   "steps": [
                     {
                       "id": "f12_h3b",
-                      "label": "דיון הכנה",
-                      "type": "pill",
+                      "label": "→ דיון הכנת החוק",
+                      "type": "crossArrow",
                       "category": "vaadat",
                       "stageId": "s8",
                       "note": "",
                       "noteType": "",
-                      "color": "#2D7D46",
-                      "textColor": "#FFFFFF",
-                      "jumpTo": "f12_1"
+                      "crossTo": "f12_1"
                     }
                   ]
                 }
