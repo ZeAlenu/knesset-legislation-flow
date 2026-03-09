@@ -4358,7 +4358,10 @@ function renderVoteDecision(step){
   for(let ci = chain.length - 1; ci >= 0; ci--){
     const item = chain[ci];
     if(item.type === 'chevron'){
-      html += `<div style="padding:4px 14px;background:${item.color||cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);white-space:nowrap">${item.icon ? item.icon + ' ' : ''}${escH(item.label)}</div>`;
+      let iconHtml = '';
+      if(item.icon && BUILTIN_ICONS[item.icon]) iconHtml = `<span style="display:inline-block;width:14px;height:14px;vertical-align:middle;margin-left:3px">${BUILTIN_ICONS[item.icon].replace(/width="[^"]*"/,'width="14"').replace(/height="[^"]*"/,'height="14"')}</span>`;
+      else if(item.icon) iconHtml = item.icon + ' ';
+      html += `<div style="padding:4px 14px;background:${item.color||cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);white-space:nowrap;display:flex;align-items:center">${iconHtml}${escH(item.label)}</div>`;
       html += `<div style="width:12px;height:2px;background:${item.color||cColor}"></div>`;
     } else if(item.type === 'pill'){
       const jmp = item.jumpTo ? `onclick="flowJumpTo('${item.jumpTo}')"` : '';

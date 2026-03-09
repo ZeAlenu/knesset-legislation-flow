@@ -1606,7 +1606,7 @@
       "rejectChain": [
         {
           "type": "chevron",
-          "icon": "⏳",
+          "icon": "hourglass",
           "label": "6 חודשים",
           "color": "#2E86AB"
         },
