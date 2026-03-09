@@ -205,6 +205,17 @@ class ProtectedHandler(http.server.SimpleHTTPRequestHandler):
                 with open(STATE_FILE, "r") as f:
                     try: existing = json.load(f)
                     except: pass
+                # Backup before merge
+                backup_dir = os.path.join(SITE_DIR, "backups")
+                os.makedirs(backup_dir, exist_ok=True)
+                ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+                backup_file = os.path.join(backup_dir, f"state-before-publish-{ts}.json")
+                import shutil
+                shutil.copy2(STATE_FILE, backup_file)
+                # Keep only last 20 backups
+                backups = sorted([f for f in os.listdir(backup_dir) if f.endswith('.json')])
+                for old in backups[:-20]:
+                    os.remove(os.path.join(backup_dir, old))
             if existing.get("stages") and data.get("stages"):
                 existing_map = {s["id"]: s for s in existing["stages"]}
                 merged_stages, seen = [], set()
