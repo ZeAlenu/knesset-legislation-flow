@@ -4345,27 +4345,11 @@ function renderVoteDecision(step){
   
   let html = `<div id="${step.id}" style="margin:6px 0">`;
   
-  // Main row: [reject column] ← line ← [diamond column]
+  // Main row: RTL — first child = right side
+  // Reject on RIGHT (first in RTL), diamond on LEFT (second in RTL)
   html += `<div style="display:flex;align-items:flex-start;justify-content:center;direction:rtl;gap:0">`;
   
-  // Diamond column: diamond + "אושרה" below
-  html += `<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto">`;
-  // Extra top padding so diamond center aligns with the connecting line
-  html += `<div style="height:${ds*0.2}px"></div>`;
-  html += `<div style="width:${ds}px;height:${ds}px;background:${dColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;cursor:pointer${actCls?';box-shadow:0 0 0 3px #f97316':''}" ${stageClick}>`;
-  html += `<span style="transform:rotate(-45deg);color:#fff;font-size:${isInBr?8:9}px;font-weight:700;text-align:center;line-height:1.2">${escH(step.voteLabel||step.label||'').replace(/\n/g,'<br>')}</span>`;
-  html += `</div>`;
-  // "אושרה" below
-  html += `<div style="display:flex;flex-direction:column;align-items:center;margin-top:2px">`;
-  html += `<div style="width:2px;height:6px;background:${cColor}"></div>`;
-  html += `<div style="padding:3px 10px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%)">${escH(step.approveLabel||'אושרה')}</div>`;
-  html += `</div>`;
-  html += `</div>`; // diamond column end
-  
-  // Connecting line (vertically centered on diamond)
-  html += `<div style="width:15px;height:2px;background:${cColor};margin-top:${ds*0.2 + ds/2}px;flex:0 0 auto"></div>`;
-  
-  // Rejected column: "נדחתה" aligned with diamond center, chain below
+  // Rejected column FIRST (= right side in RTL): "נדחתה" + chain below
   html += `<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto;margin-top:${ds*0.2 + ds/2 - 10}px">`;
   html += `<div style="padding:4px 12px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);white-space:nowrap">${escH(step.rejectLabel||'נדחתה')}</div>`;
   
@@ -4392,6 +4376,21 @@ function renderVoteDecision(step){
     }
   }
   html += `</div>`; // rejected column end
+  
+  // Connecting line
+  html += `<div style="width:15px;height:2px;background:${cColor};margin-top:${ds*0.2 + ds/2}px;flex:0 0 auto"></div>`;
+  
+  // Diamond column: diamond + "אושרה" below
+  html += `<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto">`;
+  html += `<div style="height:${ds*0.2}px"></div>`;
+  html += `<div style="width:${ds}px;height:${ds}px;background:${dColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;cursor:pointer${actCls?';box-shadow:0 0 0 3px #f97316':''}" ${stageClick}>`;
+  html += `<span style="transform:rotate(-45deg);color:#fff;font-size:${isInBr?8:9}px;font-weight:700;text-align:center;line-height:1.2">${escH(step.voteLabel||step.label||'').replace(/\n/g,'<br>')}</span>`;
+  html += `</div>`;
+  html += `<div style="display:flex;flex-direction:column;align-items:center;margin-top:2px">`;
+  html += `<div style="width:2px;height:6px;background:${cColor}"></div>`;
+  html += `<div style="padding:3px 10px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%)">${escH(step.approveLabel||'אושרה')}</div>`;
+  html += `</div>`;
+  html += `</div>`; // diamond column end
   
   html += `</div>`; // main row end
   html += `</div>`;
