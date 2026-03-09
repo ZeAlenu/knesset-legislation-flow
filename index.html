@@ -4283,11 +4283,7 @@ function renderDiamondOutcomes(step){
   const chevronText = '#FFFFFF';
   const dSize = 50;
   
-  // Calculate margin-bottom for absolute-positioned down chains
-  const hasDown = outcomes.some(o => o.arrowDir === 'down');
-  const hasDown2 = outcomes.some(o => o.arrowDir === 'down' && o.connectLabel2);
-  const mbPx = hasDown2 ? 110 : hasDown ? 60 : 0;
-  let html = `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;margin:6px 0 ${mbPx}px 0;width:100%">`;
+  let html = `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;margin:6px 0;width:100%">`;
   
   // Build each outcome with its chevron + arrow
   function renderOutcome(out, side){
@@ -4346,7 +4342,7 @@ function renderDiamondOutcomes(step){
   html += renderOutcome(right, 'right');
   
   // Line: right chevron → diamond (longer to push approved chain away from center)
-  const lineLen = step.lineLength || 50;
+  const lineLen = step.lineLength || 80;
   html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
   
   // Diamond (center)
