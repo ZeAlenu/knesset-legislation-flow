@@ -2066,16 +2066,9 @@
       "noteType": "warning"
     }
   ],
-  "flowBackLinks": [
-    {
-      "fromId": "f7",
-      "toId": "f2b",
-      "label": "נדחתה — 6 חודשים המתנה",
-      "color": "#CC0000"
-    }
-  ],
+  "flowBackLinks": [],
   "nextId": 1047,
   "publishDate": "2026-03-09T16:45:45.957Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T20:43:44.874219"
+  "mergedAt": "2026-03-09T20:45:47.389807"
 }
