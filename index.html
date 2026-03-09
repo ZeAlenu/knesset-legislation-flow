@@ -4272,7 +4272,7 @@ function renderDiamondOutcomes(step){
     } else if(out.targetType === 'crossBranch'){
       // Arrow pointing to the other branch — just show arrow indicator
       html += `<div class="cross-branch-arrow" data-target="${out.crossTo}" style="cursor:pointer;padding:4px" onclick="flowJumpTo('${out.crossTo}')">`;
-      html += `<div style="font-size:9px;color:${out.color||'#2D7D46'};font-weight:600">↩ חזרה לדיון הכנה ←</div>`;
+      html += `<div style="font-size:9px;color:${out.color||'#2D7D46'};font-weight:600">→ דיון הכנת החוק</div>`;
       html += `</div>`;
     }
     
@@ -4452,10 +4452,26 @@ function renderCrossArrows(){
     const endX = tgtRect.left + tgtRect.width/2 - containerRect.left;
     const endY = tgtRect.top - containerRect.top;
     
-    // Direct diagonal line with arrowhead
+    // Route through the gap between branches: go horizontal first, then down to target
+    // Find the midpoint between the two branches (the "dead space")
+    const srcBranch = el.closest('.flow-branch');
+    const tgtBranch = targetEl.closest('.flow-branch');
+    let midX;
+    if(srcBranch && tgtBranch){
+      const srcBR = srcBranch.getBoundingClientRect();
+      const tgtBR = tgtBranch.getBoundingClientRect();
+      // Gap between branches
+      const gapLeft = Math.min(srcBR.right, tgtBR.right);
+      const gapRight = Math.max(srcBR.left, tgtBR.left);
+      midX = (gapLeft + gapRight) / 2 - containerRect.left;
+    } else {
+      midX = (startX + endX) / 2;
+    }
+    
+    // Solid line: horizontal to gap, down in gap, horizontal to target
     svg.innerHTML = `
       <defs><marker id="crossBranchHead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2D7D46"/></marker></defs>
-      <line x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" stroke="#2D7D46" stroke-width="2.5" marker-end="url(#crossBranchHead)"/>
+      <path d="M ${startX} ${startY} L ${startX} ${startY+10} L ${midX} ${startY+10} L ${midX} ${endY} L ${endX} ${endY}" stroke="#2D7D46" stroke-width="2.5" fill="none" marker-end="url(#crossBranchHead)"/>
     `;
     
     flowContainer.style.position = 'relative';
