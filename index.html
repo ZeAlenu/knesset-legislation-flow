@@ -4400,30 +4400,34 @@ function renderVoteDecision(step){
     const cornerBoxW = hexItem ? 70 : 0;
     
     if(arrowDir === 'up'){
-      // Layout: נדחתה →→ straight line →→ [הסרה מסדר היום] →↑ vertical arrow with [⏳ corner box] →↑ [pill]
+      // Layout: נדחתה →→ straight line →→ [הסרה מסדר היום] →↑ vertical with [⏳] →↑ [pill]
       const boxItem = chain.find(c => c.type === 'box');
-      const boxW = boxItem ? 90 : 0;
-      const boxH = boxItem ? 32 : 0;
-      const vertLen = 70; // vertical arrow length above the box
-      const totalH = boxH + vertLen + cornerBoxH + 36; // box + vertical + corner box + pill
+      const boxW = 90;
+      const boxH = 32;
+      const vertLen = 70;
+      const totalH = boxH/2 + vertLen + 30; // enough height above center
       
-      html += `<div style="position:absolute;top:calc(50% - ${boxH/2}px);right:calc(50% + ${startRight}px);height:1px;width:${svgW}px">`;
+      // Container anchored at chevron center height, extends left and up
+      html += `<div style="position:absolute;top:calc(50% - ${totalH}px);right:calc(50% + ${startRight}px);width:${svgW}px;height:${totalH + boxH/2}px">`;
       
-      // 1. Straight horizontal line from נדחתה to the box position
-      html += `<svg width="${svgW}" height="4" style="position:absolute;top:-1px;left:0;overflow:visible">`;
+      // The "center line" (chevron Y level) is at bottom: boxH/2 from container bottom
+      const centerY = totalH; // px from container top = where chevron center is
+      
+      // 1. Straight horizontal line at chevron center level
+      html += `<svg width="${svgW}" height="4" style="position:absolute;top:${centerY - 2}px;left:0;overflow:visible">`;
       html += `<line x1="${svgW+4}" y1="2" x2="0" y2="2" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `</svg>`;
       
       // 2. Box "הסרה מסדר היום" at the left end of horizontal line
       if(boxItem){
-        html += `<div style="position:absolute;top:50%;left:-${boxW/2}px;transform:translateY(-50%);z-index:2">`;
+        html += `<div style="position:absolute;top:${centerY - boxH/2}px;left:0;transform:translateX(-50%);z-index:2">`;
         html += `<div style="padding:6px 14px;background:${boxItem.color||'#1B2A4A'};color:#fff;font-size:9px;font-weight:600;border-radius:8px;white-space:nowrap;text-align:center">${escH(boxItem.label)}</div>`;
         html += `</div>`;
       }
       
-      // 3. Vertical arrow going UP from box, with corner box and pill
-      const vX = boxItem ? 0 : 8; // center of vertical line = left edge (where box center is)
-      html += `<svg width="16" height="${vertLen}" style="position:absolute;bottom:${boxH/2}px;left:${vX - 8}px;overflow:visible">`;
+      // 3. Vertical arrow going UP from box top
+      const arrowBottom = centerY - boxH/2; // top of box = start of vertical arrow
+      html += `<svg width="16" height="${vertLen}" style="position:absolute;top:${arrowBottom - vertLen}px;left:-8px;overflow:visible">`;
       html += `<line x1="8" y1="${vertLen}" x2="8" y2="10" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
       html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
       html += `</svg>`;
@@ -4434,7 +4438,7 @@ function renderVoteDecision(step){
         if(hexItem.icon && BUILTIN_ICONS[hexItem.icon]){
           iconHtml = BUILTIN_ICONS[hexItem.icon].replace(/width="[^"]*"/,'width="18"').replace(/height="[^"]*"/,'height="18"');
         }
-        html += `<div style="position:absolute;bottom:${boxH/2 + vertLen*0.3}px;left:${vX - cornerBoxW}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
+        html += `<div style="position:absolute;top:${arrowBottom - vertLen*0.6}px;left:${-cornerBoxW}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
         if(iconHtml) html += `<div>${iconHtml}</div>`;
         html += `<div style="font-size:8px;font-weight:600;color:${dColor}">${escH(hexItem.label)}</div>`;
         html += `</div>`;
@@ -4443,7 +4447,7 @@ function renderVoteDecision(step){
       // 5. Pill at the top of vertical arrow
       if(pillItem){
         const jmp = pillItem.jumpTo ? `onclick="flowJumpTo('${pillItem.jumpTo}')"` : '';
-        html += `<div style="position:absolute;bottom:${boxH/2 + vertLen}px;left:${vX}px;transform:translateX(-50%);z-index:2">`;
+        html += `<div style="position:absolute;top:${arrowBottom - vertLen - 4}px;left:0;transform:translate(-50%,-100%);z-index:2">`;
         html += `<div style="padding:6px 16px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:10px;font-weight:600;border-radius:16px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:4px" ${jmp}><span style="font-size:8px;opacity:0.8">▲</span><span>${escH(pillItem.label)}</span></div>`;
         html += `</div>`;
       }
