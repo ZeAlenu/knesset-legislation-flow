@@ -731,19 +731,8 @@ async function loadFromStorage(){
     }
   } catch(e){ /* no shared state file, use defaults */ }
   
-  // 2. Override with localStorage (personal edits)
-  try {
-    const raw = localStorage.getItem("knesset-legislation-v2");
-    if(raw){
-      const d = JSON.parse(raw);
-      if(d.categories) appState.categories = d.categories;
-      if(d.stages) appState.stages = d.stages;
-      if(d.flowSteps) appState.flowSteps = d.flowSteps;
-      if(d.flowBackLinks) appState.flowBackLinks = d.flowBackLinks;
-      if(d.nextId) nextId = d.nextId;
-      showToast("נטען מאחסון מקומי");
-    }
-  } catch(e){ console.error("Load error:",e); }
+  // 2. localStorage no longer overrides server — refresh = fresh content from server
+  //    localStorage is only used for pre-refresh backup recovery (see below)
   
   // Check for pre-refresh backup
   const preRefreshBackup = localStorage.getItem("knesset-pre-refresh-backup");
