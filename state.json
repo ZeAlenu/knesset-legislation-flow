@@ -1842,11 +1842,23 @@
     {
       "id": "f13",
       "label": "קריאה שנייה",
-      "type": "diamond",
+      "type": "voteDecision",
       "category": "plenum",
       "stageId": "s9",
-      "note": "",
-      "noteType": ""
+      "voteLabel": "קריאה שנייה",
+      "rejectLabel": "נדחה",
+      "approveLabel": "אושר",
+      "diamondColor": "#1B2A4A",
+      "chevronColor": "#2E86AB",
+      "rejectArrowDir": "up",
+      "rejectArmLength": 100,
+      "rejectChain": [
+        {
+          "type": "box",
+          "label": "סעיף נמחק מהנוסח",
+          "color": "#8B4513"
+        }
+      ]
     },
     {
       "type": "voteDecision",
@@ -2046,5 +2058,5 @@
   "nextId": 1047,
   "publishDate": "2026-03-09T16:45:45.957Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T20:49:19.622557"
+  "mergedAt": "2026-03-09T20:50:38.812593"
 }
