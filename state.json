@@ -572,7 +572,9 @@
           "children": [],
           "_open": false,
           "detailsHtml": "&nbsp;<span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/state-emblem.png\" width=\"28\" height=\"28\" style=\"object-fit:contain\"></span>&nbsp;יו\"ר הכנסת היושב בדיון, מודיע לאיזו ועדה מוועדות הכנסת תעבור הצעת החוק לצורך הכנתה לקריאה הראשונה.<br><br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=124\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 78 לתקנון הכנסת — קביעת ועדה לדיון בהצעת חוק אחרי הדיון המוקדם</a>",
-          "builtinIcon": "israel"
+          "builtinIcon": "israel",
+          "showArrowAfter": false,
+          "connector": "+"
         },
         {
           "id": "step_gen_1043",
@@ -1447,7 +1449,7 @@
     }
   ],
   "nextId": 1047,
-  "publishDate": "2026-03-09T10:57:34.717Z",
+  "publishDate": "2026-03-09T11:05:44.766Z",
   "publishedBy": "נגה ארבל",
-  "mergedAt": "2026-03-09T12:57:35.145803"
+  "mergedAt": "2026-03-09T13:05:44.328206"
 }
