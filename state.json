@@ -1601,9 +1601,22 @@
       "note": "",
       "noteType": "",
       "voteLabel": "קריאה ראשונה",
-      "rejectNote": "6 חודשי המתנה",
       "diamondColor": "#1B2A4A",
-      "chevronColor": "#2E86AB"
+      "chevronColor": "#2E86AB",
+      "rejectChain": [
+        {
+          "type": "chevron",
+          "icon": "⏳",
+          "label": "6 חודשים",
+          "color": "#2E86AB"
+        },
+        {
+          "type": "pill",
+          "label": "הגשה לנשיאות",
+          "jumpTo": "f3",
+          "color": "#4A148C"
+        }
+      ]
     },
     {
       "id": "f11",

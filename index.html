@@ -4349,14 +4349,28 @@ function renderVoteDecision(step){
   html += `<span style="transform:rotate(-45deg);color:#fff;font-size:${isInBr?8:10}px;font-weight:700;text-align:center;line-height:1.2">${escH(step.voteLabel||step.label||'').replace(/\n/g,'<br>')}</span>`;
   html += `</div>`;
   
-  // Rejected hexagon — to the left of diamond, positioned from center
-  const rejectOffset = ds/2 + 22; // diamond half-width + line
+  // Rejected chain — hexagon + optional arrow → chevron → pill, all to the left
+  const rejectOffset = ds/2 + 22;
   html += `<div style="position:absolute;top:${ds/2}px;left:calc(50% - ${rejectOffset}px);transform:translate(-100%,-50%);display:flex;align-items:center;gap:0;direction:ltr">`;
-  html += `<div>`;
+  
+  // Reject chain items (pill, chevron, etc.) — rendered right-to-left (ltr flex = visual left-to-right, first item leftmost)
+  const chain = step.rejectChain || [];
+  for(let ci = chain.length - 1; ci >= 0; ci--){
+    const item = chain[ci];
+    if(item.type === 'chevron'){
+      html += `<div style="padding:4px 14px;background:${item.color||cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);white-space:nowrap">${item.icon ? item.icon + ' ' : ''}${escH(item.label)}</div>`;
+      html += `<div style="width:12px;height:2px;background:${item.color||cColor}"></div>`;
+    } else if(item.type === 'pill'){
+      const jmp = item.jumpTo ? `onclick="flowJumpTo('${item.jumpTo}')"` : '';
+      html += `<div style="padding:4px 12px;background:${item.color||'#4A148C'};color:#fff;font-size:8px;font-weight:600;border-radius:12px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:3px" ${jmp}><span>${escH(item.label)}</span><span style="font-size:7px;opacity:0.7">▼</span></div>`;
+      if(ci > 0) html += `<div style="width:12px;height:2px;background:${item.color||cColor}"></div>`;
+    }
+  }
+  
+  // "נדחתה" hexagon (closest to diamond)
   html += `<div style="padding:4px 14px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);white-space:nowrap">${escH(step.rejectLabel||'נדחתה')}</div>`;
-  if(step.rejectNote) html += `<div style="font-size:7px;color:#888;text-align:center;margin-top:1px">${escH(step.rejectNote)}</div>`;
-  html += `</div>`;
   html += `<div style="width:18px;height:2px;background:${cColor}"></div>`;
+  
   html += `</div>`;
   
   // Approved hexagon — absolute, below diamond center
