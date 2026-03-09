@@ -1588,6 +1588,15 @@
       "noteType": ""
     },
     {
+      "id": "f11b",
+      "label": "דיון בוועדה",
+      "type": "box",
+      "category": "vaadat",
+      "stageId": "s8",
+      "note": "",
+      "noteType": ""
+    },
+    {
       "id": "f12",
       "label": "",
       "type": "split",
