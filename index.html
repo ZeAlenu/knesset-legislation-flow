@@ -4430,7 +4430,7 @@ function renderVoteDecision(step){
         // The SVG is at bottom:-20px in the container. SVG top = container bottom - svgH - 20
         // Arrow tip at SVG y=2. In container coords: totalH - svgH + 2 - 20... 
         // Simpler: just use the SVG's absolute position
-        html += `<div style="position:absolute;bottom:${svgH - 22}px;left:8px;transform:translate(-50%,-100%);z-index:2">`;
+        html += `<div style="position:absolute;bottom:${svgH + 10}px;left:8px;transform:translate(-50%,-100%);z-index:2">`;
         html += `<div style="padding:6px 16px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:10px;font-weight:600;border-radius:16px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:4px" ${jmp}><span style="font-size:8px;opacity:0.8">▲</span><span>${escH(pillItem.label)}</span></div>`;
         html += `</div>`;
       }
