@@ -3282,7 +3282,9 @@ function renderFlowStepElement(step, isInBranch){
 
   if(effectiveType === "diamond"){
     const diamondLabel = label.replace(/\n/g,"<br>");
-    html += `<div class="flow-diamond${actCls}" style="background:${color};color:${textColor}${borderStyle}" ${stageClick}><span>${diamondLabel}</span></div>`;
+    const dSize = isInBranch ? "width:55px;height:55px;" : "";
+    const dFont = isInBranch ? "font-size:8px;" : "";
+    html += `<div class="flow-diamond${actCls}" style="background:${color};color:${textColor}${borderStyle};${dSize}" ${stageClick}><span style="${dFont}">${diamondLabel}</span></div>`;
     // Reject/approve labels for diamonds
     if(step.rejectLabel || step.approveLabel){
       const isRedReject = step.rejectLabel && step.rejectLabel.includes("6 חודשים");
@@ -3423,14 +3425,17 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
   return html;
 }
 
-function renderFlowSplit(step, mainIndex){
+function renderFlowSplit(step, mainIndex, isNested){
   const branches = step.branches || [];
   const brSep = step.branchSeparator || "או";
-  // Fork: "או" circle over SVG diagonal lines
-  let html = `<div style="position:relative">`;
-  html += `<svg class="flow-fork-svg" data-split-id="${step.id}" style="width:100%;height:50px;display:block;margin:0 auto"></svg>`;
-  html += `<div class="flow-or" style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2">${escH(brSep)}</div>`;
-  html += `</div>`;
+  let html = '';
+  if(!isNested){
+    // Fork: "או" circle over SVG diagonal lines
+    html += `<div style="position:relative">`;
+    html += `<svg class="flow-fork-svg" data-split-id="${step.id}" style="width:100%;height:50px;display:block;margin:0 auto"></svg>`;
+    html += `<div class="flow-or" style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2">${escH(brSep)}</div>`;
+    html += `</div>`;
+  }
   if(appState.editing){
     html += `<div style="display:flex;gap:1px;justify-content:center;opacity:0.5;margin:1px 0">`;
     [{v:"או",l:"או"},{v:"→",l:"→"},{v:"+",l:"+"},{v:"⇄",l:"⇄"},{v:"/",l:"/"}].forEach(sym=>{
@@ -3439,7 +3444,8 @@ function renderFlowSplit(step, mainIndex){
     });
     html += `</div>`;
   }
-  html += `<div class="flow-branch-container">`;
+  const nestedStyle = isNested ? 'border:2px solid #1B2A4A;border-radius:8px;padding:6px;background:#f8fafc;' : '';
+  html += `<div class="flow-branch-container" style="${nestedStyle}">`;
 
   branches.forEach((branch, bi) => {
     const borderSide = bi === 0 ? "border-left" : "border-right";
@@ -3477,7 +3483,7 @@ function renderFlowSplit(step, mainIndex){
         html += `</div>`;
       } else if(bStep.type === "split"){
         // Nested split inside branch
-        html += renderFlowSplit(bStep, bsi);
+        html += renderFlowSplit(bStep, bsi, true);
       } else {
         html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
         html += renderFlowStepElement(bStep, true);
