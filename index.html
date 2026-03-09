@@ -4349,13 +4349,14 @@ function renderVoteDecision(step){
   html += `<span style="transform:rotate(-45deg);color:#fff;font-size:${isInBr?8:10}px;font-weight:700;text-align:center;line-height:1.2">${escH(step.voteLabel||step.label||'').replace(/\n/g,'<br>')}</span>`;
   html += `</div>`;
   
-  // Rejected hexagon — absolute, to the LEFT of center (CSS left:0)
-  html += `<div style="position:absolute;top:${ds/2}px;left:8px;transform:translateY(-50%);display:flex;align-items:center;gap:0;direction:ltr">`;
+  // Rejected hexagon — to the left of diamond, positioned from center
+  const rejectOffset = ds/2 + 22; // diamond half-width + line
+  html += `<div style="position:absolute;top:${ds/2}px;left:calc(50% - ${rejectOffset}px);transform:translate(-100%,-50%);display:flex;align-items:center;gap:0;direction:ltr">`;
   html += `<div>`;
-  html += `<div style="padding:4px 14px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)">${escH(step.rejectLabel||'נדחתה')}</div>`;
+  html += `<div style="padding:4px 14px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);white-space:nowrap">${escH(step.rejectLabel||'נדחתה')}</div>`;
   if(step.rejectNote) html += `<div style="font-size:7px;color:#888;text-align:center;margin-top:1px">${escH(step.rejectNote)}</div>`;
   html += `</div>`;
-  html += `<div style="width:15px;height:2px;background:${cColor}"></div>`;
+  html += `<div style="width:18px;height:2px;background:${cColor}"></div>`;
   html += `</div>`;
   
   // Approved hexagon — absolute, below diamond center
