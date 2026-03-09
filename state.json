@@ -1637,9 +1637,10 @@
               "type": "box",
               "category": "vaadat",
               "stageId": "s8",
-              "note": "סעיף 94(א)",
+              "note": "📜 סעיף 94(א)",
               "noteType": "info",
-              "branchConnector": "arrow"
+              "branchConnector": "arrow",
+              "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=116"
             },
             {
               "id": "f12_h2",
@@ -1680,14 +1681,15 @@
                   "steps": [
                     {
                       "id": "f12_h3b",
-                      "label": "↩ חזרה לדיון\nהכנת החוק",
+                      "label": "דיון הכנה",
                       "type": "pill",
                       "category": "vaadat",
                       "stageId": "s8",
                       "note": "",
                       "noteType": "",
                       "color": "#2D7D46",
-                      "textColor": "#FFFFFF"
+                      "textColor": "#FFFFFF",
+                      "jumpTo": "f12_1"
                     }
                   ]
                 }
@@ -1704,9 +1706,10 @@
               "type": "box",
               "category": "vaadat",
               "stageId": "s8",
-              "note": "סעיף 84(א)",
+              "note": "📜 סעיף 84(א)",
               "noteType": "info",
-              "branchConnector": "arrow"
+              "branchConnector": "arrow",
+              "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100"
             },
             {
               "id": "f12_side1",
@@ -1724,9 +1727,10 @@
               "type": "box",
               "category": "vaadat",
               "stageId": "s8",
-              "note": "סעיף 84(ב)–(ו)\n↩ חזור בסיום",
+              "note": "📜 סעיף 84(ב)–(ו)\n↩ חזור בסיום",
               "noteType": "info",
-              "branchConnector": "arrow"
+              "branchConnector": "arrow",
+              "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=100"
             },
             {
               "id": "f12_side3",
@@ -1734,9 +1738,10 @@
               "type": "box",
               "category": "gov",
               "stageId": "s8",
-              "note": "שר האוצר · סעיף 93\n↩ חזור בסיום",
+              "note": "📜 שר האוצר · סעיף 93\n↩ חזור בסיום",
               "noteType": "info",
-              "branchConnector": "arrow"
+              "branchConnector": "arrow",
+              "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=113"
             },
             {
               "id": "f12_req",
@@ -1772,9 +1777,10 @@
               "type": "diamond",
               "category": "vaadat",
               "stageId": "s8",
-              "note": "סעיף 87(א)",
+              "note": "📜 סעיף 87(א)",
               "noteType": "info",
-              "branchConnector": "arrow"
+              "branchConnector": "arrow",
+              "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=106"
             },
             {
               "id": "f12_8",
@@ -1782,9 +1788,10 @@
               "type": "box",
               "category": "nesiut",
               "stageId": "s8",
-              "note": "המתנה יום\nועדת הכנסת יכולה לקצר\nסעיף 88",
+              "note": "📜 המתנה יום\nועדת הכנסת יכולה לקצר\nסעיף 88",
               "noteType": "info",
-              "branchConnector": "arrow"
+              "branchConnector": "arrow",
+              "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=107"
             },
             {
               "id": "f12_9",
@@ -1792,9 +1799,10 @@
               "type": "diamond",
               "category": "vaadat",
               "stageId": "s8",
-              "note": "הוועדה רשאית\nלחדש דיונים\nסעיף 89",
+              "note": "📜 הוועדה רשאית\nלחדש דיונים\nסעיף 89",
               "noteType": "info",
-              "branchConnector": "arrow"
+              "branchConnector": "arrow",
+              "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=107"
             },
             {
               "id": "f12_end",
@@ -1835,7 +1843,7 @@
       "type": "box",
       "category": "plenum",
       "stageId": "s8",
-      "note": "תת-תהליך · סעיף 94",
+      "note": "📜 תת-תהליך · סעיף 94",
       "noteType": "info",
       "isSubProcess": true,
       "subProcessTitle": "דיון הסרת הצעה מסדר היום",
@@ -1844,7 +1852,8 @@
           "id": "f12_h_split",
           "label": "← חזרה להכנה לקריאה ב'+ג'"
         }
-      ]
+      ],
+      "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=116"
     },
     {
       "id": "f_rem_1",
@@ -1879,8 +1888,9 @@
       "type": "diamond",
       "category": "plenum",
       "stageId": "s8",
-      "note": "סעיף 94(ב)–(ג)",
-      "noteType": "info"
+      "note": "📜 סעיף 94(ב)–(ג)",
+      "noteType": "info",
+      "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=116"
     },
     {
       "id": "f_rem_split",
@@ -1914,10 +1924,11 @@
               "type": "pill",
               "category": "vaadat",
               "stageId": "s8",
-              "note": "ניתן להאריך\nסעיף 94(ד)",
+              "note": "📜 ניתן להאריך\nסעיף 94(ד)",
               "noteType": "info",
               "color": "#2D7D46",
-              "textColor": "#FFFFFF"
+              "textColor": "#FFFFFF",
+              "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=116"
             }
           ]
         }

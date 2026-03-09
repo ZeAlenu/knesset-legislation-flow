@@ -3475,6 +3475,9 @@ function renderFlowSplit(step, mainIndex){
           html += `</div>`;
         }
         html += `</div>`;
+      } else if(bStep.type === "split"){
+        // Nested split inside branch
+        html += renderFlowSplit(bStep, bsi);
       } else {
         html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
         html += renderFlowStepElement(bStep, true);
@@ -3482,11 +3485,14 @@ function renderFlowSplit(step, mainIndex){
       }
       
       // Note below branch step (for old-style notes)
-      if(bStep.note && !hasNoteAnnotation){
-        if(bStep.noteType === "warning"){
-          html += `<div class="flow-side-note" style="font-size:9px;max-width:140px">${escH(bStep.note).replace(/\n/g,"<br>")}</div>`;
+      if(bStep.note && !hasNoteAnnotation && bStep.type !== "split"){
+        const noteText = escH(bStep.note).replace(/\n/g,"<br>");
+        if(bStep.noteLink){
+          html += `<div style="font-size:9px;color:#666;text-align:center;margin:1px 0"><a href="${escH(bStep.noteLink)}" target="_blank" style="color:#2E86AB;text-decoration:none">${noteText} 📜</a></div>`;
+        } else if(bStep.noteType === "warning"){
+          html += `<div class="flow-side-note" style="font-size:9px;max-width:140px">${noteText}</div>`;
         } else {
-          html += `<div style="font-size:9px;color:#666;text-align:center;margin:1px 0">${escH(bStep.note)}</div>`;
+          html += `<div style="font-size:9px;color:#666;text-align:center;margin:1px 0">${noteText}</div>`;
         }
       }
       
