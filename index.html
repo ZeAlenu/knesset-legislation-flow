@@ -3353,6 +3353,9 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
   if(step.type === "voteDecision"){
     if(!isInBranch) html += `<button class="flow-insert-btn" onclick="flowInsertStep(${index},'main')">➕</button>`;
     html += renderVoteDecision(step);
+  } else if(step.type === "diamondOutcomes"){
+    if(!isInBranch) html += `<button class="flow-insert-btn" onclick="flowInsertStep(${index},'main')">➕</button>`;
+    html += renderDiamondOutcomes(step);
   } else if(step.type === "split"){
     // Insert button before split
     html += `<button class="flow-insert-btn" onclick="flowInsertStep(${index},'main')">➕</button>`;
