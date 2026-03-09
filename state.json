@@ -1629,7 +1629,74 @@
       "title": "הכנה לקריאה ב'+ג'",
       "branches": [
         {
-          "label": "טיפול בהצעת חוק",
+          "label": "דיון בהסרת החוק",
+          "steps": [
+            {
+              "id": "f12_h1",
+              "label": "דיון בהסרת\nהחוק",
+              "type": "box",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "סעיף 94(א)",
+              "noteType": "info",
+              "branchConnector": "arrow"
+            },
+            {
+              "id": "f12_h2",
+              "label": "הצבעה\nלהסיר",
+              "type": "diamond",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "",
+              "noteType": "",
+              "branchConnector": "או"
+            },
+            {
+              "id": "f12_h_split",
+              "label": "",
+              "type": "split",
+              "stageId": "s8",
+              "branchSeparator": "או",
+              "branches": [
+                {
+                  "label": "חצי או יותר\nתומכים בהסרה",
+                  "steps": [
+                    {
+                      "id": "f12_h3a",
+                      "label": "→ דיון הסרת הצעה\nמסדר היום",
+                      "type": "pill",
+                      "category": "plenum",
+                      "stageId": "s8",
+                      "note": "תת-תהליך נפרד",
+                      "noteType": "info",
+                      "color": "#4A148C",
+                      "textColor": "#FFFFFF",
+                      "jumpTo": "f_removal_process"
+                    }
+                  ]
+                },
+                {
+                  "label": "רוב מתנגדים\nלהסרה",
+                  "steps": [
+                    {
+                      "id": "f12_h3b",
+                      "label": "↩ חזרה לדיון\nהכנת החוק",
+                      "type": "pill",
+                      "category": "vaadat",
+                      "stageId": "s8",
+                      "note": "",
+                      "noteType": "",
+                      "color": "#2D7D46",
+                      "textColor": "#FFFFFF"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "דיון הכנת החוק",
           "steps": [
             {
               "id": "f12_1",
@@ -1638,7 +1705,8 @@
               "category": "vaadat",
               "stageId": "s8",
               "note": "סעיף 84(א)",
-              "noteType": "info"
+              "noteType": "info",
+              "branchConnector": "arrow"
             },
             {
               "id": "f12_side1",
@@ -1740,104 +1808,6 @@
               "textColor": "#FFFFFF"
             }
           ]
-        },
-        {
-          "label": "הסרה מסדר היום",
-          "steps": [
-            {
-              "id": "f12_r1",
-              "label": "הוועדה מחליטה\nלהציע הסרה",
-              "type": "box",
-              "category": "vaadat",
-              "stageId": "s8",
-              "note": "רוב או חצי מחברי\nהוועדה תומכים\nסעיף 94(א)",
-              "noteType": "info",
-              "branchConnector": "arrow"
-            },
-            {
-              "id": "f12_r2",
-              "label": "הנחה על\nשולחן הכנסת",
-              "type": "box",
-              "category": "nesiut",
-              "stageId": "s8",
-              "note": "",
-              "noteType": "",
-              "branchConnector": "arrow"
-            },
-            {
-              "id": "f12_r3",
-              "label": "יו\"ר הוועדה מציג\nלמליאה",
-              "type": "box",
-              "category": "plenum",
-              "stageId": "s8",
-              "note": "הממשלה רשאית\nלהביע עמדה",
-              "noteType": "info",
-              "branchConnector": "arrow"
-            },
-            {
-              "id": "f12_r3b",
-              "label": "היוזם רשאי\nלהשיב",
-              "type": "box",
-              "category": "chk",
-              "stageId": "s8",
-              "note": "",
-              "noteType": "",
-              "branchConnector": "arrow"
-            },
-            {
-              "id": "f12_r4",
-              "label": "הצבעה\nבמליאה",
-              "type": "diamond",
-              "category": "plenum",
-              "stageId": "s8",
-              "note": "סעיף 94(ב)–(ג)",
-              "noteType": "info",
-              "branchConnector": "או"
-            },
-            {
-              "id": "f12_r5",
-              "label": "",
-              "type": "split",
-              "stageId": "s8",
-              "note": "",
-              "noteType": "",
-              "branchSeparator": "או",
-              "branches": [
-                {
-                  "label": "אושרה ההסרה",
-                  "steps": [
-                    {
-                      "id": "f12_r5a",
-                      "label": "❌ הצעת החוק\nהוסרה",
-                      "type": "pill",
-                      "category": "",
-                      "stageId": "s8",
-                      "note": "",
-                      "noteType": "",
-                      "color": "#888888",
-                      "textColor": "#FFFFFF"
-                    }
-                  ]
-                },
-                {
-                  "label": "נדחתה / שקולים",
-                  "steps": [
-                    {
-                      "id": "f12_r5b",
-                      "label": "↩ הוועדה תמשיך\nלהכין ותגיש\nתוך 3 חודשים",
-                      "type": "pill",
-                      "category": "vaadat",
-                      "stageId": "s8",
-                      "note": "ניתן להאריך\nסעיף 94(ד)",
-                      "noteType": "info",
-                      "color": "#2D7D46",
-                      "textColor": "#FFFFFF"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
         }
       ]
     },
@@ -1858,6 +1828,100 @@
       "stageId": "s10",
       "note": "",
       "noteType": ""
+    },
+    {
+      "id": "f_removal_process",
+      "label": "דיון הסרת הצעה מסדר היום",
+      "type": "box",
+      "category": "plenum",
+      "stageId": "s8",
+      "note": "תת-תהליך · סעיף 94",
+      "noteType": "info",
+      "isSubProcess": true,
+      "subProcessTitle": "דיון הסרת הצעה מסדר היום",
+      "returnPoints": [
+        {
+          "id": "f12_h_split",
+          "label": "← חזרה להכנה לקריאה ב'+ג'"
+        }
+      ]
+    },
+    {
+      "id": "f_rem_1",
+      "label": "הנחה על\nשולחן הכנסת",
+      "type": "box",
+      "category": "nesiut",
+      "stageId": "s8",
+      "note": "",
+      "noteType": ""
+    },
+    {
+      "id": "f_rem_2",
+      "label": "יו\"ר הוועדה\nמציג למליאה",
+      "type": "box",
+      "category": "plenum",
+      "stageId": "s8",
+      "note": "הממשלה רשאית\nלהביע עמדה",
+      "noteType": "info"
+    },
+    {
+      "id": "f_rem_3",
+      "label": "היוזם רשאי\nלהשיב",
+      "type": "box",
+      "category": "chk",
+      "stageId": "s8",
+      "note": "",
+      "noteType": ""
+    },
+    {
+      "id": "f_rem_4",
+      "label": "הצבעה\nבמליאה",
+      "type": "diamond",
+      "category": "plenum",
+      "stageId": "s8",
+      "note": "סעיף 94(ב)–(ג)",
+      "noteType": "info"
+    },
+    {
+      "id": "f_rem_split",
+      "label": "",
+      "type": "split",
+      "stageId": "s8",
+      "branchSeparator": "או",
+      "branches": [
+        {
+          "label": "אושרה ההסרה",
+          "steps": [
+            {
+              "id": "f_rem_5a",
+              "label": "❌ הצעת החוק\nהוסרה",
+              "type": "pill",
+              "category": "",
+              "stageId": "s8",
+              "note": "",
+              "noteType": "",
+              "color": "#888888",
+              "textColor": "#FFFFFF"
+            }
+          ]
+        },
+        {
+          "label": "נדחתה / שקולים",
+          "steps": [
+            {
+              "id": "f_rem_5b",
+              "label": "↩ הוועדה ממשיכה\nלהכין · תגיש\nתוך 3 חודשים",
+              "type": "pill",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "ניתן להאריך\nסעיף 94(ד)",
+              "noteType": "info",
+              "color": "#2D7D46",
+              "textColor": "#FFFFFF"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "f15",

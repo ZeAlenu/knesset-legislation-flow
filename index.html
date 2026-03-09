@@ -3229,7 +3229,8 @@ function renderFlowStepElement(step, isInBranch){
   const active = appState.activeFlowStage;
   const isAct = step.stageId && active === step.stageId;
   const actCls = isAct ? " flow-active" : "";
-  const stageClick = step.stageId ? `onclick="flowClickStage('${step.stageId}')"` : "";
+  const jumpTo = step.jumpTo;
+  const stageClick = jumpTo ? `onclick="flowJumpTo('${jumpTo}')"` : (step.stageId ? `onclick="flowClickStage('${step.stageId}')"` : "");
   const borderStyle = step.specialBorder ? `;border:3px solid ${step.specialBorder}` : "";
   const smallStyle = isInBranch ? "font-size:10px;padding:4px 7px;" : "";
 
@@ -3319,6 +3320,16 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
 
   // Skip note steps - they're handled as side annotations with their parent step
   if(step.type === "note") return "";
+
+  // Sub-process header with return buttons
+  if(step.isSubProcess && step.returnPoints){
+    html += `<div style="margin:8px 0;padding:8px 12px;background:#f0f4f8;border:2px dashed #2E86AB;border-radius:10px;text-align:center">`;
+    html += `<div style="font-size:12px;font-weight:600;color:#2E86AB;margin-bottom:6px">📋 ${escH(step.subProcessTitle||step.label)}</div>`;
+    step.returnPoints.forEach(rp => {
+      html += `<button onclick="flowJumpTo('${rp.id}')" style="padding:4px 12px;border:1px solid #2E86AB;border-radius:6px;background:#fff;color:#2E86AB;font-size:11px;cursor:pointer;font-family:inherit;margin:2px">${escH(rp.label)}</button>`;
+    });
+    html += `</div>`;
+  }
 
   if(step.type === "split"){
     // Insert button before split
@@ -4223,6 +4234,15 @@ function deduplicateSteps(){
   }
 }
 
+function flowJumpTo(targetId){
+  const el = document.getElementById(targetId);
+  if(el){
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    el.style.transition = 'box-shadow 0.3s';
+    el.style.boxShadow = '0 0 20px 6px rgba(46,134,171,0.6)';
+    setTimeout(()=>{ el.style.boxShadow = ''; }, 2000);
+  }
+}
 function renderForkLines(){
   document.querySelectorAll('svg.flow-fork-svg').forEach(svg => {
     const splitId = svg.dataset.splitId;
