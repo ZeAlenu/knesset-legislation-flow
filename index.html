@@ -4367,8 +4367,11 @@ function renderVoteDecision(step){
   // 2. Line diamond → נדחתה
   html += `<div style="width:12px;height:2px;background:${cColor};flex:0 0 auto"></div>`;
   
-  // 3. נדחתה (small hexagon)
-  html += `<div style="padding:4px 12px;background:${cColor};color:#fff;font-size:8px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%);white-space:nowrap;flex:0 0 auto">${escH(step.rejectLabel||'נדחתה')}</div>`;
+  // 3. נדחתה (small diamond)
+  const rDs = isInBr ? 30 : 38;
+  html += `<div style="width:${rDs}px;height:${rDs}px;background:${dColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;flex:0 0 auto">`;
+  html += `<span style="transform:rotate(-45deg);color:#fff;font-size:7px;font-weight:600;white-space:nowrap">${escH(step.rejectLabel||'נדחתה')}</span>`;
+  html += `</div>`;
   
   // 4. Line נדחתה → chain hexagon
   if(chain.length > 0){
