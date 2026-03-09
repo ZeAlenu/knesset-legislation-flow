@@ -1589,12 +1589,163 @@
     },
     {
       "id": "f12",
-      "label": "הכנה לקריאה ב'+ג'",
-      "type": "box",
-      "category": "vaadat",
+      "label": "",
+      "type": "split",
       "stageId": "s8",
       "note": "",
-      "noteType": ""
+      "noteType": "",
+      "title": "הכנה לקריאה ב'+ג'",
+      "branches": [
+        {
+          "label": "טיפול בהצעת חוק",
+          "steps": [
+            {
+              "id": "f12_1",
+              "label": "דיון בוועדה",
+              "type": "box",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "סעיף 84(א)",
+              "noteType": "info"
+            },
+            {
+              "id": "f12_2",
+              "label": "תיקונים\nבוועדה",
+              "type": "box",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "סעיף 85–86",
+              "noteType": "info"
+            },
+            {
+              "id": "f12_2b",
+              "label": "נושא חדש?",
+              "type": "diamond",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "ועדת הכנסת\nמכריעה",
+              "noteType": "warning"
+            },
+            {
+              "id": "f12_3",
+              "label": "פיצול / מיזוג\n/ שינוי נוסח",
+              "type": "box",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "סעיף 84(ב)–(ו)",
+              "noteType": "info"
+            },
+            {
+              "id": "f12_4",
+              "label": "עלות\nכלכלית",
+              "type": "box",
+              "category": "gov",
+              "stageId": "s8",
+              "note": "שר האוצר\nסעיף 93",
+              "noteType": "info"
+            },
+            {
+              "id": "f12_4b",
+              "label": "תקציבית?",
+              "type": "diamond",
+              "category": "gov",
+              "stageId": "s8",
+              "note": "דורש רוב 61",
+              "noteType": "warning"
+            },
+            {
+              "id": "f12_5",
+              "label": "הסתייגויות",
+              "type": "box",
+              "category": "chk",
+              "stageId": "s8",
+              "note": "סעיף 86",
+              "noteType": "info"
+            },
+            {
+              "id": "f12_6",
+              "label": "ניסוח נוסח\nסופי",
+              "type": "box",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "",
+              "noteType": ""
+            },
+            {
+              "id": "f12_6b",
+              "label": "ניסוח —\nלשכה משפטית",
+              "type": "pill",
+              "category": "chriga",
+              "stageId": "s8",
+              "note": "לא בתקנון!",
+              "noteType": "warning",
+              "color": "#CC0000",
+              "textColor": "#FFFFFF"
+            },
+            {
+              "id": "f12_7",
+              "label": "הצבעה\nבוועדה",
+              "type": "diamond",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "סעיף 87(א)",
+              "noteType": "info"
+            },
+            {
+              "id": "f12_8",
+              "label": "הנחה על\nשולחן הכנסת",
+              "type": "box",
+              "category": "nesiut",
+              "stageId": "s8",
+              "note": "המתנה יום\nסעיף 88",
+              "noteType": "info"
+            },
+            {
+              "id": "f12_9",
+              "label": "רוויזיה?",
+              "type": "diamond",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "הוועדה רשאית\nלחדש דיונים\nסעיף 89",
+              "noteType": "info"
+            }
+          ]
+        },
+        {
+          "label": "הסרה מסדר היום",
+          "steps": [
+            {
+              "id": "f12_r1",
+              "label": "הצעת הסרה\nמסדר היום",
+              "type": "box",
+              "category": "vaadat",
+              "stageId": "s8",
+              "note": "סעיף 94",
+              "noteType": "info"
+            },
+            {
+              "id": "f12_r2",
+              "label": "הצבעה\nבמליאה",
+              "type": "diamond",
+              "category": "plenum",
+              "stageId": "s8",
+              "note": "",
+              "noteType": ""
+            },
+            {
+              "id": "f12_r3",
+              "label": "❌ הצעת החוק\nהוסרה",
+              "type": "pill",
+              "category": "",
+              "stageId": "s8",
+              "note": "",
+              "noteType": "",
+              "color": "#888888",
+              "textColor": "#FFFFFF"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "f13",
