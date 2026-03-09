@@ -1643,16 +1643,6 @@
               "noteLink": "https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=116"
             },
             {
-              "id": "f12_h2",
-              "label": "הצבעה\nלהסיר",
-              "type": "diamond",
-              "category": "vaadat",
-              "stageId": "s8",
-              "note": "",
-              "noteType": "",
-              "branchConnector": "או"
-            },
-            {
               "id": "f12_h_outcomes",
               "type": "diamondOutcomes",
               "stageId": "s8",
@@ -1672,7 +1662,8 @@
                   "crossTo": "f12_1",
                   "color": "#2D7D46"
                 }
-              ]
+              ],
+              "diamondLabel": "הצבעה\nלהסיר"
             }
           ]
         },

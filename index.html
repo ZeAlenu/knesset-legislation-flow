@@ -4247,46 +4247,44 @@ function deduplicateSteps(){
 }
 
 function renderDiamondOutcomes(step){
-  // Vertical layout matching Noga's design:
-  // Diamond above (rendered by normal flow) → lines down → bordered box with two columns
+  // Horizontal: [right-chevron] —— [diamond] —— [left-chevron]
+  // All on one horizontal axis, connected by lines
   const outcomes = step.outcomes || [];
+  const right = outcomes[0] || {};
+  const left = outcomes[1] || {};
   
-  let html = `<div class="diamond-outcomes" id="${step.id}" style="position:relative;width:100%;margin:2px 0">`;
+  const diamondColor = '#0e5825';
+  const diamondText = '#FFFFFF';
+  const lineColor = '#2E86AB';
+  const chevronColor = '#2E86AB';
+  const chevronText = '#FFFFFF';
+  const dSize = 50;
   
-  // Bordered outcome box with two columns
-  html += `<div style="border:2px solid #1B2A4A;border-radius:8px;overflow:hidden;margin:0 auto;max-width:280px">`;
+  let html = `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;margin:6px 0;width:100%">`;
   
-  // Header row: outcome labels
-  html += `<div style="display:flex;direction:rtl;border-bottom:1px solid #ddd">`;
-  outcomes.forEach((out, oi) => {
-    const borderStyle = oi > 0 ? 'border-right:1px solid #ddd;' : '';
-    html += `<div style="flex:1;padding:6px 4px;text-align:center;${borderStyle}">`;
-    html += `<div style="font-size:9px;font-weight:600;color:#333;line-height:1.3">${escH(out.label).replace(/\n/g,'<br>')}</div>`;
-    html += `</div>`;
-  });
-  html += `</div>`; // header row
+  // Right chevron (first outcome in RTL) — points left (toward diamond)
+  html += `<div class="diamond-outcome-right" style="flex:0 0 auto;cursor:pointer" ${right.targetType==='jump'?`onclick="flowJumpTo('${right.jumpTo}')"`:(right.targetType==='crossBranch'?`onclick="flowJumpTo('${right.crossTo}')"`:'')}>`;
+  html += `<div style="padding:6px 14px 6px 20px;background:${right.chevronColor||chevronColor};color:${right.chevronText||chevronText};font-size:9px;font-weight:600;line-height:1.4;text-align:center;clip-path:polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%);min-width:70px">${escH(right.label||'').replace(/\n/g,'<br>')}</div>`;
+  html += `</div>`;
   
-  // Result row: action items
-  html += `<div style="display:flex;direction:rtl;background:#f8fafc">`;
-  outcomes.forEach((out, oi) => {
-    const borderStyle = oi > 0 ? 'border-right:1px solid #ddd;' : '';
-    html += `<div style="flex:1;padding:8px 4px;text-align:center;${borderStyle}">`;
-    
-    if(out.targetType === 'jump'){
-      html += `<div style="display:inline-block;padding:5px 10px;background:${out.color||'#4A148C'};color:${out.textColor||'#fff'};border-radius:12px;font-size:9px;font-weight:600;cursor:pointer" onclick="flowJumpTo('${out.jumpTo}')">${escH(out.jumpLabel||'').replace(/\n/g,' ')}</div>`;
-      html += `<div style="font-size:8px;color:#666;margin-top:3px">תת-תהליך נפרד</div>`;
-    } else if(out.targetType === 'crossBranch'){
-      html += `<div class="cross-branch-arrow" data-target="${out.crossTo}" style="cursor:pointer">`;
-      html += `<div style="font-size:9px;color:${out.color||'#2D7D46'};font-weight:600">→ דיון הכנת החוק</div>`;
-      html += `</div>`;
-    }
-    
-    html += `</div>`;
-  });
-  html += `</div>`; // result row
+  // Line: right chevron → diamond
+  html += `<div style="flex:0 0 20px;height:2px;background:${lineColor}"></div>`;
   
-  html += `</div>`; // bordered box
-  html += `</div>`; // diamond-outcomes
+  // Diamond (center)
+  html += `<div style="flex:0 0 auto">`;
+  html += `<div style="width:${dSize}px;height:${dSize}px;background:${diamondColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center">`;
+  html += `<span style="transform:rotate(-45deg);color:${diamondText};font-size:9px;font-weight:600;text-align:center;line-height:1.2">${escH(step.diamondLabel||'הצבעה\nלהסיר').replace(/\n/g,'<br>')}</span>`;
+  html += `</div></div>`;
+  
+  // Line: diamond → left chevron
+  html += `<div style="flex:0 0 20px;height:2px;background:${lineColor}"></div>`;
+  
+  // Left chevron (second outcome in RTL) — points left (away from diamond)  
+  html += `<div class="diamond-outcome-left" ${left.targetType==='crossBranch'?`class="cross-branch-arrow" data-target="${left.crossTo}"`:''}  style="flex:0 0 auto;cursor:pointer" ${left.targetType==='jump'?`onclick="flowJumpTo('${left.jumpTo}')"`:(left.targetType==='crossBranch'?`onclick="flowJumpTo('${left.crossTo}')"`:'')}>`;
+  html += `<div style="padding:6px 20px 6px 14px;background:${left.chevronColor||chevronColor};color:${left.chevronText||chevronText};font-size:9px;font-weight:600;line-height:1.4;text-align:center;clip-path:polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%);min-width:70px">${escH(left.label||'').replace(/\n/g,'<br>')}</div>`;
+  html += `</div>`;
+  
+  html += `</div>`;
   return html;
 }
 
