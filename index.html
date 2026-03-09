@@ -231,7 +231,7 @@ header p{font-size:13px;opacity:.85}
     <button onclick="showChangelog()" title="היסטוריית שינויים — רשימת כל הפרסומים עם אפשרות שחזור">📋 היסטוריה</button>
     <button onclick="document.getElementById('importInput').click()">📥 ייבוא</button>
     <input type="file" id="importInput" accept=".json" class="hidden-input" onchange="importJSON(event)">
-    <button onclick="loadFromServer()" title="מוחק שמירה מקומית וטוען מהשרת">🔄 טען מהשרת</button>
+    <button onclick="loadFromServer()" title="טוען פונקציונליות חדשה, שומר תוכן">🔧 טען פונקציונליות</button>
     <a href="manual.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📘 מדריך</a>
     <a href="system.pdf" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">⚙️ תפעול</a>
     <a href="issues.html" target="_blank" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">📋 דיווח בעיות</a>
@@ -731,8 +731,20 @@ async function loadFromStorage(){
     }
   } catch(e){ /* no shared state file, use defaults */ }
   
-  // 2. localStorage no longer overrides server — refresh = fresh content from server
-  //    localStorage is only used for pre-refresh backup recovery (see below)
+  // 2. Check if this is a code-only reload (טען מהשרת) — restore content from before reload
+  const codeReloadState = localStorage.getItem("knesset-code-reload-state");
+  if(codeReloadState){
+    try {
+      const d = JSON.parse(codeReloadState);
+      if(d.categories) appState.categories = d.categories;
+      if(d.stages) appState.stages = d.stages;
+      if(d.flowSteps) appState.flowSteps = d.flowSteps;
+      if(d.flowBackLinks) appState.flowBackLinks = d.flowBackLinks;
+      if(d.nextId) nextId = d.nextId;
+      showToast("🔧 פונקציונליות עודכנה — התוכן נשמר");
+    } catch(e){ console.error("Code reload restore error:", e); }
+    localStorage.removeItem("knesset-code-reload-state");
+  }
   
   // Check for pre-refresh backup
   const preRefreshBackup = localStorage.getItem("knesset-pre-refresh-backup");
@@ -921,8 +933,15 @@ async function publishState(){
 }
 
 function loadFromServer(){
-  if(!confirm("לטעון מהשרת? השמירה המקומית תימחק.")) return;
-  localStorage.removeItem("knesset-legislation-v2");
+  // Reload functionality (HTML/JS) while keeping current content
+  const stateBackup = JSON.stringify({
+    categories: appState.categories,
+    stages: appState.stages,
+    flowSteps: appState.flowSteps,
+    flowBackLinks: appState.flowBackLinks,
+    nextId: nextId
+  });
+  localStorage.setItem("knesset-code-reload-state", stateBackup);
   location.reload();
 }
 
