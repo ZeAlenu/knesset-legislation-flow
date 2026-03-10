@@ -1567,7 +1567,7 @@ function renderHierarchy(){
       }
 
       stage.steps.forEach((step, stepi) => {
-        content.appendChild(renderStep(step, stage, stepi));
+        content.appendChild(renderStep(step, stage, stepi, false, false, 0));
         // Show connector between steps (default: arrow for non-last; showArrowAfter===false: hidden; connector: custom)
         if(stepi < stage.steps.length - 1){
           if(step.connector && step.connector !== "arrow"){
@@ -1656,22 +1656,24 @@ function renderHierarchy(){
   });
 }
 
-function renderStep(step, stage, index, skipChildren, asBranchHeader){
+function renderStep(step, stage, index, skipChildren, asBranchHeader, structuralDepth){
+  // structuralDepth reflects actual nesting position (0=top, 1=child, 2=grandchild...)
+  const sDepth = structuralDepth !== undefined ? structuralDepth : step.depth;
   const cat = getCat(step.catId) || getCat("process");
   const overrideColor = step.overrideColor;
   const overrideBorder = step.overrideBorder;
   const bgColor = overrideColor || cat.color;
-  const borderColor = overrideBorder || getDepthColor(step.depth);
+  const borderColor = overrideBorder || getDepthColor(sDepth);
   const isChriga = step.chpiqa;
   const hasDetails = !!step.details;
   const hasChildrenOrDetails = !skipChildren && ((step.children && step.children.length > 0) || hasDetails);
   // For skipChildren mode (parallel branch headers), still allow details to show
   const hasChildren = skipChildren ? hasDetails : hasChildrenOrDetails;
   // Branch headers in parallel splits always get full category color (not lightened)
-  const isLight = isLightStep(step) && !asBranchHeader;
+  const isLight = (sDepth > 0 && !step.chpiqa) && !asBranchHeader;
 
   const wrapper = document.createElement("div");
-  wrapper.className = `sub-step depth-${step.depth}${step._open ? " open" : ""}`;
+  wrapper.className = `sub-step depth-${sDepth}${step._open ? " open" : ""}`;
   if(isChriga && !step.details) wrapper.classList.add("chriga-full");
   else if(isChriga) wrapper.classList.add("chriga");
   wrapper.style.position = "relative";
@@ -1681,8 +1683,10 @@ function renderStep(step, stage, index, skipChildren, asBranchHeader){
   // Category colors take priority over chpiqa defaults
   const catHasCustomColor = cat.id !== "default" && cat.color;
   const catBorderColor = cat.borderColor || null;
-  const effectiveBorder = overrideBorder || catBorderColor || (isChriga && !catHasCustomColor ? "#CC0000" : getDepthColor(step.depth));
-  const effectiveBg = overrideColor || (catHasCustomColor ? (isLight ? lighten(cat.color, 0.85) : cat.color) : (isChriga && !step.detailType ? "#CC0000" : (isLight ? lighten(bgColor, 0.85) : bgColor)));
+  const effectiveBorder = overrideBorder || catBorderColor || (isChriga && !catHasCustomColor ? "#CC0000" : getDepthColor(sDepth));
+  // Progressive lightening: deeper levels get progressively lighter backgrounds
+  const lightenAmount = isLight ? Math.min(0.6 + sDepth * 0.1, 0.92) : 0;
+  const effectiveBg = overrideColor || (catHasCustomColor ? (isLight ? lighten(cat.color, lightenAmount) : cat.color) : (isChriga && !step.detailType ? "#CC0000" : (isLight ? lighten(bgColor, lightenAmount) : bgColor)));
   const effectiveText = step.overrideTextColor || cat.textColor || (isChriga && !catHasCustomColor ? "#fff" : (isLight ? darken(bgColor) : "#fff"));
   header.style.background = effectiveBg;
   header.style.color = effectiveText;
@@ -1709,9 +1713,9 @@ function renderStep(step, stage, index, skipChildren, asBranchHeader){
       <span class="edit-btn-sm" onclick="event.stopPropagation();moveStep('${step.id}',-1)" title="הזז למעלה">⬆️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();moveStep('${step.id}',1)" title="הזז למטה">⬇️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();promoteStep('${step.id}')" title="קדם לרמת האב" style="font-size:11px">🔼</span>
-      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',-1)" title="העלה רמה (רמה ${step.depth})">⬅️</span>
-      <span class="edit-btn-sm" style="font-size:9px;pointer-events:none;opacity:0.6">${step.depth}</span>
-      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',1)" title="הורד רמה (רמה ${step.depth})">➡️</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',-1)" title="העלה רמה (רמה ${sDepth})">⬅️</span>
+      <span class="edit-btn-sm" style="font-size:9px;pointer-events:none;opacity:0.6">${sDepth}</span>
+      <span class="edit-btn-sm" onclick="event.stopPropagation();changeDepth('${step.id}',1)" title="הורד רמה (רמה ${sDepth})">➡️</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();toggleChpiqa('${step.id}')" title="חריגה">${isChriga?"✅":"🛑"}</span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();pickStepIcon(event,'${step.id}')" title="סמל מובנה"><img src="icons/icon-picker.png" width="14" height="14" style="vertical-align:middle"></span>
       <span class="edit-btn-sm" onclick="event.stopPropagation();uploadStepImage('${step.id}')" title="תמונה/לוגו">🖼️</span>
@@ -1860,7 +1864,7 @@ function renderStep(step, stage, index, skipChildren, asBranchHeader){
           const col = document.createElement("div");
           col.style.cssText = "flex:1;min-width:0;border:1px dashed #ccc;border-radius:6px;padding:4px";
           // Render branch header WITHOUT its children (skipChildren=true); asBranchHeader=true forces full category color
-          col.appendChild(renderStep(child, stage, ci, true, true));
+          col.appendChild(renderStep(child, stage, ci, true, true, sDepth + 1));
           // Connector between branch header and first child (editing mode)
           if(child.children && child.children.length > 0 && appState.editing){
             const hcd = document.createElement("div");
@@ -1893,7 +1897,7 @@ function renderStep(step, stage, index, skipChildren, asBranchHeader){
           // Render sub-steps of each branch with connectors
           if(child.children){
             child.children.forEach((gc, gci) => {
-              col.appendChild(renderStep(gc, stage, gci));
+              col.appendChild(renderStep(gc, stage, gci, false, false, sDepth + 2));
               // Connector AFTER this step (before the next one)
               if(gci < child.children.length - 1){
                 // Show connector
@@ -1960,7 +1964,7 @@ function renderStep(step, stage, index, skipChildren, asBranchHeader){
         }
       } else {
         step.children.forEach((child, ci) => {
-          detailPanel.appendChild(renderStep(child, stage, ci));
+          detailPanel.appendChild(renderStep(child, stage, ci, false, false, sDepth + 1));
           // Show connector between steps (default: arrow for non-last; showArrowAfter===false: hidden; connector: custom)
           if(ci < step.children.length - 1){
           if(child.connector && child.connector !== "arrow"){
