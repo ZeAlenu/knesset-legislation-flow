@@ -3163,6 +3163,9 @@ function resetStepColors(stepId){
 
 function flowClickStage(stageId){
   if(!stageId) return;
+  // Save flow scroll position before re-render
+  const flowCard = document.querySelector('.flow-card');
+  const savedFlowScroll = flowCard ? flowCard.scrollTop : 0;
   // Open the stage in hierarchy
   appState.openStages.add(stageId);
   appState.activeFlowStage = stageId;
@@ -3172,6 +3175,8 @@ function flowClickStage(stageId){
     closeAllSteps(stage.steps);
   }
   renderAll();
+  // Restore flow scroll position
+  if(flowCard) flowCard.scrollTop = savedFlowScroll;
   // Scroll hierarchy panel to the stage
   setTimeout(()=>{
     const btn = document.getElementById("stage-btn-" + stageId);
