@@ -4216,6 +4216,10 @@ function editVoteDecisionPopup(stepId, btnEl){
     </select>
   `);
   
+  // Line lengths
+  html += _componentEditorRow('אורך קו אופקי', `<input type="range" min="30" max="400" value="${step.rejectArmLength||146}" oninput="_vdSet('${stepId}','rejectArmLength',parseInt(this.value));this.nextSibling.textContent=this.value+'px'" style="width:100px"><span style="font-size:11px;color:#666">${step.rejectArmLength||146}px</span>`);
+  html += _componentEditorRow('אורך חץ אנכי', `<input type="range" min="30" max="400" value="${step.rejectVertLength||80}" oninput="_vdSet('${stepId}','rejectVertLength',parseInt(this.value));this.nextSibling.textContent=this.value+'px'" style="width:100px"><span style="font-size:11px;color:#666">${step.rejectVertLength||80}px</span>`);
+  
   _showComponentEditor(btnEl, '✏️ עריכת הצבעה', html);
 }
 
@@ -4334,6 +4338,36 @@ function startArrowResize(e, stepId, arrowIdx){
         if(poly) poly.setAttribute('points', `4,${h-6} 12,${h-6} 8,${h}`);
       }
     }
+  }
+  function onUp(){
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    renderAll();
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+// Drag voteDecision lines (horizontal arm / vertical arm)
+function startVDLineDrag(e, stepId, axis){
+  e.preventDefault(); e.stopPropagation();
+  const step = findFlowStep(stepId) || _findFlowStepDeep(stepId);
+  if(!step) return;
+  pushUndo();
+  const isH = axis === 'h';
+  const startPos = isH ? e.clientX : e.clientY;
+  const startLen = isH ? (step.rejectArmLength || 146) : (step.rejectVertLength || 80);
+  document.body.style.cursor = isH ? 'col-resize' : 'row-resize';
+  document.body.style.userSelect = 'none';
+  
+  function onMove(ev){
+    const d = isH ? (startPos - ev.clientX) : (startPos - ev.clientY);
+    // Dragging left/up = longer (line extends left/up from diamond)
+    const newLen = Math.round(Math.max(30, Math.min(400, startLen + d)));
+    if(isH) step.rejectArmLength = newLen;
+    else step.rejectVertLength = newLen;
   }
   function onUp(){
     document.removeEventListener('mousemove', onMove);
@@ -4787,8 +4821,8 @@ function renderVoteDecision(step){
   // Corner is far from center axis
   if(chain.length > 0 || true){
     const arrowColor = lightColor;
-    const hLen = step.rejectArmLength || 146; // horizontal leg (configurable, default ~146)
-    const vLen = 80; // vertical leg
+    const hLen = step.rejectArmLength || 146; // horizontal leg (configurable)
+    const vLen = step.rejectVertLength || 80; // vertical leg (configurable)
     const strokeW = 2.5;
     
     // Arrow starts from the LEFT TIP (vertex) of the נדחתה chevron
@@ -4824,9 +4858,11 @@ function renderVoteDecision(step){
       const centerY = totalH; // px from container top = where chevron center is
       
       // 1. Straight horizontal line at chevron center level
-      html += `<svg width="${svgW}" height="4" style="position:absolute;top:${centerY - 2}px;left:0;overflow:visible">`;
-      html += `<line x1="${svgW+4}" y1="2" x2="0" y2="2" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
-      html += `</svg>`;
+      const hDrag = appState.editing ? ` onmousedown="startVDLineDrag(event,'${step.id}','h')" style="cursor:col-resize" title="גרור לשנות אורך קו אופקי"` : '';
+      html += `<div${hDrag} style="position:absolute;top:${centerY - 4}px;left:0;width:${svgW}px;height:8px;z-index:3">`;
+      html += `<svg width="${svgW}" height="8" style="overflow:visible">`;
+      html += `<line x1="${svgW+4}" y1="4" x2="0" y2="4" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      html += `</svg></div>`;
       
       // 2. Box "הסרה מסדר היום" at the left end of horizontal line
       if(boxItem){
@@ -4840,10 +4876,12 @@ function renderVoteDecision(step){
       // 3. Vertical arrow going UP from box top (only if there's a vertical chain)
       const arrowBottom = centerY - boxH/2;
       if(hasVertical){
-      html += `<svg width="16" height="${vertLen}" style="position:absolute;top:${arrowBottom - vertLen}px;left:-8px;overflow:visible">`;
-      html += `<line x1="8" y1="${vertLen}" x2="8" y2="10" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
-      html += `<polygon points="3,12 13,12 8,2" fill="${arrowColor}"/>`;
-      html += `</svg>`;
+      const vDrag = appState.editing ? ` onmousedown="startVDLineDrag(event,'${step.id}','v')" style="cursor:row-resize" title="גרור לשנות אורך חץ אנכי"` : '';
+      html += `<div${vDrag} style="position:absolute;top:${arrowBottom - vertLen}px;left:-12px;width:24px;height:${vertLen}px;z-index:3">`;
+      html += `<svg width="24" height="${vertLen}" style="overflow:visible">`;
+      html += `<line x1="12" y1="${vertLen}" x2="12" y2="10" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
+      html += `<polygon points="7,12 17,12 12,2" fill="${arrowColor}"/>`;
+      html += `</svg></div>`;
       }
       
       // 4. Corner box (⏳) along the vertical arrow, on the outer side
@@ -4873,12 +4911,14 @@ function renderVoteDecision(step){
       const totalH = svgH + cornerBoxH;
       html += `<div style="position:absolute;top:50%;right:calc(50% + ${startRight}px);width:${svgW}px;height:${totalH}px">`;
       
-      // SVG L-arrow at top
-      html += `<svg width="${svgW}" height="${svgH}" style="display:block;overflow:visible">`;
-      html += `<line x1="${svgW+4}" y1="0" x2="8" y2="0" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
-      html += `<line x1="8" y1="0" x2="8" y2="${svgH-10}" stroke="${arrowColor}" stroke-width="${strokeW}"/>`;
-      html += `<polygon points="3,${svgH-12} 13,${svgH-12} 8,${svgH-2}" fill="${arrowColor}"/>`;
-      html += `</svg>`;
+      // Horizontal line
+      const hDragD = appState.editing ? ` onmousedown="startVDLineDrag(event,'${step.id}','h')" style="cursor:col-resize" title="גרור לשנות אורך"` : '';
+      html += `<div${hDragD} style="position:absolute;top:-4px;left:0;width:${svgW}px;height:8px;z-index:3">`;
+      html += `<svg width="${svgW}" height="8"><line x1="${svgW+4}" y1="4" x2="0" y2="4" stroke="${arrowColor}" stroke-width="${strokeW}"/></svg></div>`;
+      // Vertical arrow down
+      const vDragD = appState.editing ? ` onmousedown="startVDLineDrag(event,'${step.id}','v')" style="cursor:row-resize" title="גרור לשנות אורך"` : '';
+      html += `<div${vDragD} style="position:absolute;top:4px;left:0;width:24px;height:${svgH-14}px;z-index:3">`;
+      html += `<svg width="24" height="${svgH-14}"><line x1="12" y1="0" x2="12" y2="${svgH-24}" stroke="${arrowColor}" stroke-width="${strokeW}"/><polygon points="7,${svgH-26} 17,${svgH-26} 12,${svgH-16}" fill="${arrowColor}"/></svg></div>`;
       
       // Pill at arrow tip (bottom)
       const pillItem2 = chain.find(c => c.type === 'pill');
