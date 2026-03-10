@@ -3885,9 +3885,10 @@ function flowChangeShape(id, shape){
   }
 }
 
+function flowShowCatDropdown(id, event){ flowAssignCategory(id, event.target); }
 function flowAssignCategory(id, btnEl){
   document.querySelectorAll(".cat-assign").forEach(d=>d.remove());
-  const step = findFlowStep(id);
+  const step = findFlowStep(id) || _findFlowStepDeep(id);
   if(!step) return;
 
   const dropdown = document.createElement("div");
@@ -3921,7 +3922,7 @@ function flowAssignCategory(id, btnEl){
 }
 
 function flowSetCategory(id, catId){
-  const step = findFlowStep(id);
+  const step = findFlowStep(id) || _findFlowStepDeep(id);
   if(step){
     step.category = catId;
     delete step.color; // Remove manual override when assigning category
@@ -3931,7 +3932,7 @@ function flowSetCategory(id, catId){
 }
 
 function flowClearCategoryOverride(id){
-  const step = findFlowStep(id);
+  const step = findFlowStep(id) || _findFlowStepDeep(id);
   if(step){
     delete step.color;
     delete step.textColor;
@@ -3950,7 +3951,7 @@ function flowAddSideNote(id){
   pushUndo();
   const text = prompt("טקסט הערת צד:");
   if(!text) return;
-  const step = findFlowStep(id);
+  const step = findFlowStep(id) || _findFlowStepDeep(id);
   if(step){
     if(!step.sideNotes) step.sideNotes = [];
     step.sideNotes.push({text, side: "left"});
@@ -4469,10 +4470,16 @@ function renderDiamondOutcomes(step){
   const right = outcomes[0] || {};
   const left = outcomes[1] || {};
   
-  const diamondColor = '#0e5825';
+  // Use category color if assigned
+  let doCatColor = null;
+  if(step.category){
+    const stepCat = appState.categories.find(c=>c.id===step.category);
+    if(stepCat) doCatColor = stepCat.color;
+  }
+  const diamondColor = step.diamondColor || doCatColor || '#0e5825';
   const diamondText = '#FFFFFF';
-  const lineColor = '#2E86AB';
-  const chevronColor = '#2E86AB';
+  const lineColor = doCatColor || '#2E86AB';
+  const chevronColor = doCatColor || '#2E86AB';
   const chevronText = '#FFFFFF';
   const dSize = 50;
   
@@ -4488,6 +4495,9 @@ function renderDiamondOutcomes(step){
   outcomes.forEach((out, i) => {
     html += `<button class="flow-edit-btn" onclick="event.stopPropagation();editDiamondOutcome('${step.id}','outcome',${i})" title="ערוך מוצא ${i+1}">⬡${i+1}</button>`;
   });
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowShowCatDropdown('${step.id}',event)" title="קטגוריה">🏷️</button>`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAddSideNote('${step.id}')" title="הערת צד">💬</button>`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowToggleTopIcon('${step.id}',event)" title="לוגו מעל">🔝</button>`;
   html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
   if(step.stageId) html += `<button class="flow-edit-btn" onclick="event.stopPropagation();scrollToDetailStage('${step.stageId}')" title="מצא בפירוט">🔍</button>`;
   html += `</div>`;
@@ -4585,8 +4595,14 @@ function renderVoteDecision(step){
   //   - At the END: pill (הגשה לנשיאות)
   // rejectArrowDir: 'up' or 'down' (configurable)
   
-  const dColor = step.diamondColor || '#1B2A4A';
-  const lightColor = step.chevronColor || '#2a4a7a'; // slightly lighter than diamond
+  // Use category color if assigned and no manual override
+  let catColor = null;
+  if(step.category){
+    const stepCat = appState.categories.find(c=>c.id===step.category);
+    if(stepCat) catColor = stepCat.color;
+  }
+  const dColor = step.diamondColor || catColor || '#1B2A4A';
+  const lightColor = step.chevronColor || (catColor ? catColor + 'cc' : '#2a4a7a'); // slightly lighter than diamond
   const stageClick = step.stageId ? `onclick="flowClickStage('${step.stageId}')"` : '';
   const active = appState.activeFlowStage;
   const isAct = step.stageId && active === step.stageId;
@@ -4602,6 +4618,8 @@ function renderVoteDecision(step){
   // Edit controls
   html += `<div class="flow-edit-actions" style="margin-bottom:4px">`;
   html += `<button class="flow-edit-btn" onclick="event.stopPropagation();editVoteDecisionPopup('${step.id}',this)" title="ערוך הצבעה">✏️</button>`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowShowCatDropdown('${step.id}',event)" title="קטגוריה">🏷️</button>`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowAddSideNote('${step.id}')" title="הערת צד">💬</button>`;
   html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowToggleTopIcon('${step.id}',event)" title="לוגו מעל">🔝</button>`;
   html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
   if(step.stageId) html += `<button class="flow-edit-btn" onclick="event.stopPropagation();scrollToDetailStage('${step.stageId}')" title="מצא בפירוט">🔍</button>`;
