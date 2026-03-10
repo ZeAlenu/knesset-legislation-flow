@@ -4286,75 +4286,9 @@ function editDiamondOutcome(stepId, part, outcomeIdx){
       html += _textRow('טקסט תיבה שנייה', out.connectLabel2||'', `_doOutSet('${stepId}',${outcomeIdx},'connectLabel2',this.value)`);
     }
     html += _colorRow('צבע תיבות', out.jumpColor||'#1B2A4A', `_doOutSet('${stepId}',${outcomeIdx},'jumpColor',this.value)`);
-    html += _componentEditorRow('אורך קו', `<input type="range" min="20" max="300" value="${out.lineLength||120}" oninput="_doOutSet('${stepId}',${outcomeIdx},'lineLength',parseInt(this.value));this.nextSibling.textContent=this.value+'px'" style="width:100%"><span style="font-size:11px;color:#666">${out.lineLength||120}px</span>`);
     _showComponentEditor(btnEl, '⬡ עריכת מוצא', html);
   }
 }
-
-// ===== Drag chevron to resize lines — live preview, diamond stays fixed =====
-function startChevronDrag(e, stepId, outcomeIdx){
-  e.preventDefault();
-  e.stopPropagation();
-  const step = _findFlowStepDeep(stepId);
-  if(!step || !step.outcomes || !step.outcomes[outcomeIdx]) return;
-  pushUndo();
-  const out = step.outcomes[outcomeIdx];
-  const startX = e.clientX;
-  const startLen = out.lineLength || step.lineLength || 120;
-  
-  const chevronEl = e.target.closest('[data-chevron-drag]');
-  // Find sibling line div (previous sibling in the relative container — the line between diamond and this chevron)
-  const container = chevronEl?.parentElement;
-  // Lines are divs with position:absolute and specific widths
-  const lines = container ? Array.from(container.querySelectorAll('div')).filter(d => d.style.height === '2px') : [];
-  const lineEl = lines[outcomeIdx]; // line 0 = right line, line 1 = left line
-  
-  document.body.style.cursor = 'col-resize';
-  document.body.style.userSelect = 'none';
-  if(chevronEl) chevronEl.style.opacity = '0.7';
-  
-  function onMove(ev){
-    const dx = ev.clientX - startX;
-    // outcome 0 (right of diamond): drag right = longer; outcome 1 (left): drag left = longer
-    const dir = outcomeIdx === 0 ? 1 : -1;
-    const newLen = Math.max(20, Math.min(300, startLen + dx * dir));
-    out.lineLength = Math.round(newLen);
-    
-    // Live update chevron position + line width
-    if(lineEl) lineEl.style.width = out.lineLength + 'px';
-    if(chevronEl){
-      if(outcomeIdx === 0){
-        // Move right chevron: increase left offset
-        const baseLeft = parseFloat(chevronEl.dataset.baseLeft || chevronEl.style.left);
-        if(!chevronEl.dataset.baseLeft) chevronEl.dataset.baseLeft = baseLeft;
-        chevronEl.style.left = (parseFloat(chevronEl.dataset.baseLeft) + (out.lineLength - startLen)) + 'px';
-      } else {
-        // Move left chevron: decrease left offset (move further left)
-        const baseRight = parseFloat(chevronEl.dataset.baseRight || chevronEl.style.right);
-        if(!chevronEl.dataset.baseRight) chevronEl.dataset.baseRight = baseRight;
-        chevronEl.style.right = (parseFloat(chevronEl.dataset.baseRight) + (out.lineLength - startLen)) + 'px';
-      }
-    }
-    // Update line position for left chevron
-    if(outcomeIdx === 1 && lineEl){
-      const baseLineLeft = parseFloat(lineEl.dataset.baseLeft || lineEl.style.left);
-      if(!lineEl.dataset.baseLeft) lineEl.dataset.baseLeft = baseLineLeft;
-      lineEl.style.left = (parseFloat(lineEl.dataset.baseLeft) - (out.lineLength - startLen)) + 'px';
-    }
-  }
-  
-  function onUp(){
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-    renderAll();
-  }
-  
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
-function startLineDrag(e, stepId, outcomeIdx){ startChevronDrag(e, stepId, outcomeIdx); }
 
 function _doSet(stepId, field, value){
   const step = _findFlowStepDeep(stepId);
@@ -4599,7 +4533,7 @@ function renderDiamondOutcomes(step){
   html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
   if(step.stageId) html += `<button class="flow-edit-btn" onclick="event.stopPropagation();scrollToDetailStage('${step.stageId}')" title="מצא בפירוט">🔍</button>`;
   html += `</div>`;
-  html += `<div class="diamond-outcomes" id="${step.id}" style="width:100%">`;
+  html += `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;width:100%">`;
   
   // Build each outcome with its chevron + arrow
   function renderOutcome(out, side){
@@ -4610,11 +4544,10 @@ function renderDiamondOutcomes(step){
     const clickTarget = out.connectTo ? `onclick="flowJumpTo('${out.connectTo}')"` : '';
     const crossClass = out.arrowDir === 'left' || out.arrowDir === 'right' ? `class="cross-branch-arrow" data-target="${out.connectTo||''}"` : '';
     
-    const oi = outcomes.indexOf(out);
-    let h = `<div style="position:relative;display:flex;align-items:center" ${crossClass}>`;
+    let h = `<div style="flex:0 0 auto;position:relative;display:flex;align-items:center" ${crossClass}>`;
     
     // Chevron — voteDecision style (hexagonal, attached to diamond)
-    const editChevron = appState.editing ? `ondblclick="event.stopPropagation();editDiamondOutcome('${step.id}','outcome',${oi})" title="גרור לשנות מרחק | דאבל-קליק לעריכה"` : clickTarget;
+    const editChevron = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','outcome',${outcomes.indexOf(out)})" title="ערוך שברון"` : clickTarget;
     h += `<div style="padding:${padding};background:${out.chevronColor||chevronColor};color:${out.chevronText||chevronText};font-size:7px;font-weight:600;line-height:1.4;text-align:center;clip-path:${clipPath};min-width:50px;white-space:nowrap;cursor:pointer" ${editChevron}>${escH(out.label||'').replace(/\n/g,'<br>')}</div>`;
     
     // Arrow DOWN (absolute, doesn't affect height)
@@ -4657,43 +4590,29 @@ function renderDiamondOutcomes(step){
     return h;
   }
   
-  // Layout: diamond fixed at center, chevrons at configurable distances
-  const lineLenR = right.lineLength || step.lineLength || 120;
-  const lineLenL = left.lineLength || step.lineLength || 120;
-  const chevW = 60; // approximate chevron width
-  const totalW = lineLenR + lineLenL + dSize + chevW * 2 + 20;
-  
-  html += `<div style="position:relative;width:${totalW}px;height:${dSize + 20}px;margin:0 auto">`;
-  
-  // Diamond — always at center
-  const centerX = totalW / 2;
-  const centerY = (dSize + 20) / 2;
-  const editDiamond = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" title="ערוך מעוין"` : '';
-  html += `<div ${editDiamond} style="position:absolute;left:${centerX - dSize/2}px;top:${centerY - dSize/2}px;width:${dSize}px;height:${dSize}px;background:${diamondColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;z-index:2;${appState.editing?'cursor:pointer':''}">`;
-  html += `<span style="transform:rotate(-45deg);color:${diamondText};font-size:9px;font-weight:600;text-align:center;line-height:1.2">${escH(step.diamondLabel||'הצבעה\nלהסיר').replace(/\n/g,'<br>')}</span>`;
-  html += `</div>`;
-  
-  // Line: diamond → right chevron (RTL: right = toward higher X in LTR coords)
-  const lineRightStart = centerX + dSize * 0.35;
-  html += `<div style="position:absolute;left:${lineRightStart}px;top:${centerY - 1}px;width:${lineLenR}px;height:2px;background:${lineColor}"></div>`;
-  
-  // Right chevron (outcome 0)
-  const rightChevX = lineRightStart + lineLenR;
-  html += `<div data-chevron-drag="1" data-outcome="0" style="position:absolute;left:${rightChevX}px;top:50%;transform:translateY(-50%);z-index:3${appState.editing?';cursor:col-resize':''}" ${appState.editing?`onmousedown="startChevronDrag(event,'${step.id}',0)"`:''}>`;
+  // RIGHT outcome (first in RTL)
   html += renderOutcome(right, 'right');
-  html += `</div>`;
+  
+  // Line: right chevron → diamond (longer to push approved chain away from center)
+  const lineLen = step.lineLength || 120;
+  html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
+  
+  // Diamond (center)
+  const editDiamond = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" style="cursor:pointer" title="ערוך מעוין"` : '';
+  html += `<div style="flex:0 0 auto;align-self:center">`;
+  html += `<div ${editDiamond} style="width:${dSize}px;height:${dSize}px;background:${diamondColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;${appState.editing?'cursor:pointer':''}">`;
+  html += `<span style="transform:rotate(-45deg);color:${diamondText};font-size:9px;font-weight:600;text-align:center;line-height:1.2">${escH(step.diamondLabel||'הצבעה\nלהסיר').replace(/\n/g,'<br>')}</span>`;
+  html += `</div></div>`;
   
   // Line: diamond → left chevron
-  const lineLeftEnd = centerX - dSize * 0.35;
-  html += `<div style="position:absolute;left:${lineLeftEnd - lineLenL}px;top:${centerY - 1}px;width:${lineLenL}px;height:2px;background:${lineColor}"></div>`;
+  html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
   
-  // Left chevron (outcome 1)
-  const leftChevX = lineLeftEnd - lineLenL;
-  html += `<div data-chevron-drag="1" data-outcome="1" style="position:absolute;right:${totalW - leftChevX}px;top:50%;transform:translateY(-50%);z-index:3${appState.editing?';cursor:col-resize':''}" ${appState.editing?`onmousedown="startChevronDrag(event,'${step.id}',1)"`:''}>`;
+  // LEFT outcome (second in RTL)
   html += renderOutcome(left, 'left');
-  html += `</div>`;
   
-  html += `</div>`; // relative container
+  // Arrow LEFT/RIGHT extends from chevron edge (rendered as SVG overlay post-render)
+  
+  html += `</div>`; // diamond-outcomes inner
   html += `</div>`; // outer flex column wrapper
   return html;
 }
