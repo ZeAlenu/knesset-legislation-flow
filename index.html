@@ -5151,7 +5151,7 @@ function setupFlowScrollSync(){
         flowCard.scrollTo({top: Math.max(0, scrollTarget), behavior:'smooth'});
       }
     }
-  }, {root: hierPanel, rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.5, 1]});
+  }, {root: hierPanel.scrollHeight > hierPanel.clientHeight ? hierPanel : null, rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.5, 1]});
   
   document.querySelectorAll('[id^="stage-btn-"]').forEach(btn => {
     _flowSyncObserver.observe(btn);
@@ -5188,13 +5188,21 @@ document.addEventListener('DOMContentLoaded', () => {
           closestDist = dist;
         }
       }
-      if(closest && hp){
+      if(closest){
         const btn = document.getElementById('stage-btn-' + closest);
         if(btn){
-          // Scroll the hierarchy panel to show this button
-          const btnTop = btn.offsetTop;
-          const hpHeight = hp.clientHeight;
-          hp.scrollTo({top: Math.max(0, btnTop - hpHeight/2 + btn.clientHeight/2), behavior:'smooth'});
+          // Open the stage if collapsed
+          const stageContent = btn.nextElementSibling;
+          if(stageContent && !stageContent.classList.contains('open')){
+            btn.click();
+          }
+          // Scroll into view — try panel first, fall back to window
+          if(hp && hp.scrollHeight > hp.clientHeight){
+            const btnTop = btn.offsetTop - hp.offsetTop;
+            hp.scrollTo({top: Math.max(0, btnTop - hp.clientHeight/2 + btn.clientHeight/2), behavior:'smooth'});
+          } else {
+            btn.scrollIntoView({behavior:'smooth', block:'center'});
+          }
         }
       }
     }catch(e){}
