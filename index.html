@@ -4290,95 +4290,6 @@ function editDiamondOutcome(stepId, part, outcomeIdx){
   }
 }
 
-// Drag line between diamond and chevron to change length
-function startLineDrag(e, stepId, outcomeIdx){
-  e.preventDefault(); e.stopPropagation();
-  const step = findFlowStep(stepId) || _findFlowStepDeep(stepId);
-  if(!step?.outcomes?.[outcomeIdx]) return;
-  pushUndo();
-  const out = step.outcomes[outcomeIdx];
-  const startX = e.clientX;
-  const startLen = out.lineLength ?? step.lineLength ?? 120;
-  const lineEl = e.target;
-  const gridEl = lineEl.parentElement;
-  
-  document.body.style.cursor = 'col-resize';
-  document.body.style.userSelect = 'none';
-  lineEl.style.background = '#f97316';
-  
-  function onMove(ev){
-    const dx = ev.clientX - startX;
-    // RTL grid: outcome 0 is column 2 (right of diamond), outcome 1 is column 4 (left)
-    // Dragging right on outcome 0 = longer; dragging left on outcome 1 = longer
-    const dir = outcomeIdx === 0 ? -1 : 1;
-    const newLen = Math.max(20, Math.min(400, startLen + dx * dir));
-    out.lineLength = Math.round(newLen);
-    // Live update grid column width
-    const lineLenR = step.outcomes[0].lineLength ?? step.lineLength ?? 120;
-    const lineLenL = step.outcomes[1].lineLength ?? step.lineLength ?? 120;
-    const dSize = 50;
-    gridEl.style.gridTemplateColumns = `auto ${lineLenR}px ${dSize}px ${lineLenL}px auto`;
-  }
-  
-  function onUp(){
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-    renderAll();
-  }
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
-
-// Drag arrow/connected elements to reposition
-function startArrowDrag(e, stepId, outcomeIdx){
-  e.preventDefault(); e.stopPropagation();
-  const step = findFlowStep(stepId) || _findFlowStepDeep(stepId);
-  if(!step?.outcomes?.[outcomeIdx]) return;
-  pushUndo();
-  const out = step.outcomes[outcomeIdx];
-  const startX = e.clientX;
-  const startY = e.clientY;
-  const startOffX = out.arrowOffsetX || 0;
-  const startOffY = out.arrowOffsetY || 0;
-  const arrowEl = e.target.closest('[data-arrow-drag]');
-  
-  document.body.style.cursor = 'move';
-  document.body.style.userSelect = 'none';
-  if(arrowEl) arrowEl.style.outline = '2px dashed #f97316';
-  
-  function onMove(ev){
-    const dx = ev.clientX - startX;
-    const dy = ev.clientY - startY;
-    out.arrowOffsetX = Math.round(startOffX + dx);
-    out.arrowOffsetY = Math.round(startOffY + dy);
-    // Live update position
-    if(arrowEl){
-      if(out.arrowDir === 'down'){
-        arrowEl.style.top = `calc(100% + 1px + ${out.arrowOffsetY}px)`;
-        arrowEl.style.left = `calc(50% + ${out.arrowOffsetX}px)`;
-      } else if(out.arrowDir === 'left'){
-        arrowEl.style.top = `calc(50% + ${out.arrowOffsetY}px)`;
-        arrowEl.style.right = `calc(100% + 4px + ${out.arrowOffsetX}px)`;
-      } else if(out.arrowDir === 'up'){
-        arrowEl.style.bottom = `calc(100% + ${out.arrowOffsetY}px)`;
-        arrowEl.style.left = `calc(50% + ${out.arrowOffsetX}px)`;
-      }
-    }
-  }
-  
-  function onUp(){
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-    renderAll();
-  }
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
-
 function _doSet(stepId, field, value){
   const step = _findFlowStepDeep(stepId);
   if(!step) return;
@@ -4642,10 +4553,7 @@ function renderDiamondOutcomes(step){
     // Arrow DOWN (absolute, doesn't affect height)
     if(out.arrowDir === 'down'){
       const pillColor = out.jumpColor || '#4A148C';
-      const offX = out.arrowOffsetX || 0;
-      const offY = out.arrowOffsetY || 0;
-      const dragArrow = appState.editing ? `onmousedown="startArrowDrag(event,'${step.id}',${oi})" style="cursor:move" title="גרור לשנות מיקום"` : '';
-      h += `<div ${dragArrow} data-arrow-drag="1" style="position:absolute;top:calc(100% + 1px + ${offY}px);left:calc(50% + ${offX}px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
+      h += `<div style="position:absolute;top:calc(100% + 1px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
       h += `<svg width="16" height="20"><line x1="8" y1="0" x2="8" y2="16" stroke="${pillColor}" stroke-width="2"/><polygon points="4,14 12,14 8,20" fill="${pillColor}"/></svg>`;
       if(out.connectLabel){
         h += `<div style="padding:4px 12px;background:${pillColor};color:#fff;border-radius:5px;cursor:pointer;text-align:center;font-size:8px;font-weight:600;line-height:1.3;white-space:nowrap" ${clickTarget}>${escH(out.connectLabel)}</div>`;
@@ -4662,10 +4570,7 @@ function renderDiamondOutcomes(step){
     // Arrow LEFT — horizontal arrow to a box on the left (absolute)
     if(out.arrowDir === 'left'){
       const boxColor = out.jumpColor || '#1B2A4A';
-      const offX = out.arrowOffsetX || 0;
-      const offY = out.arrowOffsetY || 0;
-      const dragArrow = appState.editing ? `onmousedown="startArrowDrag(event,'${step.id}',${oi})" style="cursor:move" title="גרור לשנות מיקום"` : '';
-      h += `<div ${dragArrow} data-arrow-drag="1" style="position:absolute;top:calc(50% + ${offY}px);right:calc(100% + 4px + ${offX}px);transform:translateY(-50%);display:flex;align-items:center;direction:rtl">`;
+      h += `<div style="position:absolute;top:50%;right:calc(100% + 4px);transform:translateY(-50%);display:flex;align-items:center;direction:rtl">`;
       h += `<svg width="30" height="20" style="flex:0 0 30px"><line x1="0" y1="10" x2="24" y2="10" stroke="${boxColor}" stroke-width="2"/><polygon points="0,6 0,14 -6,10" fill="${boxColor}" transform="translate(6,0)"/></svg>`;
       if(out.connectLabel){
         h += `<div style="padding:8px 16px;background:${boxColor};color:#fff;border-radius:6px;font-size:10px;font-weight:600;text-align:center;white-space:nowrap">${escH(out.connectLabel)}</div>`;
@@ -4675,10 +4580,7 @@ function renderDiamondOutcomes(step){
     
     // Arrow UP (absolute)
     if(out.arrowDir === 'up'){
-      const offX = out.arrowOffsetX || 0;
-      const offY = out.arrowOffsetY || 0;
-      const dragArrow = appState.editing ? `onmousedown="startArrowDrag(event,'${step.id}',${oi})" style="cursor:move" title="גרור לשנות מיקום"` : '';
-      h += `<div ${dragArrow} data-arrow-drag="1" style="position:absolute;bottom:calc(100% + ${offY}px);left:calc(50% + ${offX}px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
+      h += `<div style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center">`;
       if(out.connectLabel) h += `<div style="font-size:7px;color:#666">${escH(out.connectLabel)}</div>`;
       h += `<svg width="20" height="20"><line x1="10" y1="20" x2="10" y2="3" stroke="${out.chevronColor||chevronColor}" stroke-width="2"/><polygon points="6,6 14,6 10,0" fill="${out.chevronColor||chevronColor}"/></svg>`;
       h += `</div>`;
@@ -4688,36 +4590,29 @@ function renderDiamondOutcomes(step){
     return h;
   }
   
-  // Per-outcome line lengths (independent)
-  const lineLenR = right.lineLength ?? step.lineLength ?? 120;
-  const lineLenL = left.lineLength ?? step.lineLength ?? 120;
-  
-  // Grid layout: [right-chev] [right-line] [diamond] [left-line] [left-chev]
-  // Diamond column is fixed width, line columns are fixed per lineLength
-  html += `<div style="display:grid;grid-template-columns:auto ${lineLenR}px ${dSize}px ${lineLenL}px auto;align-items:center;justify-content:center;direction:rtl">`;
-  
-  // Col 1: RIGHT outcome (first in RTL)
+  // RIGHT outcome (first in RTL)
   html += renderOutcome(right, 'right');
   
-  // Col 2: Line right → diamond
-  const dragAttrR = appState.editing ? `data-line-drag="${step.id}" data-outcome="0" style="height:4px;background:${lineColor};cursor:col-resize;border-radius:2px" title="גרור לשנות אורך" onmousedown="startLineDrag(event,'${step.id}',0)"` : `style="height:2px;background:${lineColor}"`;
-  html += `<div ${dragAttrR}></div>`;
+  // Line: right chevron → diamond (longer to push approved chain away from center)
+  const lineLen = step.lineLength || 120;
+  html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
   
-  // Col 3: Diamond (center, fixed)
-  const editDiamond = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" title="ערוך מעוין"` : '';
-  html += `<div style="justify-self:center">`;
+  // Diamond (center)
+  const editDiamond = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" style="cursor:pointer" title="ערוך מעוין"` : '';
+  html += `<div style="flex:0 0 auto;align-self:center">`;
   html += `<div ${editDiamond} style="width:${dSize}px;height:${dSize}px;background:${diamondColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;${appState.editing?'cursor:pointer':''}">`;
   html += `<span style="transform:rotate(-45deg);color:${diamondText};font-size:9px;font-weight:600;text-align:center;line-height:1.2">${escH(step.diamondLabel||'הצבעה\nלהסיר').replace(/\n/g,'<br>')}</span>`;
   html += `</div></div>`;
   
-  // Col 4: Line diamond → left
-  const dragAttrL = appState.editing ? `data-line-drag="${step.id}" data-outcome="1" style="height:4px;background:${lineColor};cursor:col-resize;border-radius:2px" title="גרור לשנות אורך" onmousedown="startLineDrag(event,'${step.id}',1)"` : `style="height:2px;background:${lineColor}"`;
-  html += `<div ${dragAttrL}></div>`;
+  // Line: diamond → left chevron
+  html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
   
-  // Col 5: LEFT outcome (second in RTL)
+  // LEFT outcome (second in RTL)
   html += renderOutcome(left, 'left');
   
-  html += `</div>`; // grid
+  // Arrow LEFT/RIGHT extends from chevron edge (rendered as SVG overlay post-render)
+  
+  html += `</div>`; // diamond-outcomes inner
   html += `</div>`; // outer flex column wrapper
   return html;
 }
