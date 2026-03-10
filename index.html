@@ -4282,8 +4282,43 @@ function editDiamondOutcome(stepId, part, outcomeIdx){
       html += _textRow('טקסט תיבה שנייה', out.connectLabel2||'', `_doOutSet('${stepId}',${outcomeIdx},'connectLabel2',this.value)`);
     }
     html += _colorRow('צבע תיבות', out.jumpColor||'#1B2A4A', `_doOutSet('${stepId}',${outcomeIdx},'jumpColor',this.value)`);
+    html += _componentEditorRow('אורך קו', `<input type="range" min="20" max="300" value="${out.lineLength||120}" oninput="_doOutSet('${stepId}',${outcomeIdx},'lineLength',parseInt(this.value));this.nextSibling.textContent=this.value+'px'" style="width:100%"><span style="font-size:11px;color:#666">${out.lineLength||120}px</span>`);
     _showComponentEditor(btnEl, '⬡ עריכת מוצא', html);
   }
+}
+
+// ===== Drag to resize lines between diamond and chevrons =====
+function startLineDrag(e, stepId, outcomeIdx){
+  e.preventDefault();
+  e.stopPropagation();
+  const step = _findFlowStepDeep(stepId);
+  if(!step || !step.outcomes || !step.outcomes[outcomeIdx]) return;
+  pushUndo();
+  const out = step.outcomes[outcomeIdx];
+  const startX = e.clientX;
+  const startLen = out.lineLength || step.lineLength || 120;
+  const lineEl = e.target;
+  lineEl.style.background = '#f97316'; // highlight while dragging
+  
+  function onMove(ev){
+    // RTL: dragging left = shorter for right outcome, longer for left outcome
+    const dx = ev.clientX - startX;
+    // For outcome 0 (right in RTL): drag right = longer, drag left = shorter
+    // For outcome 1 (left in RTL): drag right = shorter, drag left = longer
+    const dir = outcomeIdx === 0 ? 1 : -1;
+    const newLen = Math.max(20, Math.min(300, startLen + dx * dir));
+    out.lineLength = Math.round(newLen);
+    lineEl.style.flex = `0 0 ${out.lineLength}px`;
+  }
+  
+  function onUp(){
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    renderAll();
+  }
+  
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
 }
 
 function _doSet(stepId, field, value){
@@ -4589,9 +4624,10 @@ function renderDiamondOutcomes(step){
   // RIGHT outcome (first in RTL)
   html += renderOutcome(right, 'right');
   
-  // Line: right chevron → diamond (longer to push approved chain away from center)
-  const lineLen = step.lineLength || 120;
-  html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
+  // Line: right chevron → diamond
+  const lineLenR = right.lineLength || step.lineLength || 120;
+  const dragR = appState.editing ? `onmousedown="startLineDrag(event,'${step.id}',0)" style="cursor:col-resize" title="גרור לשנות אורך"` : '';
+  html += `<div ${dragR} style="flex:0 0 ${lineLenR}px;height:2px;background:${lineColor};align-self:center${appState.editing?';cursor:col-resize':''}"></div>`;
   
   // Diamond (center)
   const editDiamond = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" style="cursor:pointer" title="ערוך מעוין"` : '';
@@ -4601,7 +4637,9 @@ function renderDiamondOutcomes(step){
   html += `</div></div>`;
   
   // Line: diamond → left chevron
-  html += `<div style="flex:0 0 ${lineLen}px;height:2px;background:${lineColor};align-self:center"></div>`;
+  const lineLenL = left.lineLength || step.lineLength || 120;
+  const dragL = appState.editing ? `onmousedown="startLineDrag(event,'${step.id}',1)" style="cursor:col-resize" title="גרור לשנות אורך"` : '';
+  html += `<div ${dragL} style="flex:0 0 ${lineLenL}px;height:2px;background:${lineColor};align-self:center${appState.editing?';cursor:col-resize':''}"></div>`;
   
   // LEFT outcome (second in RTL)
   html += renderOutcome(left, 'left');
