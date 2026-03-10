@@ -33,7 +33,7 @@ header p{font-size:13px;opacity:.85}
 
 /* LAYOUT */
 .container{display:flex;gap:30px;padding:24px 40px;max-width:1900px;margin:0 auto}
-.hierarchy-panel{flex:1;min-width:200px;overflow:auto}
+.hierarchy-panel{flex:1;min-width:200px;overflow-y:auto;max-height:calc(100vh - 120px)}
 .panel-resizer{width:6px;cursor:col-resize;background:linear-gradient(90deg,#ddd 1px,transparent 1px,transparent 5px,#ddd 5px);flex-shrink:0;transition:background .2s;border-radius:3px}
 .panel-resizer:hover,.panel-resizer.dragging{background:linear-gradient(90deg,#2E86AB 1px,transparent 1px,transparent 5px,#2E86AB 5px)}
 .flow-panel{width:600px;min-width:200px;flex-shrink:0;position:sticky;top:20px;align-self:flex-start}
@@ -5158,7 +5158,7 @@ function setupFlowScrollSync(){
         setTimeout(() => { if(_scrollSyncSource === 'hier') _scrollSyncSource = null; }, 2000);
       }
     }
-  }, {root: hierPanel.scrollHeight > hierPanel.clientHeight ? hierPanel : null, rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.5, 1]});
+  }, {root: hierPanel, rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.5, 1]});
   
   document.querySelectorAll('[id^="stage-btn-"]').forEach(btn => {
     _flowSyncObserver.observe(btn);
@@ -5193,7 +5193,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if(closest){
         const btn = document.getElementById('stage-btn-' + closest);
-        if(btn) btn.scrollIntoView({behavior:'smooth', block:'center'});
+        if(btn){
+          const hp = document.querySelector('.hierarchy-panel');
+          if(hp){
+            const btnTop = btn.offsetTop;
+            hp.scrollTo({top: Math.max(0, btnTop - hp.clientHeight/2), behavior:'smooth'});
+          }
+        }
       }
     }catch(e){}
   }, {passive:true});
