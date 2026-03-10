@@ -5147,8 +5147,10 @@ function setupFlowScrollSync(){
       const el = document.getElementById(flowId);
       const flowCard = document.querySelector('.flow-card');
       if(el && flowCard){
+        _scrollSyncSource = 'hier';
         const scrollTarget = el.offsetTop - flowCard.offsetTop - (flowCard.clientHeight / 2) + (el.clientHeight / 2);
         flowCard.scrollTo({top: Math.max(0, scrollTarget), behavior:'smooth'});
+        setTimeout(() => { if(_scrollSyncSource === 'hier') _scrollSyncSource = null; }, 2000);
       }
     }
   }, {root: hierPanel.scrollHeight > hierPanel.clientHeight ? hierPanel : null, rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.5, 1]});
@@ -5158,62 +5160,37 @@ function setupFlowScrollSync(){
   });
 }
 
-// Bidirectional scroll sync
-let _hierSyncPaused = false;
+// Bidirectional scroll sync — debounced
+let _scrollSyncSource = null; // 'flow' or 'hier' — prevents feedback loops
 document.addEventListener('DOMContentLoaded', () => {
-  let flowScrollTimer, hierScrollTimer;
+  let syncTimer;
   const fc = document.querySelector('.flow-card');
-  const hp = document.querySelector('.hierarchy-panel');
-  // When user scrolls flow → pause hier→flow sync, and sync flow→hier
+  
+  // Flow card scroll → sync hierarchy to matching stage
   if(fc) fc.addEventListener('scroll', () => {
-    _flowSyncPaused = true;
-    clearTimeout(flowScrollTimer);
-    flowScrollTimer = setTimeout(() => { _flowSyncPaused = false; }, 3000);
-    // Reverse sync: find which flow step is near center of flow card
-    if(_hierSyncPaused) return;
-    _hierSyncPaused = true;
+    if(_scrollSyncSource === 'hier') return; // ignore programmatic scroll
+    _scrollSyncSource = 'flow';
+    _flowSyncPaused = true; // pause hier→flow IntersectionObserver
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => { _scrollSyncSource = null; _flowSyncPaused = false; }, 2000);
+    
     try{
       const flowToStage = typeof getFlowStageMap === 'function' ? getFlowStageMap() : {};
       const fcRect = fc.getBoundingClientRect();
       const centerY = fcRect.top + fcRect.height / 2;
       let closest = null, closestDist = Infinity;
-      // Check all flow step elements
       for(const [flowId, stageId] of Object.entries(flowToStage)){
         const el = document.getElementById(flowId);
         if(!el) continue;
         const r = el.getBoundingClientRect();
         const dist = Math.abs(r.top + r.height/2 - centerY);
-        if(dist < closestDist){
-          closest = stageId;
-          closestDist = dist;
-        }
+        if(dist < closestDist){ closest = stageId; closestDist = dist; }
       }
       if(closest){
         const btn = document.getElementById('stage-btn-' + closest);
-        if(btn){
-          // Open the stage if collapsed
-          const stageContent = btn.nextElementSibling;
-          if(stageContent && !stageContent.classList.contains('open')){
-            btn.click();
-          }
-          // Scroll into view — try panel first, fall back to window
-          if(hp && hp.scrollHeight > hp.clientHeight){
-            const btnTop = btn.offsetTop - hp.offsetTop;
-            hp.scrollTo({top: Math.max(0, btnTop - hp.clientHeight/2 + btn.clientHeight/2), behavior:'smooth'});
-          } else {
-            btn.scrollIntoView({behavior:'smooth', block:'center'});
-          }
-        }
+        if(btn) btn.scrollIntoView({behavior:'smooth', block:'center'});
       }
     }catch(e){}
-    clearTimeout(hierScrollTimer);
-    hierScrollTimer = setTimeout(() => { _hierSyncPaused = false; }, 3000);
-  }, {passive:true});
-  // When user scrolls hierarchy → pause flow→hier sync
-  if(hp) hp.addEventListener('scroll', () => {
-    _hierSyncPaused = true;
-    clearTimeout(hierScrollTimer);
-    hierScrollTimer = setTimeout(() => { _hierSyncPaused = false; }, 3000);
   }, {passive:true});
 });
 
