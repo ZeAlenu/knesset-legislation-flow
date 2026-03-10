@@ -4287,8 +4287,8 @@ function editDiamondOutcome(stepId, part, outcomeIdx){
   }
 }
 
-// ===== Drag to resize lines between diamond and chevrons =====
-function startLineDrag(e, stepId, outcomeIdx){
+// ===== Drag chevron to resize lines — live preview =====
+function startChevronDrag(e, stepId, outcomeIdx){
   e.preventDefault();
   e.stopPropagation();
   const step = _findFlowStepDeep(stepId);
@@ -4297,29 +4297,45 @@ function startLineDrag(e, stepId, outcomeIdx){
   const out = step.outcomes[outcomeIdx];
   const startX = e.clientX;
   const startLen = out.lineLength || step.lineLength || 120;
-  const lineEl = e.target;
-  lineEl.style.background = '#f97316'; // highlight while dragging
+  
+  // Find the line element (sibling of the chevron container)
+  const chevronEl = e.target.closest('[data-chevron-drag]');
+  const parentFlex = chevronEl?.parentElement;
+  // The line is the adjacent sibling div (between chevron and diamond)
+  let lineEl = null;
+  if(parentFlex){
+    // outcome 0 (right): line is nextSibling; outcome 1 (left): line is previousSibling
+    lineEl = outcomeIdx === 0 ? chevronEl.nextElementSibling : chevronEl.previousElementSibling;
+  }
+  
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+  if(chevronEl) chevronEl.style.opacity = '0.7';
   
   function onMove(ev){
-    // RTL: dragging left = shorter for right outcome, longer for left outcome
     const dx = ev.clientX - startX;
-    // For outcome 0 (right in RTL): drag right = longer, drag left = shorter
-    // For outcome 1 (left in RTL): drag right = shorter, drag left = longer
+    // RTL: outcome 0 is on the right, dragging right = longer
     const dir = outcomeIdx === 0 ? 1 : -1;
     const newLen = Math.max(20, Math.min(300, startLen + dx * dir));
     out.lineLength = Math.round(newLen);
-    lineEl.style.flex = `0 0 ${out.lineLength}px`;
+    // Live update the line width without re-rendering
+    if(lineEl) lineEl.style.flex = `0 0 ${out.lineLength}px`;
   }
   
   function onUp(){
     document.removeEventListener('mousemove', onMove);
     document.removeEventListener('mouseup', onUp);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    if(chevronEl) chevronEl.style.opacity = '';
     renderAll();
   }
   
   document.addEventListener('mousemove', onMove);
   document.addEventListener('mouseup', onUp);
 }
+// Keep old function name as alias
+function startLineDrag(e, stepId, outcomeIdx){ startChevronDrag(e, stepId, outcomeIdx); }
 
 function _doSet(stepId, field, value){
   const step = _findFlowStepDeep(stepId);
@@ -4575,11 +4591,12 @@ function renderDiamondOutcomes(step){
     const clickTarget = out.connectTo ? `onclick="flowJumpTo('${out.connectTo}')"` : '';
     const crossClass = out.arrowDir === 'left' || out.arrowDir === 'right' ? `class="cross-branch-arrow" data-target="${out.connectTo||''}"` : '';
     
-    let h = `<div style="flex:0 0 auto;position:relative;display:flex;align-items:center" ${crossClass}>`;
+    const oi = outcomes.indexOf(out);
+    let h = `<div data-chevron-drag="1" style="flex:0 0 auto;position:relative;display:flex;align-items:center${appState.editing?';cursor:col-resize':''}" ${crossClass} ${appState.editing?`onmousedown="startChevronDrag(event,'${step.id}',${oi})"`:''}>`;
     
     // Chevron — voteDecision style (hexagonal, attached to diamond)
-    const editChevron = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','outcome',${outcomes.indexOf(out)})" title="ערוך שברון"` : clickTarget;
-    h += `<div style="padding:${padding};background:${out.chevronColor||chevronColor};color:${out.chevronText||chevronText};font-size:7px;font-weight:600;line-height:1.4;text-align:center;clip-path:${clipPath};min-width:50px;white-space:nowrap;cursor:pointer" ${editChevron}>${escH(out.label||'').replace(/\n/g,'<br>')}</div>`;
+    const editChevron = appState.editing ? `ondblclick="event.stopPropagation();editDiamondOutcome('${step.id}','outcome',${oi})" title="גרור לשנות מרחק | דאבל-קליק לעריכה"` : clickTarget;
+    h += `<div style="padding:${padding};background:${out.chevronColor||chevronColor};color:${out.chevronText||chevronText};font-size:7px;font-weight:600;line-height:1.4;text-align:center;clip-path:${clipPath};min-width:50px;white-space:nowrap;cursor:${appState.editing?'col-resize':'pointer'}" ${editChevron}>${escH(out.label||'').replace(/\n/g,'<br>')}</div>`;
     
     // Arrow DOWN (absolute, doesn't affect height)
     if(out.arrowDir === 'down'){
