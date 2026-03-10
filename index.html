@@ -4647,11 +4647,11 @@ function renderDiamondOutcomes(step){
   
   // Line: right chevron → diamond
   const lineLenR = right.lineLength || step.lineLength || 120;
-  const dragR = appState.editing ? `onmousedown="startLineDrag(event,'${step.id}',0)" style="cursor:col-resize" title="גרור לשנות אורך"` : '';
+  const dragR = appState.editing ? `onmousedown="startLineDrag(event,'${step.id}',0)" title="גרור לשנות אורך"` : '';
   html += `<div ${dragR} style="flex:0 0 ${lineLenR}px;height:2px;background:${lineColor};align-self:center${appState.editing?';cursor:col-resize':''}"></div>`;
   
   // Diamond (center)
-  const editDiamond = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" style="cursor:pointer" title="ערוך מעוין"` : '';
+  const editDiamond = appState.editing ? `onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" title="ערוך מעוין"` : '';
   html += `<div style="flex:0 0 auto;align-self:center">`;
   html += `<div ${editDiamond} style="width:${dSize}px;height:${dSize}px;background:${diamondColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;${appState.editing?'cursor:pointer':''}">`;
   html += `<span style="transform:rotate(-45deg);color:${diamondText};font-size:9px;font-weight:600;text-align:center;line-height:1.2">${escH(step.diamondLabel||'הצבעה\nלהסיר').replace(/\n/g,'<br>')}</span>`;
@@ -4659,7 +4659,7 @@ function renderDiamondOutcomes(step){
   
   // Line: diamond → left chevron
   const lineLenL = left.lineLength || step.lineLength || 120;
-  const dragL = appState.editing ? `onmousedown="startLineDrag(event,'${step.id}',1)" style="cursor:col-resize" title="גרור לשנות אורך"` : '';
+  const dragL = appState.editing ? `onmousedown="startLineDrag(event,'${step.id}',1)" title="גרור לשנות אורך"` : '';
   html += `<div ${dragL} style="flex:0 0 ${lineLenL}px;height:2px;background:${lineColor};align-self:center${appState.editing?';cursor:col-resize':''}"></div>`;
   
   // LEFT outcome (second in RTL)
