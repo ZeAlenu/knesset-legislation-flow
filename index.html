@@ -1656,7 +1656,7 @@ function renderHierarchy(){
   });
 }
 
-function renderStep(step, stage, index, skipChildren){
+function renderStep(step, stage, index, skipChildren, asBranchHeader){
   const cat = getCat(step.catId) || getCat("process");
   const overrideColor = step.overrideColor;
   const overrideBorder = step.overrideBorder;
@@ -1667,6 +1667,8 @@ function renderStep(step, stage, index, skipChildren){
   const hasChildrenOrDetails = !skipChildren && ((step.children && step.children.length > 0) || hasDetails);
   // For skipChildren mode (parallel branch headers), still allow details to show
   const hasChildren = skipChildren ? hasDetails : hasChildrenOrDetails;
+  // Branch headers in parallel splits always get full category color (not lightened)
+  const isLight = isLightStep(step) && !asBranchHeader;
 
   const wrapper = document.createElement("div");
   wrapper.className = `sub-step depth-${step.depth}${step._open ? " open" : ""}`;
@@ -1680,8 +1682,8 @@ function renderStep(step, stage, index, skipChildren){
   const catHasCustomColor = cat.id !== "default" && cat.color;
   const catBorderColor = cat.borderColor || null;
   const effectiveBorder = overrideBorder || catBorderColor || (isChriga && !catHasCustomColor ? "#CC0000" : getDepthColor(step.depth));
-  const effectiveBg = overrideColor || (catHasCustomColor ? (isLightStep(step) ? lighten(cat.color, 0.85) : cat.color) : (isChriga && !step.detailType ? "#CC0000" : (isLightStep(step) ? lighten(bgColor, 0.85) : bgColor)));
-  const effectiveText = step.overrideTextColor || cat.textColor || (isChriga && !catHasCustomColor ? "#fff" : (isLightStep(step) ? darken(bgColor) : "#fff"));
+  const effectiveBg = overrideColor || (catHasCustomColor ? (isLight ? lighten(cat.color, 0.85) : cat.color) : (isChriga && !step.detailType ? "#CC0000" : (isLight ? lighten(bgColor, 0.85) : bgColor)));
+  const effectiveText = step.overrideTextColor || cat.textColor || (isChriga && !catHasCustomColor ? "#fff" : (isLight ? darken(bgColor) : "#fff"));
   header.style.background = effectiveBg;
   header.style.color = effectiveText;
   header.style.borderColor = effectiveBorder;
@@ -1857,8 +1859,8 @@ function renderStep(step, stage, index, skipChildren){
           }
           const col = document.createElement("div");
           col.style.cssText = "flex:1;min-width:0;border:1px dashed #ccc;border-radius:6px;padding:4px";
-          // Render branch header WITHOUT its children (skipChildren=true); we render children explicitly below with connectors
-          col.appendChild(renderStep(child, stage, ci, true));
+          // Render branch header WITHOUT its children (skipChildren=true); asBranchHeader=true forces full category color
+          col.appendChild(renderStep(child, stage, ci, true, true));
           // Connector between branch header and first child (editing mode)
           if(child.children && child.children.length > 0 && appState.editing){
             const hcd = document.createElement("div");
