@@ -5169,27 +5169,35 @@ document.addEventListener('DOMContentLoaded', () => {
     _flowSyncPaused = true;
     clearTimeout(flowScrollTimer);
     flowScrollTimer = setTimeout(() => { _flowSyncPaused = false; }, 3000);
-    // Reverse sync: find which flow step is visible and scroll hierarchy to match
+    // Reverse sync: find which flow step is near center of flow card
     if(_hierSyncPaused) return;
     _hierSyncPaused = true;
-    const stageMap = typeof getStageFlowMap === 'function' ? getStageFlowMap() : {};
-    const reverseMap = {};
-    for(const [stageId, flowId] of Object.entries(stageMap)) reverseMap[flowId] = stageId;
-    const fcRect = fc.getBoundingClientRect();
-    const centerY = fcRect.top + fcRect.height / 2;
-    let closest = null, closestDist = Infinity;
-    fc.querySelectorAll('[id]').forEach(el => {
-      const r = el.getBoundingClientRect();
-      const dist = Math.abs(r.top + r.height/2 - centerY);
-      if(dist < closestDist && reverseMap[el.id]){
-        closest = reverseMap[el.id];
-        closestDist = dist;
+    try{
+      const flowToStage = typeof getFlowStageMap === 'function' ? getFlowStageMap() : {};
+      const fcRect = fc.getBoundingClientRect();
+      const centerY = fcRect.top + fcRect.height / 2;
+      let closest = null, closestDist = Infinity;
+      // Check all flow step elements
+      for(const [flowId, stageId] of Object.entries(flowToStage)){
+        const el = document.getElementById(flowId);
+        if(!el) continue;
+        const r = el.getBoundingClientRect();
+        const dist = Math.abs(r.top + r.height/2 - centerY);
+        if(dist < closestDist){
+          closest = stageId;
+          closestDist = dist;
+        }
       }
-    });
-    if(closest && hp){
-      const btn = document.getElementById('stage-btn-' + closest);
-      if(btn) btn.scrollIntoView({behavior:'smooth', block:'center'});
-    }
+      if(closest && hp){
+        const btn = document.getElementById('stage-btn-' + closest);
+        if(btn){
+          // Scroll the hierarchy panel to show this button
+          const btnTop = btn.offsetTop;
+          const hpHeight = hp.clientHeight;
+          hp.scrollTo({top: Math.max(0, btnTop - hpHeight/2 + btn.clientHeight/2), behavior:'smooth'});
+        }
+      }
+    }catch(e){}
     clearTimeout(hierScrollTimer);
     hierScrollTimer = setTimeout(() => { _hierSyncPaused = false; }, 3000);
   }, {passive:true});
