@@ -5158,14 +5158,46 @@ function setupFlowScrollSync(){
   });
 }
 
-// Pause sync temporarily when user manually scrolls the flow card
+// Bidirectional scroll sync
+let _hierSyncPaused = false;
 document.addEventListener('DOMContentLoaded', () => {
-  let flowScrollTimer;
+  let flowScrollTimer, hierScrollTimer;
   const fc = document.querySelector('.flow-card');
+  const hp = document.querySelector('.hierarchy-panel');
+  // When user scrolls flow → pause hier→flow sync, and sync flow→hier
   if(fc) fc.addEventListener('scroll', () => {
     _flowSyncPaused = true;
     clearTimeout(flowScrollTimer);
     flowScrollTimer = setTimeout(() => { _flowSyncPaused = false; }, 3000);
+    // Reverse sync: find which flow step is visible and scroll hierarchy to match
+    if(_hierSyncPaused) return;
+    _hierSyncPaused = true;
+    const stageMap = typeof getStageFlowMap === 'function' ? getStageFlowMap() : {};
+    const reverseMap = {};
+    for(const [stageId, flowId] of Object.entries(stageMap)) reverseMap[flowId] = stageId;
+    const fcRect = fc.getBoundingClientRect();
+    const centerY = fcRect.top + fcRect.height / 2;
+    let closest = null, closestDist = Infinity;
+    fc.querySelectorAll('[id]').forEach(el => {
+      const r = el.getBoundingClientRect();
+      const dist = Math.abs(r.top + r.height/2 - centerY);
+      if(dist < closestDist && reverseMap[el.id]){
+        closest = reverseMap[el.id];
+        closestDist = dist;
+      }
+    });
+    if(closest && hp){
+      const btn = document.getElementById('stage-btn-' + closest);
+      if(btn) btn.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+    clearTimeout(hierScrollTimer);
+    hierScrollTimer = setTimeout(() => { _hierSyncPaused = false; }, 3000);
+  }, {passive:true});
+  // When user scrolls hierarchy → pause flow→hier sync
+  if(hp) hp.addEventListener('scroll', () => {
+    _hierSyncPaused = true;
+    clearTimeout(hierScrollTimer);
+    hierScrollTimer = setTimeout(() => { _hierSyncPaused = false; }, 3000);
   }, {passive:true});
 });
 
