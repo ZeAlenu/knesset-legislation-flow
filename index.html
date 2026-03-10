@@ -4185,6 +4185,40 @@ function editVoteDecisionPopup(stepId, btnEl){
   _showComponentEditor(btnEl, '✏️ עריכת הצבעה', html);
 }
 
+// Click-to-edit individual reject chain items
+function editRejectChainItem(stepId, chainIdx, btnEl){
+  const step = _findFlowStepDeep(stepId);
+  if(!step || !step.rejectChain || !step.rejectChain[chainIdx]) return;
+  pushUndo();
+  const item = step.rejectChain[chainIdx];
+  let html = '';
+  html += _textRow('טקסט', item.label||'', `_vdChainSet('${stepId}',${chainIdx},'label',this.value)`);
+  html += _colorRow('צבע', item.color||'#2E86AB', `_vdChainSet('${stepId}',${chainIdx},'color',this.value)`);
+  if(item.jumpTo !== undefined){
+    html += _textRow('קפיצה ל-ID', item.jumpTo||'', `_vdChainSet('${stepId}',${chainIdx},'jumpTo',this.value)`);
+  }
+  _showComponentEditor(btnEl, `✏️ עריכת ${item.type === 'pill' ? 'כפתור' : item.type === 'box' ? 'תיבה' : 'אלמנט'}`, html);
+}
+
+// Click-to-edit voteDecision diamond/chevrons directly
+function editVoteDiamondDirect(stepId, part, btnEl){
+  const step = _findFlowStepDeep(stepId);
+  if(!step) return;
+  pushUndo();
+  let html = '';
+  if(part === 'diamond'){
+    html += _textRow('טקסט', (step.voteLabel||step.label||'').replace(/\n/g,' '), `_vdSet('${stepId}','voteLabel',this.value)`);
+    html += _colorRow('צבע', step.diamondColor||'#1B2A4A', `_vdSet('${stepId}','diamondColor',this.value)`);
+  } else if(part === 'approve'){
+    html += _textRow('טקסט', step.approveLabel||'אושרה', `_vdSet('${stepId}','approveLabel',this.value)`);
+    html += _colorRow('צבע שברונים', step.chevronColor||'#2a4a7a', `_vdSet('${stepId}','chevronColor',this.value)`);
+  } else if(part === 'reject'){
+    html += _textRow('טקסט', step.rejectLabel||'נדחתה', `_vdSet('${stepId}','rejectLabel',this.value)`);
+    html += _colorRow('צבע שברונים', step.chevronColor||'#2a4a7a', `_vdSet('${stepId}','chevronColor',this.value)`);
+  }
+  _showComponentEditor(btnEl, `✏️ עריכת ${part === 'diamond' ? 'מעוין' : 'שברון'}`, html);
+}
+
 function _vdSet(stepId, field, value){
   const step = _findFlowStepDeep(stepId);
   if(!step) return;
@@ -4584,15 +4618,18 @@ function renderVoteDecision(step){
   html += `<div style="position:relative;width:${ds + ds*0.3}px">`;
   
   // Diamond
-  html += `<div style="width:${ds}px;height:${ds}px;background:${dColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;margin:${ds*0.15}px auto;cursor:pointer${isAct?';box-shadow:0 0 0 3px #f97316':''}" ${stageClick}>`;
+  const diamondClick = appState.editing ? `onclick="event.stopPropagation();editVoteDiamondDirect('${step.id}','diamond',this)" title="ערוך מעוין"` : stageClick;
+  html += `<div style="width:${ds}px;height:${ds}px;background:${dColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;margin:${ds*0.15}px auto;cursor:pointer${isAct?';box-shadow:0 0 0 3px #f97316':''}" ${diamondClick}>`;
   html += `<span style="transform:rotate(-45deg);color:#fff;font-size:${isInBr?7:9}px;font-weight:700;text-align:center;line-height:1.2">${escH(step.voteLabel||step.label||'').replace(/\n/g,'<br>')}</span>`;
   html += `</div>`;
   
   // "אושרה" chevron — attached to BOTTOM vertex of diamond
-  html += `<div style="position:absolute;left:50%;bottom:-${chevH+1}px;transform:translateX(-50%);padding:2px 10px;background:${lightColor};color:#fff;font-size:7px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%);white-space:nowrap">${escH(step.approveLabel||'אושרה')}</div>`;
+  const approveClick = appState.editing ? `onclick="event.stopPropagation();editVoteDiamondDirect('${step.id}','approve',this)" title="ערוך שברון"` : '';
+  html += `<div ${approveClick} style="position:absolute;left:50%;bottom:-${chevH+1}px;transform:translateX(-50%);padding:2px 10px;background:${lightColor};color:#fff;font-size:7px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%);white-space:nowrap${appState.editing?';cursor:pointer':''}">${escH(step.approveLabel||'אושרה')}</div>`;
   
   // "נדחתה" chevron — attached to LEFT vertex of diamond
-  html += `<div style="position:absolute;top:50%;left:-${chevW+1}px;transform:translateY(-50%);padding:2px 10px;background:${lightColor};color:#fff;font-size:7px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%);white-space:nowrap">${escH(step.rejectLabel||'נדחתה')}</div>`;
+  const rejectClick = appState.editing ? `onclick="event.stopPropagation();editVoteDiamondDirect('${step.id}','reject',this)" title="ערוך שברון"` : '';
+  html += `<div ${rejectClick} style="position:absolute;top:50%;left:-${chevW+1}px;transform:translateY(-50%);padding:2px 10px;background:${lightColor};color:#fff;font-size:7px;font-weight:600;clip-path:polygon(12% 0%, 88% 0%, 100% 50%, 88% 100%, 12% 100%, 0% 50%);white-space:nowrap${appState.editing?';cursor:pointer':''}">${escH(step.rejectLabel||'נדחתה')}</div>`;
   
   html += `</div>`; // diamond container
   
@@ -4644,8 +4681,10 @@ function renderVoteDecision(step){
       
       // 2. Box "הסרה מסדר היום" at the left end of horizontal line
       if(boxItem){
+        const boxIdx = chain.indexOf(boxItem);
+        const boxEdit = appState.editing ? `onclick="event.stopPropagation();editRejectChainItem('${step.id}',${boxIdx},this)" style="cursor:pointer" title="ערוך"` : '';
         html += `<div style="position:absolute;top:${centerY - boxH/2}px;left:0;transform:translateX(-50%);z-index:2">`;
-        html += `<div style="padding:6px 14px;background:${boxItem.color||'#1B2A4A'};color:#fff;font-size:9px;font-weight:600;border-radius:8px;white-space:nowrap;text-align:center">${escH(boxItem.label)}</div>`;
+        html += `<div ${boxEdit} style="padding:6px 14px;background:${boxItem.color||'#1B2A4A'};color:#fff;font-size:9px;font-weight:600;border-radius:8px;white-space:nowrap;text-align:center${appState.editing?';cursor:pointer':''}">${escH(boxItem.label)}</div>`;
         html += `</div>`;
       }
       
@@ -4660,11 +4699,13 @@ function renderVoteDecision(step){
       
       // 4. Corner box (⏳) along the vertical arrow, on the outer side
       if(hexItem){
+        const hexIdx = chain.indexOf(hexItem);
+        const hexEdit = appState.editing ? `onclick="event.stopPropagation();editRejectChainItem('${step.id}',${hexIdx},this)" title="ערוך"` : '';
         let iconHtml = '';
         if(hexItem.icon && BUILTIN_ICONS[hexItem.icon]){
           iconHtml = BUILTIN_ICONS[hexItem.icon].replace(/width="[^"]*"/,'width="18"').replace(/height="[^"]*"/,'height="18"');
         }
-        html += `<div style="position:absolute;top:${arrowBottom - vertLen*0.6}px;left:${-cornerBoxW}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
+        html += `<div ${hexEdit} style="position:absolute;top:${arrowBottom - vertLen*0.6}px;left:${-cornerBoxW}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;direction:rtl${appState.editing?';cursor:pointer':''}">`;
         if(iconHtml) html += `<div>${iconHtml}</div>`;
         html += `<div style="font-size:8px;font-weight:600;color:${dColor}">${escH(hexItem.label)}</div>`;
         html += `</div>`;
@@ -4672,7 +4713,8 @@ function renderVoteDecision(step){
       
       // 5. Pill at the top of vertical arrow
       if(pillItem){
-        const jmp = pillItem.jumpTo ? `onclick="flowJumpTo('${pillItem.jumpTo}')"` : '';
+        const pillIdx = chain.indexOf(pillItem);
+        const jmp = appState.editing ? `onclick="event.stopPropagation();editRejectChainItem('${step.id}',${pillIdx},this)" title="ערוך"` : (pillItem.jumpTo ? `onclick="flowJumpTo('${pillItem.jumpTo}')"` : '');
         html += `<div style="position:absolute;top:${arrowBottom - vertLen - 4}px;left:0;transform:translate(-50%,-100%);z-index:2">`;
         html += `<div style="padding:6px 16px;background:${pillItem.color||'#4A148C'};color:#fff;font-size:10px;font-weight:600;border-radius:16px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:4px" ${jmp}><span style="font-size:8px;opacity:0.8">▲</span><span>${escH(pillItem.label)}</span></div>`;
         html += `</div>`;
@@ -4692,7 +4734,8 @@ function renderVoteDecision(step){
       // Pill at arrow tip (bottom)
       const pillItem2 = chain.find(c => c.type === 'pill');
       if(pillItem2){
-        const jmp2 = pillItem2.jumpTo ? `onclick="flowJumpTo('${pillItem2.jumpTo}')"` : '';
+        const pillIdx2 = chain.indexOf(pillItem2);
+        const jmp2 = appState.editing ? `onclick="event.stopPropagation();editRejectChainItem('${step.id}',${pillIdx2},this)" title="ערוך"` : (pillItem2.jumpTo ? `onclick="flowJumpTo('${pillItem2.jumpTo}')"` : '');
         html += `<div style="position:absolute;bottom:-8px;left:50%;transform:translate(-50%,100%);z-index:2">`;
         html += `<div style="padding:4px 12px;background:${pillItem2.color||'#4A148C'};color:#fff;font-size:8px;font-weight:600;border-radius:14px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:3px" ${jmp2}><span>${escH(pillItem2.label)}</span><span style="font-size:7px;opacity:0.8">▼</span></div>`;
         html += `</div>`;
@@ -4700,11 +4743,13 @@ function renderVoteDecision(step){
       
       // Corner box below the corner
       if(hexItem){
+        const hexIdx2 = chain.indexOf(hexItem);
+        const hexEdit2 = appState.editing ? `onclick="event.stopPropagation();editRejectChainItem('${step.id}',${hexIdx2},this)" title="ערוך"` : '';
         let iconHtml = '';
         if(hexItem.icon && BUILTIN_ICONS[hexItem.icon]){
           iconHtml = BUILTIN_ICONS[hexItem.icon].replace(/width="[^"]*"/,'width="18"').replace(/height="[^"]*"/,'height="18"');
         }
-        html += `<div style="position:absolute;bottom:-20px;left:${8 - cornerBoxW + 6}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;direction:rtl">`;
+        html += `<div ${hexEdit2} style="position:absolute;bottom:-20px;left:${8 - cornerBoxW + 6}px;width:${cornerBoxW}px;height:${cornerBoxH}px;background:#f0f4f8;z-index:2;border:2px solid ${dColor};display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;direction:rtl${appState.editing?';cursor:pointer':''}">`;
         if(iconHtml) html += `<div>${iconHtml}</div>`;
         html += `<div style="font-size:8px;font-weight:600;color:${dColor}">${escH(hexItem.label)}</div>`;
         html += `</div>`;
