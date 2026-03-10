@@ -1724,7 +1724,8 @@
                   "arrowDir": "down",
                   "connectTo": "f_removal_process",
                   "connectLabel": "→ דיון הסרת הצעה מסדר היום",
-                  "connectSub": "סעיף 94"
+                  "connectSub": "סעיף 94",
+                  "lineLength": 50
                 },
                 {
                   "label": "רוב מתנגדים\nלהסרה",
@@ -1732,7 +1733,8 @@
                   "crossTo": "f12_1",
                   "color": "#2D7D46",
                   "arrowDir": "left",
-                  "connectTo": "f12_1"
+                  "connectTo": "f12_1",
+                  "lineLength": 47
                 }
               ],
               "diamondLabel": "הצבעה\nלהסיר"
@@ -2108,7 +2110,7 @@
     }
   ],
   "nextId": 1047,
-  "publishDate": "2026-03-10T07:29:27.363Z",
+  "publishDate": "2026-03-10T10:01:00.400Z",
   "publishedBy": "zan2026",
-  "mergedAt": "2026-03-10T09:29:27.263341"
+  "mergedAt": "2026-03-10T12:01:00.574480"
 }
