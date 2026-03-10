@@ -112,19 +112,21 @@ header p{font-size:13px;opacity:.85}
 
 .flow-step{text-align:center;margin-bottom:2px;position:relative;z-index:1}
 .flow-step:hover{z-index:25}
-.flow-step .box{display:inline-block;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;color:#fff;min-width:160px;cursor:pointer;transition:all .2s;border:2px solid transparent}
+.flow-step .box{display:inline-block;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;color:#fff;min-width:160px;cursor:pointer;transition:all .2s;border:2px solid transparent;word-wrap:break-word;overflow-wrap:break-word;max-width:100%}
 .flow-step .box:hover{transform:scale(1.03);filter:brightness(1.1)}
 .flow-step .box.flow-active{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,.6);animation:flowGlow 1.5s ease-in-out infinite alternate}
 @keyframes flowGlow{from{box-shadow:0 0 8px rgba(255,215,0,.4)}to{box-shadow:0 0 16px rgba(255,215,0,.8)}}
 .flow-here-badge{position:absolute;left:-2px;top:50%;transform:translateY(-50%);font-size:10px;color:#FFD700;font-weight:700;white-space:nowrap;pointer-events:none;text-shadow:0 0 4px rgba(0,0,0,.3)}
 .flow-step-nav-pulse{outline:3px solid #FFD700!important;box-shadow:0 0 16px rgba(255,215,0,.8)!important;border-radius:6px;transition:outline .2s,box-shadow .2s}
 .stage-btn-nav-pulse{outline:3px solid #4ECDC4!important;box-shadow:0 0 14px rgba(78,205,196,.7)!important}
-.flow-arrow{text-align:center;color:#bbb;font-size:16px;margin:2px 0;line-height:1}
+.flow-arrow{text-align:center;color:#bbb;font-size:16px;margin:2px 0;line-height:1;position:relative}
+.flow-arrow-resizer{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:20px;height:8px;cursor:row-resize;background:rgba(249,115,22,.4);border-radius:3px;display:none}
+.flow-arrow:hover .flow-arrow-resizer{display:block}
 .flow-note{font-size:10px;color:var(--waiting);text-align:center;margin:2px 0;font-weight:600}
 .flow-split{display:flex;gap:8px;justify-content:center;margin:4px 0;align-items:flex-start}
 .flow-track{display:flex;flex-direction:column;align-items:center;gap:3px}
 .flow-or{background:var(--waiting);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
-.flow-side-note{font-size:10px;color:#CC0000;text-align:center;background:#FFF0F0;border:1px solid #CC0000;border-radius:6px;padding:2px 6px;margin:2px 0}
+.flow-side-note{font-size:10px;color:#CC0000;text-align:center;background:#FFF0F0;border:1px solid #CC0000;border-radius:6px;padding:2px 6px;margin:2px 0;word-wrap:break-word;overflow-wrap:break-word}
 .flow-diamond{display:inline-flex;align-items:center;justify-content:center;width:85px;height:85px;transform:rotate(45deg);font-size:10px;font-weight:600;color:#fff;margin:6px auto;cursor:pointer;transition:all .2s;border:2px solid transparent}
 .flow-diamond:hover{filter:brightness(1.1)}
 .flow-diamond.flow-active{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,.6)}
@@ -3485,10 +3487,9 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
   const stepAfterNote = nextStepIsNote && arr[index + 2];
   
   if(!isInBranch && !nextStepIsNote && index < arr.length - 1 && step.type !== "split"){
-    html += `<div class="flow-arrow">▼</div>`;
+    html += flowArrowHtml(step.id, 0, step.arrowHeights?.[0]);
   } else if(!isInBranch && nextStepIsNote && stepAfterNote){
-    // Add arrow after note annotation
-    html += `<div class="flow-arrow">▼</div>`;
+    html += flowArrowHtml(step.id, 0, step.arrowHeights?.[0]);
   }
 
   return html;
@@ -3573,7 +3574,7 @@ function renderFlowSplit(step, mainIndex, isNested){
       if(!isLastVisible){
         const bConn = bStep.branchConnector || "או";
         if(bConn === "arrow"){
-          html += `<div class="flow-arrow" style="margin:2px 0;font-size:10px">▼</div>`;
+          html += flowArrowHtml(bStep.id, 0, bStep.arrowHeights?.[0]);
         } else {
           html += `<div class="flow-or" style="width:18px;height:18px;font-size:8px">${escH(bConn)}</div>`;
         }
@@ -3608,7 +3609,7 @@ function renderFlowSplit(step, mainIndex, isNested){
   html += `</div>`;
 
   // Arrow after split
-  html += `<div class="flow-arrow">▼</div>`;
+  html += flowArrowHtml(step.id, 1, step.arrowHeights?.[1]);
 
   return html;
 }
@@ -4294,6 +4295,55 @@ function editDiamondOutcome(stepId, part, outcomeIdx){
     html += _componentEditorRow('אורך קו', `<input type="range" min="20" max="400" value="${out.lineLength||120}" oninput="_doOutSet('${stepId}',${outcomeIdx},'lineLength',parseInt(this.value));this.nextSibling.textContent=this.value+'px'" style="width:100px"><span style="font-size:11px;color:#666">${out.lineLength||120}px</span>`);
     _showComponentEditor(btnEl, '⬡ עריכת מוצא', html);
   }
+}
+
+// Render flow arrow with optional custom height and drag-to-resize
+function flowArrowHtml(stepId, idx, height){
+  const h = height || 20;
+  const svgH = Math.max(10, h);
+  if(!appState.editing){
+    return `<div class="flow-arrow" style="height:${h}px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end"><svg width="16" height="${svgH}"><line x1="8" y1="0" x2="8" y2="${svgH-6}" stroke="#ccc" stroke-width="2"/><polygon points="4,${svgH-6} 12,${svgH-6} 8,${svgH}" fill="#ccc"/></svg></div>`;
+  }
+  return `<div class="flow-arrow" style="height:${h}px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;cursor:row-resize" onmousedown="startArrowResize(event,'${stepId}',${idx})" title="גרור למעלה/למטה לשנות אורך חץ"><svg width="16" height="${svgH}"><line x1="8" y1="0" x2="8" y2="${svgH-6}" stroke="#ccc" stroke-width="2"/><polygon points="4,${svgH-6} 12,${svgH-6} 8,${svgH}" fill="#ccc"/></svg></div>`;
+}
+
+function startArrowResize(e, stepId, arrowIdx){
+  e.preventDefault(); e.stopPropagation();
+  const step = findFlowStep(stepId) || _findFlowStepDeep(stepId);
+  if(!step) return;
+  pushUndo();
+  if(!step.arrowHeights) step.arrowHeights = {};
+  const startY = e.clientY;
+  const startH = step.arrowHeights[arrowIdx] || 20;
+  const el = e.target.closest('.flow-arrow');
+  document.body.style.cursor = 'row-resize';
+  document.body.style.userSelect = 'none';
+  
+  function onMove(ev){
+    const dy = ev.clientY - startY;
+    step.arrowHeights[arrowIdx] = Math.round(Math.max(8, Math.min(200, startH + dy)));
+    if(el){
+      el.style.height = step.arrowHeights[arrowIdx] + 'px';
+      const svg = el.querySelector('svg');
+      if(svg){
+        const h = step.arrowHeights[arrowIdx];
+        svg.setAttribute('height', h);
+        const line = svg.querySelector('line');
+        if(line) line.setAttribute('y2', h-6);
+        const poly = svg.querySelector('polygon');
+        if(poly) poly.setAttribute('points', `4,${h-6} 12,${h-6} 8,${h}`);
+      }
+    }
+  }
+  function onUp(){
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    renderAll();
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
 }
 
 // Drag line to change chevron distance — no layout shift during drag
