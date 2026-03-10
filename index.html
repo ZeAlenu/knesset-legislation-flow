@@ -3275,12 +3275,13 @@ function renderFlowStepElement(step, isInBranch){
     html += `</div>`;
   }
 
-  // Top icon (above the box)
+  // Top icon → rendered as right-side icon (inside flex wrapper below)
+  let _topIconHtml = "";
   if(step.topIcon){
     if(step.topIcon.type === "builtin" && BUILTIN_ICONS[step.topIcon.icon]){
-      html += `<div style="text-align:center;margin-bottom:2px">${BUILTIN_ICONS[step.topIcon.icon]}</div>`;
+      _topIconHtml = `<div style="flex-shrink:0;display:flex;align-items:center">${BUILTIN_ICONS[step.topIcon.icon]}</div>`;
     } else if(step.topIcon.type === "image"){
-      html += `<div style="text-align:center;margin-bottom:2px"><img src="${step.topIcon.src}" style="width:24px;height:24px;object-fit:contain"></div>`;
+      _topIconHtml = `<div style="flex-shrink:0;display:flex;align-items:center"><img src="${step.topIcon.src}" style="width:24px;height:24px;object-fit:contain"></div>`;
     }
   }
 
@@ -3297,11 +3298,16 @@ function renderFlowStepElement(step, isInBranch){
     }
   }
 
+  // Wrap shape + icon in flex row if icon exists
+  if(_topIconHtml) html += `<div style="display:flex;align-items:center;gap:4px;justify-content:center;direction:rtl">`;
+  if(_topIconHtml) html += _topIconHtml;
+
   if(effectiveType === "diamond"){
     const diamondLabel = label.replace(/\n/g,"<br>");
     const dSize = isInBranch ? "width:55px;height:55px;" : "";
     const dFont = isInBranch ? "font-size:8px;" : "";
     html += `<div class="flow-diamond${actCls}" style="background:${color};color:${textColor}${borderStyle};${dSize}" ${stageClick}><span style="${dFont}">${diamondLabel}</span></div>`;
+    if(_topIconHtml) html += `</div>`;
     // Reject/approve labels for diamonds
     if(step.rejectLabel || step.approveLabel){
       const isRedReject = step.rejectLabel && step.rejectLabel.includes("6 חודשים");
@@ -3317,9 +3323,12 @@ function renderFlowStepElement(step, isInBranch){
   } else if(effectiveType === "circle"){
     const circleLabel = label.replace(/\n/g,"<br>");
     html += `<div class="flow-circle${actCls}" style="background:${color};color:${textColor};width:70px;height:70px" ${stageClick}><span style="font-size:10px;line-height:1.2;text-align:center">${circleLabel}</span></div>`;
+    if(_topIconHtml) html += `</div>`;
   } else if(effectiveType === "pill"){
     html += `<div style="${smallStyle}font-size:${isInBranch?'10':'11'}px;padding:${isInBranch?'5px 8px':'6px 14px'};background:${color};color:${textColor};border-radius:14px;font-weight:600;display:inline-block;cursor:pointer" ${stageClick}>${label}</div>`;
+    if(_topIconHtml) html += `</div>`;
   } else if(step.type === "note"){
+    if(_topIconHtml) html += `</div>`;
     // Note types should be handled by renderNoteAnnotation now, but keep this for backwards compatibility
     return renderNoteAnnotation(step);
   } else {
@@ -3327,6 +3336,7 @@ function renderFlowStepElement(step, isInBranch){
     const catId = step.category;
     const borderExtra = catId === "chriga" ? ";border-color:#CC0000" : "";
     html += `<div class="box${actCls}" style="background:${color};color:${textColor}${borderExtra}${borderStyle};${smallStyle}" ${stageClick}>${label}</div>`;
+    if(_topIconHtml) html += `</div>`;
   }
 
   return html;
