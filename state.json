@@ -205,7 +205,6 @@
           "showArrowAfter": true,
           "_open": false,
           "detailsHtml": null,
-          "builtinIcon": "pen",
           "detailType": "expand"
         },
         {
@@ -651,7 +650,7 @@
           "details": "הוועדה יכולה לדון בהסרת ההצעה מסדר היום.\n\nאם רוב או חצי מחבריה תומכים בהסרה — ההצעה עוברת למסלול של הסרה מסדר היום.\n📜 מקור: [סעיף 94 לתקנון הכנסת — הסרת הצעת חוק מסדר היום](https://www.nevo.co.il/law/72248#Seif100)",
           "detailType": "expand",
           "children": [],
-          "_open": true,
+          "_open": false,
           "detailsHtml": "הוועדה יכולה לדון בהסרת ההצעה מסדר היום.<br><br>אם רוב או חצי מחבריה תומכים בהסרה — ההצעה עוברת למסלול של הסרה מסדר היום.<br>📜 מקור: <a href=\"https://www.nevo.co.il/law/72248#Seif100\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 94 לתקנון הכנסת — הסרת הצעת חוק מסדר היום</a>"
         },
         {
@@ -664,7 +663,7 @@
           "details": "ליו\"ר הוועדה אסור להקדים הצעה שלו להצעות אחרות שהגיעו לוועדה לפניה, ולא נדונו בחצי השנה האחרונה.\n\nמותר לו להקדים את שלו אם יוזמי ההצעות המוקדמות מבקשים לדון קודם בהצעתו או אם חלפה יותר מחצי שנה מאז שהצעתו הגיעה לוועדה.\n📜 מקור: [סעיף 79 לתקנון הכנסת — הכנת הצעת חוק פרטית לקריאה הראשונה, פיצול ומיזוג ופרסום ברשומות](https://www.nevo.co.il/law/72248#Seif61)",
           "detailType": "expand",
           "children": [],
-          "_open": true,
+          "_open": false,
           "detailsHtml": "ליו\"ר הוועדה אסור להקדים הצעה שלו להצעות אחרות שהגיעו לוועדה לפניה, ולא נדונו בחצי השנה האחרונה.<br><br>מותר לו להקדים את שלו אם יוזמי ההצעות המוקדמות מבקשים לדון קודם בהצעתו או אם חלפה יותר מחצי שנה מאז שהצעתו הגיעה לוועדה.<br>📜 מקור: <a href=\"https://main.knesset.gov.il/Activity/Documents/RulesOfProcedure.pdf#page=125\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 79 לתקנון הכנסת — הכנת הצעת חוק פרטית לקריאה הראשונה, פיצול ומיזוג ופרסום ברשומות</a>",
           "builtinIcon": "calendar"
         },
@@ -1260,7 +1259,7 @@
           "details": "יו\"ר הכנסת קובע את המועד, ואינו מחויב לסד זמנים. ביכולתו לקבוע דיון משולב בכמה הצעות בנושא דומה.\n📜 מקור: [סעיף 88 לתקנון הכנסת — הנחה על שולחן הכנסת ומועד הקריאה השנייה](https://www.nevo.co.il/law/72248#Seif70)",
           "detailType": "expand",
           "children": [],
-          "_open": true,
+          "_open": false,
           "detailsHtml": "הוועדה יכולה לדון בהסרת ההצעה מסדר היום.<br><br>אם רוב או חצי מחבריה תומכים בהסרה — ההצעה עוברת למסלול של הסרה מסדר היום.<br>📜 מקור: <a href=\"https://www.nevo.co.il/law/72248#Seif100\" target=\"_blank\" rel=\"noopener\" style=\"color:#2E86AB;text-decoration:underline\">סעיף 94 לתקנון הכנסת — הסרת הצעת חוק מסדר היום</a><span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/calendar.png?v=1\" width=\"34\" height=\"34\" style=\"object-fit:contain\"></span>&nbsp;<span class=\"inline-icon\" contenteditable=\"false\" style=\"display:inline;vertical-align:middle;cursor:pointer\" onclick=\"if(appState.editing&amp;&amp;confirm('להסיר סמל?')){this.remove()}\"><img src=\"icons/calendar.png?v=1\" width=\"34\" height=\"34\" style=\"object-fit:contain\"></span>&nbsp;",
           "builtinIcon": "calendar"
         },
@@ -1423,11 +1422,7 @@
       "note": "",
       "noteType": "",
       "textColor": "#FFFFFF",
-      "specialBorder": "#0A5E6E",
-      "topIcon": {
-        "type": "builtin",
-        "icon": "shortcut-wait"
-      }
+      "specialBorder": "#0A5E6E"
     },
     {
       "id": "f2",
@@ -2113,7 +2108,7 @@
     }
   ],
   "nextId": 1047,
-  "publishDate": "2026-03-10T07:18:19.876Z",
+  "publishDate": "2026-03-10T07:29:27.363Z",
   "publishedBy": "zan2026",
-  "mergedAt": "2026-03-10T09:18:19.731680"
+  "mergedAt": "2026-03-10T09:29:27.263341"
 }
