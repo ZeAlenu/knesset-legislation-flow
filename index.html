@@ -4979,13 +4979,63 @@ function renderForkLines(){
     });
   });
 }
+// ===== Flow ↔ Hierarchy scroll sync =====
+let _flowSyncObserver = null;
+let _flowSyncPaused = false;
+function setupFlowScrollSync(){
+  if(_flowSyncObserver) _flowSyncObserver.disconnect();
+  const hierPanel = document.querySelector('.hierarchy-panel');
+  if(!hierPanel) return;
+  const stageMap = getStageFlowMap();
+  // Observe each stage button — when it enters the viewport center, scroll flow to match
+  _flowSyncObserver = new IntersectionObserver((entries) => {
+    if(_flowSyncPaused) return;
+    // Find the most visible stage button that has a flow mapping
+    let best = null;
+    for(const entry of entries){
+      if(entry.isIntersecting){
+        const stageId = entry.target.id?.replace('stage-btn-','');
+        if(stageId && stageMap[stageId]){
+          if(!best || entry.intersectionRatio > best.ratio){
+            best = {stageId, ratio: entry.intersectionRatio};
+          }
+        }
+      }
+    }
+    if(best){
+      const flowId = stageMap[best.stageId];
+      const el = document.getElementById(flowId);
+      const flowCard = document.querySelector('.flow-card');
+      if(el && flowCard){
+        const scrollTarget = el.offsetTop - flowCard.offsetTop - (flowCard.clientHeight / 2) + (el.clientHeight / 2);
+        flowCard.scrollTo({top: Math.max(0, scrollTarget), behavior:'smooth'});
+      }
+    }
+  }, {root: hierPanel, rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.5, 1]});
+  
+  document.querySelectorAll('[id^="stage-btn-"]').forEach(btn => {
+    _flowSyncObserver.observe(btn);
+  });
+}
+
+// Pause sync temporarily when user manually scrolls the flow card
+document.addEventListener('DOMContentLoaded', () => {
+  let flowScrollTimer;
+  const fc = document.querySelector('.flow-card');
+  if(fc) fc.addEventListener('scroll', () => {
+    _flowSyncPaused = true;
+    clearTimeout(flowScrollTimer);
+    flowScrollTimer = setTimeout(() => { _flowSyncPaused = false; }, 3000);
+  }, {passive:true});
+});
+
 function renderAll(){
   deduplicateSteps();
   renderLegend();
   renderHierarchy();
   renderFlowChart();
   // Delay back arrows + fork lines rendering to ensure DOM is updated
-  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderCrossArrows(); renderOutcomeToFlowArrows(); }, 100);
+  setTimeout(()=>{ renderBackArrows(); renderForkLines(); renderCrossArrows(); renderOutcomeToFlowArrows(); setupFlowScrollSync(); }, 100);
   // Update version badge
   const vb = document.getElementById("versionBadge");
   if(vb){
