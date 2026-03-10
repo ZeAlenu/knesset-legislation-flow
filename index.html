@@ -4307,9 +4307,10 @@ function startLineDrag(e, stepId, outcomeIdx){
   
   function onMove(ev){
     const dx = ev.clientX - startX;
-    // RTL: outcome 0 is right side — drag left = shorter, drag right = longer
-    // outcome 1 is left side — drag right = shorter, drag left = longer
-    const dir = outcomeIdx === 0 ? -1 : 1;
+    // Screen coordinates: drag right (dx>0) = line gets longer for BOTH sides
+    // because in RTL, right outcome extends rightward, left outcome extends leftward
+    // but mouse movement is always in screen coords: right = positive
+    const dir = outcomeIdx === 0 ? 1 : -1;
     out.lineLength = Math.round(Math.max(20, Math.min(400, startLen + dx * dir)));
     lineEl.style.flex = `0 0 ${out.lineLength}px`;
   }
