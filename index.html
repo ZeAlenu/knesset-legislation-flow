@@ -4367,7 +4367,7 @@ function startLineDrag(e, stepId, outcomeIdx){
     // but mouse movement is always in screen coords: right = positive
     const dir = outcomeIdx === 0 ? 1 : -1;
     out.lineLength = Math.round(Math.max(20, Math.min(400, startLen + dx * dir)));
-    lineEl.style.flex = `0 0 ${out.lineLength}px`;
+    lineEl.style.width = out.lineLength + 'px';
   }
   function onUp(){
     document.removeEventListener('mousemove', onMove);
@@ -4623,7 +4623,7 @@ function renderDiamondOutcomes(step){
   html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
   if(step.stageId) html += `<button class="flow-edit-btn" onclick="event.stopPropagation();scrollToDetailStage('${step.stageId}')" title="מצא בפירוט">🔍</button>`;
   html += `</div>`;
-  html += `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;width:100%">`;
+  html += `<div class="diamond-outcomes" id="${step.id}" style="position:relative;width:100%;direction:rtl">`;
   
   // Build each outcome with its chevron + arrow
   function renderOutcome(out, side){
@@ -4684,30 +4684,39 @@ function renderDiamondOutcomes(step){
   const lineLenR = right.lineLength ?? step.lineLength ?? 120;
   const lineLenL = left.lineLength ?? step.lineLength ?? 120;
   
-  // RIGHT outcome (first in RTL)
-  html += renderOutcome(right, 'right');
+  // Layout: diamond fixed at center, lines + chevrons extend from it
+  // Using absolute positioning so diamond never moves
+  const rowH = dSize + 20; // row height with some padding
   
-  // Line: right chevron → diamond
-  const dragR = appState.editing ? ` onmousedown="startLineDrag(event,'${step.id}',0)" title="גרור לשנות אורך"` : '';
-  html += `<div${dragR} style="flex:0 0 ${lineLenR}px;height:${appState.editing?'4':'2'}px;background:${lineColor};align-self:center${appState.editing?';cursor:col-resize;border-radius:2px':''}"></div>`;
+  html += `<div style="position:relative;height:${rowH}px;width:100%">`;
   
-  // Diamond (center)
+  // Diamond — always at exact center
   const editDiamond = appState.editing ? ` onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" title="ערוך מעוין"` : '';
-  html += `<div style="flex:0 0 auto;align-self:center">`;
+  html += `<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2">`;
   html += `<div${editDiamond} style="width:${dSize}px;height:${dSize}px;background:${diamondColor};transform:rotate(45deg);display:flex;align-items:center;justify-content:center;${appState.editing?'cursor:pointer':''}">`;
   html += `<span style="transform:rotate(-45deg);color:${diamondText};font-size:9px;font-weight:600;text-align:center;line-height:1.2">${escH(step.diamondLabel||'הצבעה\nלהסיר').replace(/\n/g,'<br>')}</span>`;
   html += `</div></div>`;
   
-  // Line: diamond → left chevron
+  // Right line: from diamond center to right
+  const rLineStart = dSize * 0.35; // offset from center (diamond corner)
+  const dragR = appState.editing ? ` onmousedown="startLineDrag(event,'${step.id}',0)" title="גרור לשנות אורך"` : '';
+  html += `<div${dragR} style="position:absolute;left:calc(50% + ${rLineStart}px);top:50%;height:${appState.editing?'4':'2'}px;width:${lineLenR}px;background:${lineColor};transform:translateY(-50%)${appState.editing?';cursor:col-resize;border-radius:2px':''}"></div>`;
+  
+  // Right chevron
+  html += `<div style="position:absolute;left:calc(50% + ${rLineStart + lineLenR}px);top:50%;transform:translateY(-50%);z-index:1">`;
+  html += renderOutcome(right, 'right');
+  html += `</div>`;
+  
+  // Left line: from diamond center to left  
   const dragL = appState.editing ? ` onmousedown="startLineDrag(event,'${step.id}',1)" title="גרור לשנות אורך"` : '';
-  html += `<div${dragL} style="flex:0 0 ${lineLenL}px;height:${appState.editing?'4':'2'}px;background:${lineColor};align-self:center${appState.editing?';cursor:col-resize;border-radius:2px':''}"></div>`;
+  html += `<div${dragL} style="position:absolute;right:calc(50% + ${rLineStart}px);top:50%;height:${appState.editing?'4':'2'}px;width:${lineLenL}px;background:${lineColor};transform:translateY(-50%)${appState.editing?';cursor:col-resize;border-radius:2px':''}"></div>`;
   
-  // LEFT outcome (second in RTL)
+  // Left chevron
+  html += `<div style="position:absolute;right:calc(50% + ${rLineStart + lineLenL}px);top:50%;transform:translateY(-50%);z-index:1">`;
   html += renderOutcome(left, 'left');
+  html += `</div>`;
   
-  // Arrow LEFT/RIGHT extends from chevron edge (rendered as SVG overlay post-render)
-  
-  html += `</div>`; // diamond-outcomes inner
+  html += `</div>`; // relative container
   html += `</div>`; // outer flex column wrapper
   return html;
 }
