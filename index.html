@@ -4076,48 +4076,158 @@ function flowDeleteStep(id){
   }
 }
 
-function editDiamondOutcome(stepId, part, outcomeIdx){
-  // Find the step in flowSteps or in branch steps
+function _findFlowStepDeep(stepId){
   let step = findFlowStep(stepId);
-  if(!step){
-    // Search in branches
-    for(const fs of appState.flowSteps){
-      if(fs.branches){
-        for(const br of fs.branches){
-          for(const bs of (br.steps||[])){
-            if(bs.id === stepId) { step = bs; break; }
-          }
+  if(step) return step;
+  for(const fs of appState.flowSteps){
+    if(fs.branches){
+      for(const br of fs.branches){
+        for(const bs of (br.steps||[])){
+          if(bs.id === stepId) return bs;
         }
       }
     }
   }
+  return null;
+}
+
+function _componentEditorRow(label, inputHtml){
+  return `<div style="margin-bottom:10px"><div style="font-size:11px;color:#888;margin-bottom:3px;font-weight:600">${label}</div>${inputHtml}</div>`;
+}
+
+function _colorRow(label, currentColor, onchangeExpr){
+  const presets = ["#1B2A4A","#2E86AB","#4A148C","#2D7D46","#C03928","#0A5E6E","#B8860B","#8B5CF6","#CC0000","#FFFFFF"];
+  return _componentEditorRow(label, `
+    <div style="display:flex;align-items:center;gap:6px">
+      <input type="color" value="${currentColor}" oninput="${onchangeExpr}" style="width:36px;height:28px;border:none;border-radius:4px;cursor:pointer">
+      <div style="display:flex;gap:2px;flex-wrap:wrap">${presets.map(c=>
+        `<div style="width:16px;height:16px;background:${c};border-radius:3px;border:1px solid #ccc;cursor:pointer" onclick="event.stopPropagation();${onchangeExpr.replace(/this\.value/g,"'"+c+"'")};this.closest('.component-editor').querySelector('input[oninput*=&quot;${onchangeExpr.split('(')[0]}&quot;]').value='${c}'"></div>`
+      ).join("")}</div>
+    </div>
+  `);
+}
+
+function _textRow(label, currentValue, onchangeExpr){
+  return _componentEditorRow(label, `<input type="text" value="${escH(currentValue||'')}" onchange="${onchangeExpr}" style="width:100%;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-family:inherit">`);
+}
+
+function _showComponentEditor(btnEl, title, contentHtml, onClose){
+  document.querySelectorAll(".component-editor").forEach(p=>p.remove());
+  const popup = document.createElement("div");
+  popup.className = "component-editor";
+  popup.style.cssText = "position:fixed;z-index:1200;width:280px;max-height:80vh;overflow-y:auto;padding:16px;background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.25);direction:rtl;font-family:inherit";
+  popup.innerHTML = `<div style="font-size:13px;font-weight:700;margin-bottom:12px;color:#1B2A4A;border-bottom:2px solid #2E86AB;padding-bottom:6px">${title}</div>${contentHtml}
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button onclick="event.stopPropagation();document.querySelectorAll('.component-editor').forEach(p=>p.remove());renderAll()" style="flex:1;padding:6px;border:none;border-radius:6px;background:var(--teal-dark,#0A5E6E);color:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600">✅ בצע</button>
+    </div>`;
+  const rect = btnEl.getBoundingClientRect();
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 500) + "px";
+  popup.style.left = Math.max(4, Math.min(rect.left - 140, window.innerWidth - 300)) + "px";
+  document.body.appendChild(popup);
+  if(typeof ensurePopupVisible === 'function') ensurePopupVisible(popup);
+  setTimeout(()=>{
+    document.addEventListener("click", function handler(e){
+      if(!popup.contains(e.target) && e.target !== btnEl){
+        popup.remove();
+        document.removeEventListener("click", handler);
+        renderAll();
+      }
+    });
+  }, 50);
+}
+
+// ===== voteDecision Editor =====
+function editVoteDecisionPopup(stepId, btnEl){
+  const step = _findFlowStepDeep(stepId);
   if(!step) return;
   pushUndo();
   
+  let html = '';
+  // Diamond
+  html += `<div style="font-size:11px;font-weight:700;color:#2E86AB;margin:8px 0 4px">◇ מעוין</div>`;
+  html += _textRow('טקסט', (step.voteLabel||step.label||'').replace(/\n/g,' '), `_vdSet('${stepId}','voteLabel',this.value)`);
+  html += _colorRow('צבע מעוין', step.diamondColor||'#1B2A4A', `_vdSet('${stepId}','diamondColor',this.value)`);
+  
+  // Chevrons
+  html += `<div style="font-size:11px;font-weight:700;color:#2E86AB;margin:8px 0 4px">⬡ שברונים</div>`;
+  html += _textRow('אושרה', step.approveLabel||'אושרה', `_vdSet('${stepId}','approveLabel',this.value)`);
+  html += _textRow('נדחתה', step.rejectLabel||'נדחתה', `_vdSet('${stepId}','rejectLabel',this.value)`);
+  html += _colorRow('צבע שברונים', step.chevronColor||'#2a4a7a', `_vdSet('${stepId}','chevronColor',this.value)`);
+  
+  // Reject chain items
+  const chain = step.rejectChain || [];
+  if(chain.length > 0){
+    html += `<div style="font-size:11px;font-weight:700;color:#2E86AB;margin:8px 0 4px">← שרשרת דחייה</div>`;
+    chain.forEach((item, i) => {
+      html += _textRow(`טקסט (${item.type})`, item.label||'', `_vdChainSet('${stepId}',${i},'label',this.value)`);
+      html += _colorRow(`צבע (${item.type})`, item.color||'#2E86AB', `_vdChainSet('${stepId}',${i},'color',this.value)`);
+    });
+  }
+  
+  // Arrow direction
+  html += _componentEditorRow('כיוון חץ דחייה', `
+    <select onchange="_vdSet('${stepId}','rejectArrowDir',this.value)" style="padding:4px;border:1px solid #ccc;border-radius:4px;font-family:inherit">
+      <option value="up" ${(step.rejectArrowDir||'up')==='up'?'selected':''}>↑ למעלה</option>
+      <option value="down" ${step.rejectArrowDir==='down'?'selected':''}>↓ למטה</option>
+    </select>
+  `);
+  
+  _showComponentEditor(btnEl, '✏️ עריכת הצבעה', html);
+}
+
+function _vdSet(stepId, field, value){
+  const step = _findFlowStepDeep(stepId);
+  if(!step) return;
+  if(field === 'voteLabel' || field === 'diamondLabel') value = value.replace(/ /g,'\n');
+  step[field] = value;
+}
+
+function _vdChainSet(stepId, idx, field, value){
+  const step = _findFlowStepDeep(stepId);
+  if(step && step.rejectChain && step.rejectChain[idx]) step.rejectChain[idx][field] = value;
+}
+
+// ===== diamondOutcomes Editor =====
+function editDiamondOutcome(stepId, part, outcomeIdx){
+  const step = _findFlowStepDeep(stepId);
+  if(!step) return;
+  pushUndo();
+  
+  // Find the button that was clicked for positioning
+  const el = document.getElementById(stepId);
+  const btnEl = el || document.body;
+  
   if(part === 'diamond'){
-    const newLabel = prompt("טקסט מעוין:", (step.diamondLabel||'').replace(/\n/g,' '));
-    if(newLabel !== null) step.diamondLabel = newLabel.replace(/ /g,'\n');
-    const newColor = prompt("צבע מעוין (hex):", step.diamondColor || '#1B2A4A');
-    if(newColor !== null && newColor.trim()) step.diamondColor = newColor.trim();
-    renderAll();
+    let html = '';
+    html += _textRow('טקסט מעוין', (step.diamondLabel||'').replace(/\n/g,' '), `_doSet('${stepId}','diamondLabel',this.value)`);
+    html += _colorRow('צבע מעוין', step.diamondColor||'#0e5825', `_doSet('${stepId}','diamondColor',this.value)`);
+    _showComponentEditor(btnEl, '◇ עריכת מעוין', html);
   } else if(part === 'outcome' && step.outcomes && step.outcomes[outcomeIdx]){
     const out = step.outcomes[outcomeIdx];
-    const newLabel = prompt("טקסט שברון:", out.label||'');
-    if(newLabel !== null) out.label = newLabel;
-    const newColor = prompt("צבע שברון (hex):", out.chevronColor||'#2E86AB');
-    if(newColor !== null && newColor.trim()) out.chevronColor = newColor.trim();
+    let html = '';
+    html += _textRow('טקסט שברון', (out.label||'').replace(/\n/g,' '), `_doOutSet('${stepId}',${outcomeIdx},'label',this.value)`);
+    html += _colorRow('צבע שברון', out.chevronColor||'#2E86AB', `_doOutSet('${stepId}',${outcomeIdx},'chevronColor',this.value)`);
     if(out.connectLabel !== undefined){
-      const newConn = prompt("טקסט תיבה:", out.connectLabel||'');
-      if(newConn !== null) out.connectLabel = newConn;
+      html += _textRow('טקסט תיבה', out.connectLabel||'', `_doOutSet('${stepId}',${outcomeIdx},'connectLabel',this.value)`);
     }
     if(out.connectLabel2 !== undefined){
-      const newConn2 = prompt("טקסט תיבה שנייה:", out.connectLabel2||'');
-      if(newConn2 !== null) out.connectLabel2 = newConn2;
+      html += _textRow('טקסט תיבה שנייה', out.connectLabel2||'', `_doOutSet('${stepId}',${outcomeIdx},'connectLabel2',this.value)`);
     }
-    const newJumpColor = prompt("צבע תיבות (hex):", out.jumpColor||'#1B2A4A');
-    if(newJumpColor !== null && newJumpColor.trim()) out.jumpColor = newJumpColor.trim();
-    renderAll();
+    html += _colorRow('צבע תיבות', out.jumpColor||'#1B2A4A', `_doOutSet('${stepId}',${outcomeIdx},'jumpColor',this.value)`);
+    _showComponentEditor(btnEl, '⬡ עריכת מוצא', html);
   }
+}
+
+function _doSet(stepId, field, value){
+  const step = _findFlowStepDeep(stepId);
+  if(!step) return;
+  if(field === 'diamondLabel') value = value.replace(/ /g,'\n');
+  step[field] = value;
+}
+
+function _doOutSet(stepId, idx, field, value){
+  const step = _findFlowStepDeep(stepId);
+  if(step && step.outcomes && step.outcomes[idx]) step.outcomes[idx][field] = value;
 }
 
 function flowInsertStep(index, context){
@@ -4332,7 +4442,17 @@ function renderDiamondOutcomes(step){
   const hasDown2 = outcomes.some(o => o.arrowDir === 'down' && o.connectLabel2);
   const chainH = outcomes.find(o => o.chainHeight)?.chainHeight || 0;
   const mbPx = chainH || (hasDown2 ? 80 : hasDown ? 50 : 0);
-  let html = `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;margin:2px 0 ${mbPx}px 0;width:100%">`;
+  let html = `<div style="display:flex;flex-direction:column;align-items:center;margin:2px 0 ${mbPx}px 0;width:100%">`;
+  // Edit toolbar
+  html += `<div class="flow-edit-actions" style="margin-bottom:4px">`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();editDiamondOutcome('${step.id}','diamond')" title="ערוך מעוין">◇</button>`;
+  outcomes.forEach((out, i) => {
+    html += `<button class="flow-edit-btn" onclick="event.stopPropagation();editDiamondOutcome('${step.id}','outcome',${i})" title="ערוך מוצא ${i+1}">⬡${i+1}</button>`;
+  });
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
+  if(step.stageId) html += `<button class="flow-edit-btn" onclick="event.stopPropagation();scrollToDetailStage('${step.stageId}')" title="מצא בפירוט">🔍</button>`;
+  html += `</div>`;
+  html += `<div class="diamond-outcomes" id="${step.id}" style="display:flex;align-items:center;justify-content:center;direction:rtl;gap:0;width:100%">`;
   
   // Build each outcome with its chevron + arrow
   function renderOutcome(out, side){
@@ -4411,7 +4531,8 @@ function renderDiamondOutcomes(step){
   
   // Arrow LEFT/RIGHT extends from chevron edge (rendered as SVG overlay post-render)
   
-  html += `</div>`;
+  html += `</div>`; // diamond-outcomes inner
+  html += `</div>`; // outer flex column wrapper
   return html;
 }
 
@@ -4437,7 +4558,17 @@ function renderVoteDecision(step){
   const chain = step.rejectChain || [];
   const arrowDir = step.rejectArrowDir || 'up'; // 'up' or 'down'
   
-  let html = `<div id="${step.id}" style="position:relative;margin:6px 0 20px 0;display:flex;justify-content:center">`;
+  let html = `<div id="${step.id}" style="position:relative;margin:6px 0 20px 0;display:flex;flex-direction:column;align-items:center">`;
+  
+  // Edit controls
+  html += `<div class="flow-edit-actions" style="margin-bottom:4px">`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();editVoteDecisionPopup('${step.id}',this)" title="ערוך הצבעה">✏️</button>`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowToggleTopIcon('${step.id}',event)" title="לוגו מעל">🔝</button>`;
+  html += `<button class="flow-edit-btn" onclick="event.stopPropagation();flowDeleteStep('${step.id}')" title="מחק" style="color:#c00">🗑️</button>`;
+  if(step.stageId) html += `<button class="flow-edit-btn" onclick="event.stopPropagation();scrollToDetailStage('${step.stageId}')" title="מצא בפירוט">🔍</button>`;
+  html += `</div>`;
+  
+  html += `<div style="display:flex;justify-content:center">`;
   
   // Container: diamond centered, with chevrons attached to vertices
   html += `<div style="position:relative;width:${ds + ds*0.3}px">`;
@@ -4573,7 +4704,8 @@ function renderVoteDecision(step){
     }
   }
   
-  html += `</div>`;
+  html += `</div>`; // flex justify-content center wrapper
+  html += `</div>`; // outer flex-direction column wrapper
   return html;
 }
 
