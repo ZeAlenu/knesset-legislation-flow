@@ -3381,20 +3381,18 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
     const hasNoteAnnotation = nextStep && nextStep.type === "note";
 
     if(hasNoteAnnotation){
-      // Flex row: step on the right (RTL start), note on the left (outer side)
-      html += `<div style="display:flex;align-items:center;gap:10px;direction:rtl;margin:4px 0">`;
+      // Step centered, note positioned absolutely to the left (outer side in RTL)
+      html += `<div style="position:relative;margin:4px 0">`;
       
-      // Main step (right side in RTL = inner/center side)
-      html += `<div class="flow-step" id="${step.id}" style="position:relative;flex:1;min-width:0">`;
+      // Main step (always centered)
+      html += `<div class="flow-step" id="${step.id}" style="position:relative">`;
       html += renderFlowStepElement(step, isInBranch);
       if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
       html += `</div>`;
       
-      // Connecting arrow
+      // Note annotation — absolutely positioned to the left of the step
+      html += `<div style="position:absolute;left:0;top:50%;transform:translate(-100%,-50%);display:flex;align-items:center;gap:4px;direction:rtl;max-width:140px">`;
       html += `<div style="color:#999;font-size:10px;flex-shrink:0">◂</div>`;
-      
-      // Note annotation (left side in RTL = outer side)
-      html += `<div style="flex-shrink:0;max-width:140px">`;
       html += renderNoteAnnotation(nextStep);
       html += `</div>`;
       
@@ -3402,26 +3400,27 @@ function renderFlowStepWithWrapper(step, index, arr, isInBranch){
     } else {
       // Normal step rendering - with side notes if present
       if(step.sideNotes && step.sideNotes.length > 0){
-        html += `<div style="display:flex;align-items:center;gap:8px;direction:rtl;margin:4px 0">`;
-        // Right side notes
-        const rightNotes = step.sideNotes.filter(n=>n.side==="right");
-        if(rightNotes.length){
-          html += `<div style="flex-shrink:0;max-width:130px">`;
-          rightNotes.forEach((n,ni) => { html += `<div style="font-size:9px;color:#666;background:#FFFDE7;padding:3px 6px;border-radius:4px;border:1px solid #FFE082;margin:2px 0">${escH(n.text)}${appState.editing?` <span style="cursor:pointer;color:#c00" onclick="event.stopPropagation();removeSideNote('${step.id}',${step.sideNotes.indexOf(n)})">✕</span>`:""}</div>`; });
-          html += `</div><div style="color:#999;font-size:10px;flex-shrink:0">◂</div>`;
-        }
-        // Main step
-        html += `<div class="flow-step" id="${step.id}" style="position:relative;flex:1;min-width:0">`;
+        html += `<div style="position:relative;margin:4px 0">`;
+        // Main step (always centered)
+        html += `<div class="flow-step" id="${step.id}" style="position:relative">`;
         html += renderFlowStepElement(step, isInBranch);
         if(isAct && !isInBranch) html += `<span class="flow-here-badge">← אתה כאן</span>`;
         html += `</div>`;
-        // Left side notes
+        // Right side notes — absolutely positioned to the right
+        const rightNotes = step.sideNotes.filter(n=>n.side==="right");
+        if(rightNotes.length){
+          html += `<div style="position:absolute;right:0;top:50%;transform:translate(100%,-50%);display:flex;align-items:center;gap:4px;direction:rtl;max-width:130px">`;
+          html += `<div style="color:#999;font-size:10px;flex-shrink:0">◂</div><div>`;
+          rightNotes.forEach((n,ni) => { html += `<div style="font-size:9px;color:#666;background:#FFFDE7;padding:3px 6px;border-radius:4px;border:1px solid #FFE082;margin:2px 0">${escH(n.text)}${appState.editing?` <span style="cursor:pointer;color:#c00" onclick="event.stopPropagation();removeSideNote('${step.id}',${step.sideNotes.indexOf(n)})">✕</span>`:""}</div>`; });
+          html += `</div></div>`;
+        }
+        // Left side notes — absolutely positioned to the left
         const leftNotes = step.sideNotes.filter(n=>n.side!=="right");
         if(leftNotes.length){
-          html += `<div style="color:#999;font-size:10px;flex-shrink:0">▸</div>`;
-          html += `<div style="flex-shrink:0;max-width:130px">`;
+          html += `<div style="position:absolute;left:0;top:50%;transform:translate(-100%,-50%);display:flex;align-items:center;gap:4px;direction:rtl;max-width:130px">`;
+          html += `<div style="color:#999;font-size:10px;flex-shrink:0">▸</div><div>`;
           leftNotes.forEach((n,ni) => { html += `<div style="font-size:9px;color:#666;background:#FFFDE7;padding:3px 6px;border-radius:4px;border:1px solid #FFE082;margin:2px 0">${escH(n.text)}${appState.editing?` <span style="cursor:pointer;color:#c00" onclick="event.stopPropagation();removeSideNote('${step.id}',${step.sideNotes.indexOf(n)})">✕</span>`:""}</div>`; });
-          html += `</div>`;
+          html += `</div></div>`;
         }
         html += `</div>`;
       } else {
@@ -3494,25 +3493,21 @@ function renderFlowSplit(step, mainIndex, isNested){
       const hasNoteAnnotation = nextBStep && nextBStep.type === "note";
       
       if(hasNoteAnnotation){
-        // Flex row: step inner, note outer. bi=0 (right branch in RTL) note goes right; bi>0 note goes left
-        const noteFirst = bi === 0; // right branch (RTL) = note on right (outer side, first in flex)
-        html += `<div style="display:flex;align-items:center;gap:6px;direction:rtl;margin:2px 0">`;
-        if(noteFirst){
-          html += `<div style="flex-shrink:0;max-width:90px">`;
-          html += renderNoteAnnotation(nextBStep).replace(/width:85px;height:85px/, 'width:60px;height:60px').replace(/font-size:9px/, 'font-size:8px').replace(/max-width:130px/, 'max-width:90px');
-          html += `</div>`;
-          html += `<div style="color:#999;font-size:8px;flex-shrink:0">◂</div>`;
-        }
-        html += `<div class="flow-step" id="${bStep.id}" style="position:relative;flex:1;min-width:0">`;
+        // Step centered, note absolutely positioned to the outer side
+        const noteOnRight = bi === 0; // right branch (RTL) = note on right (outer)
+        html += `<div style="position:relative;margin:2px 0">`;
+        html += `<div class="flow-step" id="${bStep.id}" style="position:relative">`;
         html += renderFlowStepElement(bStep, true);
         html += `</div>`;
-        if(!noteFirst){
-          html += `<div style="color:#999;font-size:8px;flex-shrink:0">▸</div>`;
-          html += `<div style="flex-shrink:0;max-width:90px">`;
-          html += renderNoteAnnotation(nextBStep).replace(/width:85px;height:85px/, 'width:60px;height:60px').replace(/font-size:9px/, 'font-size:8px').replace(/max-width:130px/, 'max-width:90px');
-          html += `</div>`;
+        const noteHtml = renderNoteAnnotation(nextBStep).replace(/width:85px;height:85px/, 'width:60px;height:60px').replace(/font-size:9px/, 'font-size:8px').replace(/max-width:130px/, 'max-width:90px');
+        if(noteOnRight){
+          html += `<div style="position:absolute;right:0;top:50%;transform:translate(100%,-50%);display:flex;align-items:center;gap:4px;direction:rtl;max-width:90px">`;
+          html += `<div style="color:#999;font-size:8px;flex-shrink:0">◂</div>${noteHtml}`;
+        } else {
+          html += `<div style="position:absolute;left:0;top:50%;transform:translate(-100%,-50%);display:flex;align-items:center;gap:4px;direction:rtl;max-width:90px">`;
+          html += `${noteHtml}<div style="color:#999;font-size:8px;flex-shrink:0">▸</div>`;
         }
-        html += `</div>`;
+        html += `</div></div>`;
       } else if(bStep.type === "split"){
         html += renderFlowSplit(bStep, bsi, true);
       } else if(bStep.type === "diamondOutcomes"){
